@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="styles5.css">
+  <script>
+    (function () {
+      var src = "//cdn.jsdelivr.net/npm/eruda";
+      if (
+        !/eruda=true/.test(window.location) &&
+        localStorage.getItem("active-eruda") != "true"
+      )
+        return;
+      document.write("<scr" + 'ipt src="' + src + '"></scr' + "ipt>");
+      document.write("<scr" + "ipt>eruda.init();</scr" + "ipt>");
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="rps">
+    <div id="header">
+      <h3>Rock Paper Scissors</h1>
+        <p id="game-id"></p>
+    </div>
+    <div id="game">
+      <div class="column">
+        <p id="you">YOU</p>
+        <p>(<span id="player-id"></span>)</p>
+        <div id="place-wager">
+          <input type="text" id="wager-input" name="wager-input" placeholder="Your wager in $USD" disabled>
+          <button type="button" disabled id="offer-wager">Offer Wager</button>
+          <p id="your-wager-in-ether"></p>
+        </div>
+        <p id="your-wager-offer"></p>
+        <p id="your-wager-status"></p>
+        <p id="opp-wager-offer"></p>
+        <p id="opp-wager-status"></p>
+        <div id="wager-buttons">
+          <button id="accept-wager">ACCEPT</button>
+          <button id="decline-wager">DECLINE</button>
+        </div>
+        <div id="versus">
+          <p>VS</p>
+        </div>
+        <p id="opp">OPP</p>
+        <p>(<span id="opp-id"></span>)</p>
+        <div id="opp-status">
+          <p id="opp-wager"></p>
+          <p id="opp-wager-in-ether"></p>
+          <p id="did-opp-accept-wager"></p>
+        </div>
+      </div>
+      <div class="column">
+        <p id="your-wager"></p>
+        <p id="opponent-wager"></p>
+        <div id="symbol-choice">
+          <p>Pick a symbol</p>
+          <div id="buttons">
+            <button id="rock">
+              <p>R</p>
+            </button>
+            <button id="paper">
+              <p>P</p>
+            </button>
+            <button id="scissors">
+              <p>S</p>
+            </button>
+          </div>
+        </div>
+        <div id="results">
+          <p id="your-choice"></p>
+          <p id="opp-choice"></p>
+          <p id="win-lose-draw"></p>
+          <p id="outcome"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"
+    integrity="sha512-C/TYwf93EQ6sPW4g3F9axNydQuQrAQCTOR1Gz65YK96MwrZ0KDn3qjNMAlXLYyjm84JELTYHinAfvUjbNC4fuQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="main4.js"></script>
+</body>
+
+</html>
