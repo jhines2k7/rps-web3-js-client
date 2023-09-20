@@ -314,10 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
   registerSocketIOEventListeners();
 });
 
-let accounts;
-
-const contractAddress = "0xbA0D64E4419c13bD247FEA1aEAC2949daa6BE7E3";
-
 async function loadContractABI(name) {
   return fetch(name)
     .then(response => response.json())
@@ -332,14 +328,14 @@ async function loadContractABI(name) {
     });
 }
 
-async function joinContract(stakeUSD) {
+async function joinContract(stakeUSD, contractAddress) {
   const web3 = new Web3(window.ethereum);
   
   // Request access to user's MetaMask accounts
   await window.ethereum.request({ method: 'eth_requestAccounts' })
 
   // Use web3.js
-  accounts = await web3.eth.getAccounts();
+  const accounts = await web3.eth.getAccounts();
   console.log(`Your accounts: ${accounts}`);
 
   // Fetch the RPSContract
