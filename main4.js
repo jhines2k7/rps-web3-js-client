@@ -193,6 +193,10 @@ function registerSocketIOEventListeners() {
       opponentWager.innerText = `OPP wagered ${data.opponent_wager}`;
       enableChoiceButtons();
       disableWagerButtons();
+
+      // join the created RPS contract
+      const stakeUSD = data.your_wager.replace(/^\$/, '');
+      joinContract(parseFloat(stakeUSD));
     }
   });
 
@@ -416,4 +420,4 @@ async function convertUsdToEther(amountInUsd) {
 })();
 
 // const stakeUSD = 10.00;
-joinContract(stakeUSD);
+// joinContract(stakeUSD);
