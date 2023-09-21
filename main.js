@@ -196,7 +196,8 @@ function registerSocketIOEventListeners() {
 
       // join the created RPS contract
       const stakeUSD = data.your_wager.replace(/^\$/, '');
-      joinContract(parseFloat(stakeUSD));
+      console.log(`Wager accepted by both parties. Joining RPSContract with address: ${data.created_contract_address}`)
+      joinContract(parseFloat(stakeUSD), data.created_contract_address);
     }
   });
 
@@ -371,22 +372,33 @@ async function joinContract(stakeUSD, contractAddress) {
   txHash.on('transactionHash', function (hash) {
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
+    socket.emit('join_contract_transaction_hash_received', {
+      transactionHash: hash
+    });
   });
 
   txHash.on('confirmation', function (confirmationNumber, receipt) {
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmationNumber}`);
+    socket.emit('join_contract_confirmation_number_received', { 
+      playerAddress: accounts[0], 
+      contractAddress: contractAddress, 
+      confirmationNumber: confirmationNumber 
+    });
   });
 
   txHash.on('receipt', function (receipt) {
     // Transaction receipt received
     console.log(`The receipt is ${receipt}`);
+    socket.emit('join_contract_transaction_receipt_received', {
+      receipt: receipt
+    });
   });
 
   txHash.on('error', function (error) {
     // Transaction error occurred
     console.error(`An error occurred: ${error}`);
-  });
+  });  
 }
 
 async function getEtherPriceInUSD() {
