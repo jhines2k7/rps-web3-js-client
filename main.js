@@ -235,13 +235,11 @@ function registerSocketIOEventListeners() {
 
   socket.on('opponent_disconnected', (data) => {
     opponentId.innerText = 'Waiting for an opponent to join...';
-    message.innerText = data.playerId + ' disconnected';
     disableChoiceButtons();
     yourWagerOffer.innerText = '';
     yourWagerStatus.innerText = '';
     oppWagerOffer.innerText = '';
     oppWagerStatus.innerText = '';
-    bets.innerText = '';
   });
 
   socket.on('result', (data) => {
@@ -307,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
   oppWagerStatus = document.getElementById('opp-wager-status');
 
   // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
-  socket = io('https://dev.generalsolutions43.com:8443', {transports: ['websocket']});
+  socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});
 
   disableChoiceButtons();
   registerDOMEventListeners();
