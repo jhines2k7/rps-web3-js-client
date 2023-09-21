@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
   oppWagerStatus = document.getElementById('opp-wager-status');
 
   // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
-  socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});
+  socket = io('https://dev.generalsolutions43.com:8443', {transports: ['websocket']});
 
   disableChoiceButtons();
   registerDOMEventListeners();
