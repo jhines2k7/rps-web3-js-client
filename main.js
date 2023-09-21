@@ -246,12 +246,13 @@ function registerSocketIOEventListeners() {
   socket.on('result', (data) => {
     yourChoice.innerText = `YOU chose ${data.yourChoice.toUpperCase()}`;
     oppChoice.innerText = `OPP chose ${data.opponentChoice.toUpperCase()}`;
+    console.log(`rock paper scissors result: ${JSON.stringify(data)}`);
     if (data.winnings > 0) {
       winLoseDraw.innerText = 'You won';
-      outcome.innerText = `YOU won $${data.totalWinnings}`;
+      outcome.innerText = `YOU won $${data.winnings}`;
     } else {
       winLoseDraw.innerText = 'You lost';
-      outcome.innerText = `YOU lost $${Math.abs(data.totalWinnings)}`;
+      outcome.innerText = `YOU lost $${Math.abs(data.winnings)}`;
     }
     
     disableChoiceButtons();
@@ -275,44 +276,6 @@ window.addEventListener('beforeunload', (event) => {
   socket.emit('refresh');
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  buttons = document.querySelectorAll('button');
-  gameId = document.getElementById('game-id');
-  playerId = document.getElementById('player-id');
-  wagerInput = document.getElementById('wager-input');
-  wagerInputPlaceholder = wagerInput.placeholder;
-  yourWagerInEther = document.getElementById('your-wager-in-ether');
-  wagerButtons = document.getElementById('wager-buttons');
-  acceptWagerBtn = document.getElementById('accept-wager');
-  declineWagerBtn = document.getElementById('decline-wager');
-  opponentId = document.getElementById('opp-id');
-  oppWagerInEther = document.getElementById('opp-wager-in-ether');
-  yourWager = document.getElementById('your-wager');
-  oppWager = document.getElementById('opp-wager');
-  acceptedWagerStatus = document.getElementById('accepted-wager-status');
-  results = document.getElementById('results');
-  winLoseDraw = document.getElementById('win-lose-draw');
-  yourChoice = document.getElementById('your-choice');
-  oppChoice = document.getElementById('opp-choice');
-  outcome = document.getElementById('outcome');
-  rockBtn = document.getElementById('rock');
-  paperBtn = document.getElementById('paper');
-  scissorsBtn = document.getElementById('scissors');
-  offerWagerBtn = document.getElementById('offer-wager');
-  opponentWager = document.getElementById('opponent-wager');
-  yourWagerOffer = document.getElementById('your-wager-offer');
-  yourWagerStatus = document.getElementById('your-wager-status');
-  oppWagerOffer = document.getElementById('opp-wager-offer');
-  oppWagerStatus = document.getElementById('opp-wager-status');
-
-  // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
-  socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});
-
-  disableChoiceButtons();
-  registerDOMEventListeners();
-  registerSocketIOEventListeners();
-});
-
 async function loadContractABI(name) {
   return fetch(name)
     .then(response => response.json())
@@ -328,6 +291,12 @@ async function loadContractABI(name) {
 }
 
 async function joinContract(stakeUSD, contractAddress) {
+  // Wait for window.ethereum to be present
+  while (!window.ethereum) {
+    console.log('Waiting for MetaMask...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
   const web3 = new Web3(window.ethereum);
   
   // Request access to user's MetaMask accounts
@@ -417,13 +386,47 @@ async function convertUsdToEther(amountInUsd) {
   return amountInEther;
 }
 
-// Wait for window.ethereum to be present
-(async () => {
-  while (!window.ethereum) {
-    console.log('Waiting for MetaMask...');
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-})();
+// (async () => {
+//   while (!window.ethereum) {
+//     console.log('Waiting for MetaMask...');
+//     await new Promise(resolve => setTimeout(resolve, 1000));
+//   }
+// })();
 
-// const stakeUSD = 10.00;
-// joinContract(stakeUSD);
+document.addEventListener('DOMContentLoaded', () => {
+  buttons = document.querySelectorAll('button');
+  gameId = document.getElementById('game-id');
+  playerId = document.getElementById('player-id');
+  wagerInput = document.getElementById('wager-input');
+  wagerInputPlaceholder = wagerInput.placeholder;
+  yourWagerInEther = document.getElementById('your-wager-in-ether');
+  wagerButtons = document.getElementById('wager-buttons');
+  acceptWagerBtn = document.getElementById('accept-wager');
+  declineWagerBtn = document.getElementById('decline-wager');
+  opponentId = document.getElementById('opp-id');
+  oppWagerInEther = document.getElementById('opp-wager-in-ether');
+  yourWager = document.getElementById('your-wager');
+  oppWager = document.getElementById('opp-wager');
+  acceptedWagerStatus = document.getElementById('accepted-wager-status');
+  results = document.getElementById('results');
+  winLoseDraw = document.getElementById('win-lose-draw');
+  yourChoice = document.getElementById('your-choice');
+  oppChoice = document.getElementById('opp-choice');
+  outcome = document.getElementById('outcome');
+  rockBtn = document.getElementById('rock');
+  paperBtn = document.getElementById('paper');
+  scissorsBtn = document.getElementById('scissors');
+  offerWagerBtn = document.getElementById('offer-wager');
+  opponentWager = document.getElementById('opponent-wager');
+  yourWagerOffer = document.getElementById('your-wager-offer');
+  yourWagerStatus = document.getElementById('your-wager-status');
+  oppWagerOffer = document.getElementById('opp-wager-offer');
+  oppWagerStatus = document.getElementById('opp-wager-status');
+
+  // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
+  socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});
+
+  disableChoiceButtons();
+  registerDOMEventListeners();
+  registerSocketIOEventListeners();
+});
