@@ -321,7 +321,7 @@ async function joinContract(stakeUSD, contractAddress) {
   const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
   console.log(`Calling joinContract(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
 
-  const stakeInEther = await convertUsdToEther(stakeUSD);
+  let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   stakeInEther *= 0.1; // for testing purposes
   // const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
