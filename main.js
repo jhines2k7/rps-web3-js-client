@@ -196,8 +196,9 @@ function registerSocketIOEventListeners() {
 
       // join the created RPS contract
       const stakeUSD = data.your_wager.replace(/^\$/, '');
-      console.log(`Wager accepted by both parties. Joining RPSContract with address: ${data.created_contract_address}`)
-      joinContract(parseFloat(stakeUSD), data.created_contract_address);
+      console.log(`Wager accepted by both parties. Joining RPSContract with address: ${data.contractAddress}`)
+      console.log(`Stake in USD: ${stakeUSD}`);
+      joinContract(parseFloat(stakeUSD), data.contractAddress);
     }
   });
 
