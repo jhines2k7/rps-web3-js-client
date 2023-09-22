@@ -77,7 +77,6 @@ function registerDOMEventListeners() {
     wagerAccepted = true;
 
     if (wagerAccepted && opponentWagerAccepted) {
-      // joinContractStatus.innerText = 'Generating contract...';
       enableChoiceButtons();
       disableWagerButtons();
     }
@@ -183,6 +182,10 @@ function registerSocketIOEventListeners() {
     declineWagerBtn.disabled = true;
   });
 
+  socket.on('generating_contract', (data) => {
+    joinContractStatus.innerText = 'Generating contract...';
+  });
+
   socket.on('wager_accepted', (data) => {
     opponentWagerAccepted = true;
     oppWagerStatus.innerText = '';
@@ -190,8 +193,8 @@ function registerSocketIOEventListeners() {
     yourWagerOffer.innerText = '';
     yourWagerStatus.innerText = `${data.opponent_id} accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
+
     if (data.your_wager && data.opponent_wager) {
-      joinContractStatus.innerText = 'Generating contract...';
       yourWager.innerText = `YOU wagered ${data.your_wager}`;
       opponentWager.innerText = `OPP wagered ${data.opponent_wager}`;
       enableChoiceButtons();
@@ -343,9 +346,9 @@ async function joinContract(stakeUSD, contractAddress) {
     'data': encodedData,
   };
 
-  const txHash = web3.eth.sendTransaction(transaction);
-
   joinContractStatus.innerText = 'Joining players to contract...';
+
+  const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.on('transactionHash', function (hash) {
     joinContractStatus.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
