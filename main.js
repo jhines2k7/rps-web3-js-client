@@ -347,7 +347,6 @@ async function joinContract(stakeUSD, contractAddress) {
       transactionHash: hash,
       playerAddress: accounts[0], 
       contractAddress: contractAddress,
-      playerId: playerId.innerText,
     });
   });
 
