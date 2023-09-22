@@ -37,6 +37,7 @@ let offerWagerBtn;
 let oppWagerInDollars;
 let oppId;
 let wagerInputPlaceholder;
+let joinContractStatus;
 
 function disableChoiceButtons() {
   buttons.forEach((button) => {
@@ -189,6 +190,8 @@ function registerSocketIOEventListeners() {
     yourWagerStatus.innerText = `${data.opponent_id} accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
     if (data.your_wager && data.opponent_wager) {
+      joinContractStatus.innerText = 'Generating contract...';
+
       yourWager.innerText = `YOU wagered ${data.your_wager}`;
       opponentWager.innerText = `OPP wagered ${data.opponent_wager}`;
       enableChoiceButtons();
@@ -207,12 +210,11 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('connected', (data) => {
-    playerId.innerText = data.playerId;
+    playerId.innerText = `(${data.playerId})`;
     gameId.innerText = 'Game ID: ' + data.sessionId;
     oppWagerStatus.innerText = '';
     yourWager.innerText = '';
     yourWagerInEther.innerText = 'in eth: 0.00000';
-    opponentId.innerText = 'Waiting for an opponent to join...';
     wagerInput.value = '';
     yourWagerOffer.innerText = '';
     yourWagerStatus.innerText = '';
@@ -223,13 +225,15 @@ function registerSocketIOEventListeners() {
     if (data.opponentId) {
       wagerInput.disabled = false;
       offerWagerBtn.disabled = false;
-      opponentId.innerText = data.opponentId;
+      opponentId.innerText = `(${data.opponentId})`;
+      opponentId.classList.remove('flashing');
       oppId = data.opponentId;
     }
   });
 
   socket.on('opponent_connected', (data) => {
-    opponentId.innerText = data.opponentId;
+    opponentId.innerText = `(${data.opponentId})`;
+    opponentId.classList.remove('flashing');
     oppId = data.opponentId;
     wagerInput.disabled = false;
     offerWagerBtn.disabled = false;
@@ -237,6 +241,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('opponent_disconnected', (data) => {
     opponentId.innerText = 'Waiting for an opponent to join...';
+    opponentId.classList.add('flashing');
     disableChoiceButtons();
     yourWagerOffer.innerText = '';
     yourWagerStatus.innerText = '';
@@ -340,7 +345,10 @@ async function joinContract(stakeUSD, contractAddress) {
 
   const txHash = web3.eth.sendTransaction(transaction);
 
+  joinContractStatus.innerText = 'Joining players to contract...';
+
   txHash.on('transactionHash', function (hash) {
+    joinContractStatus.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
     socket.emit('join_contract_transaction_hash_received', {
@@ -350,22 +358,26 @@ async function joinContract(stakeUSD, contractAddress) {
     });
   });
 
-  txHash.on('confirmation', function (confirmationNumber, receipt) {
-    // Transaction confirmed
-    console.log(`The confirmation number is ${confirmationNumber}`);
-    // socket.emit('join_contract_confirmation_number_received', { 
-    //   playerAddress: accounts[0], 
-    //   contractAddress: contractAddress, 
-    //   confirmationNumber: confirmationNumber 
-    // });
-  });
-
   txHash.on('receipt', function (receipt) {
+    joinContractStatus.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
     // Transaction receipt received
     console.log(`The receipt is ${receipt}`);
     // socket.emit('join_contract_transaction_receipt_received', {
     //   receipt: receipt
     // });
+  });
+
+  txHash.on('confirmation', function (confirmation, receipt) {
+    joinContractStatus.innerText = 'Transaction confirmed.';
+    // Transaction confirmed
+    console.log(`The confirmation number is ${confirmation}`);
+    // socket.emit('join_contract_confirmation_received', { 
+    //   playerAddress: accounts[0], 
+    //   contractAddress: contractAddress, 
+    //   confirmation: confirmation 
+    // });
+    let gameSection = document.getElementById('game-section');
+    gameSection.style.display = 'contents';
   });
 
   txHash.on('error', function (error) {
@@ -426,6 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
   yourWagerStatus = document.getElementById('your-wager-status');
   oppWagerOffer = document.getElementById('opp-wager-offer');
   oppWagerStatus = document.getElementById('opp-wager-status');
+  joinContractStatus = document.getElementById('join-contract-status');
 
   // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
   socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});

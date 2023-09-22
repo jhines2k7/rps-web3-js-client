@@ -30,7 +30,7 @@
     <div id="game">
       <div class="column">
         <p id="you">YOU</p>
-        <p>(<span id="player-id"></span>)</p>
+        <p id="player-id"></p>
         <div id="place-wager">
           <input type="text" id="wager-input" name="wager-input" placeholder="Your wager in $USD" disabled>
           <button type="button" disabled id="offer-wager">Offer Wager</button>
@@ -48,7 +48,7 @@
           <p>VS</p>
         </div>
         <p id="opp">OPP</p>
-        <p>(<span id="opp-id"></span>)</p>
+        <p class="flashing" id="opp-id">Waiting for an opponent to join...</p>
         <div id="opp-status">
           <p id="opp-wager"></p>
           <p id="opp-wager-in-ether"></p>
@@ -56,22 +56,25 @@
         </div>
       </div>
       <div class="column">
-        <p id="your-wager"></p>
-        <p id="opponent-wager"></p>
-        <div id="symbol-choice">
-          <p>Pick a symbol</p>
-          <div id="buttons">
-            <button id="rock">
-              <p>R</p>
-            </button>
-            <button id="paper">
-              <p>P</p>
-            </button>
-            <button id="scissors">
-              <p>S</p>
-            </button>
+        <p class="flashing" id="join-contract-status">Generating contract...</p>
+        <div id="game-section">
+          <p id="your-wager"></p>
+          <p id="opponent-wager"></p>
+          <div id="symbol-choice">
+            <p>Pick a symbol</p>
+            <div id="buttons">
+              <button id="rock">
+                <p>R</p>
+              </button>
+              <button id="paper">
+                <p>P</p>
+              </button>
+              <button id="scissors">
+                <p>S</p>
+              </button>
+            </div>
           </div>
-        </div>
+        </div>        
         <div id="results">
           <p id="your-choice"></p>
           <p id="opp-choice"></p>
