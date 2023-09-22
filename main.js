@@ -8,7 +8,7 @@ let timeout;
 let buttons;
 
 let gameId;
-let playerId = '';
+let playerId;
 let wagerInput;
 let yourWagerInEther;
 let oppWagerStatus;
@@ -344,27 +344,30 @@ async function joinContract(stakeUSD, contractAddress) {
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
     socket.emit('join_contract_transaction_hash_received', {
-      transactionHash: hash
+      transactionHash: hash,
+      playerAddress: accounts[0], 
+      contractAddress: contractAddress,
+      playerId: playerId.innerText,
     });
   });
 
   txHash.on('confirmation', function (confirmationNumber, receipt) {
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmationNumber}`);
-    socket.emit('join_contract_confirmation_number_received', { 
-      playerAddress: accounts[0], 
-      contractAddress: contractAddress, 
-      confirmationNumber: confirmationNumber 
-    });
+    // socket.emit('join_contract_confirmation_number_received', { 
+    //   playerAddress: accounts[0], 
+    //   contractAddress: contractAddress, 
+    //   confirmationNumber: confirmationNumber 
+    // });
   });
 
-  // txHash.on('receipt', function (receipt) {
-  //   // Transaction receipt received
-  //   console.log(`The receipt is ${JSON.stringify(receipt)}`);
-  //   socket.emit('join_contract_transaction_receipt_received', {
-  //     receipt: receipt
-  //   });
-  // });
+  txHash.on('receipt', function (receipt) {
+    // Transaction receipt received
+    console.log(`The receipt is ${receipt}`);
+    // socket.emit('join_contract_transaction_receipt_received', {
+    //   receipt: receipt
+    // });
+  });
 
   txHash.on('error', function (error) {
     // Transaction error occurred
