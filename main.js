@@ -359,9 +359,6 @@ async function joinContract(stakeUSD, contractAddress) {
       playerAddress: accounts[0], 
       contractAddress: contractAddress,
     });
-  }).on('error', function (error) {
-    // Transaction error occurred
-    console.error(`An error occurred onTransactionHash: ${error}`);
   });
 
   txHash.on('receipt', function (receipt) {
@@ -371,9 +368,6 @@ async function joinContract(stakeUSD, contractAddress) {
     // socket.emit('join_contract_transaction_receipt_received', {
     //   receipt: receipt
     // });
-  }).on('error', function (error) {
-    // Transaction error occurred
-    console.error(`An error occurred onReceipt: ${error}`);
   });
 
   txHash.on('confirmation', function (confirmation, receipt) {
@@ -387,9 +381,6 @@ async function joinContract(stakeUSD, contractAddress) {
     // });
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'contents';
-  }).on('error', function (error) {
-    // Transaction error occurred
-    console.error(`An error occurred onConfirmation: ${error}`);
   });
 
   txHash.on('error', function (error) {
