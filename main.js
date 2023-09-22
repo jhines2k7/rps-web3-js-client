@@ -331,7 +331,7 @@ async function joinContract(stakeUSD, contractAddress) {
 
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
-  stakeInEther *= 0.1; // for testing purposes
+  // stakeInEther *= 0.1; // for testing purposes
   // const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${web3.utils.toWei(stakeInEther.toString(), 'ether')}`);
 
@@ -359,6 +359,9 @@ async function joinContract(stakeUSD, contractAddress) {
       playerAddress: accounts[0], 
       contractAddress: contractAddress,
     });
+  }).on('error', function (error) {
+    // Transaction error occurred
+    console.error(`An error occurred onTransactionHash: ${error}`);
   });
 
   txHash.on('receipt', function (receipt) {
@@ -368,6 +371,9 @@ async function joinContract(stakeUSD, contractAddress) {
     // socket.emit('join_contract_transaction_receipt_received', {
     //   receipt: receipt
     // });
+  }).on('error', function (error) {
+    // Transaction error occurred
+    console.error(`An error occurred onReceipt: ${error}`);
   });
 
   txHash.on('confirmation', function (confirmation, receipt) {
@@ -381,6 +387,9 @@ async function joinContract(stakeUSD, contractAddress) {
     // });
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'contents';
+  }).on('error', function (error) {
+    // Transaction error occurred
+    console.error(`An error occurred onConfirmation: ${error}`);
   });
 
   txHash.on('error', function (error) {
