@@ -323,6 +323,7 @@ async function joinContract(stakeUSD, contractAddress) {
 
   const stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
+  stakeInEther *= 0.1; // for testing purposes
   // const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${web3.utils.toWei(stakeInEther.toString(), 'ether')}`);
 
