@@ -358,13 +358,13 @@ async function joinContract(stakeUSD, contractAddress) {
     });
   });
 
-  txHash.on('receipt', function (receipt) {
-    // Transaction receipt received
-    console.log(`The receipt is ${JSON.stringify(receipt)}`);
+  // txHash.on('receipt', function (receipt) {
+  //   // Transaction receipt received
+  //   console.log(`The receipt is ${JSON.stringify(receipt)}`);
   //   socket.emit('join_contract_transaction_receipt_received', {
   //     receipt: receipt
-    // });
-  });
+  //   });
+  // });
 
   txHash.on('error', function (error) {
     // Transaction error occurred
