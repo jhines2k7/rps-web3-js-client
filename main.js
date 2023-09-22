@@ -77,7 +77,7 @@ function registerDOMEventListeners() {
     wagerAccepted = true;
 
     if (wagerAccepted && opponentWagerAccepted) {
-      joinContractStatus.innerText = 'Generating contract...';
+      // joinContractStatus.innerText = 'Generating contract...';
       enableChoiceButtons();
       disableWagerButtons();
     }
@@ -190,7 +190,8 @@ function registerSocketIOEventListeners() {
     yourWagerOffer.innerText = '';
     yourWagerStatus.innerText = `${data.opponent_id} accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
-    if (data.your_wager && data.opponent_wager) {      
+    if (data.your_wager && data.opponent_wager) {
+      joinContractStatus.innerText = 'Generating contract...';
       yourWager.innerText = `YOU wagered ${data.your_wager}`;
       opponentWager.innerText = `OPP wagered ${data.opponent_wager}`;
       enableChoiceButtons();
