@@ -338,13 +338,14 @@ async function joinContract(stakeUSD, contractAddress) {
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
-    'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
+    'value': web3.utils.toHex(stakeInWei),
+    // 'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
     'gas': 500000,  // You may need to change the gas limit
     'gasPrice': gasPricePlusTwoPercent,
     'data': encodedData,
   };
-//0.0012533134474266342
+
   joinContractStatus.innerText = 'Joining players to contract...';
 
   const txHash = web3.eth.sendTransaction(transaction);
