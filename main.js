@@ -348,7 +348,6 @@ async function joinContract(stakeUSD, contractAddress) {
   joinContractStatus.innerText = 'Joining players to contract...';
 
   const txHash = web3.eth.sendTransaction(transaction);
-
   txHash.catch((err) => {
     console.error(`An error occurred: ${err}`);
   });
