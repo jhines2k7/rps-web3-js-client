@@ -372,6 +372,7 @@ async function joinContract(stakeUSD, contractAddress) {
 
   txHash.on('confirmation', function (confirmation, receipt) {
     joinContractStatus.innerText = 'Transaction confirmed.';
+    joinContractStatus.classList.remove('flashing');
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmation}`);
     // socket.emit('join_contract_confirmation_received', { 
