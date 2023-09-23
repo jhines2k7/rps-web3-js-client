@@ -331,16 +331,14 @@ async function joinContract(stakeUSD, contractAddress) {
 
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
-  // stakeInEther *= 0.1; // for testing purposes
-  // const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
+  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${web3.utils.toWei(stakeInEther.toString(), 'ether')}`);
 
   const encodedData = RPSContract.methods.joinContract().encodeABI();
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
-    // 'value': '0x' + web3.utils.toBigInt(web3.utils.toWei('0.0012533134474266342', 'ether')).toString(16),
-    'value': web3.utils.toHex(web3.utils.toWei('0.0012533134474266342', 'ether')),
+    'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
     'gas': 500000,  // You may need to change the gas limit
     'gasPrice': gasPricePlusTwoPercent,
