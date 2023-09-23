@@ -354,7 +354,6 @@ async function joinContract(stakeUSD, contractAddress) {
   joinContractStatus.innerText = 'Joining players to contract...';
 
   const txHash = web3.eth.sendTransaction(transaction);
-  
     console.error(`An error occurred: ${err}`);
     txHash.catch((err) => {
     // emit an event to the server to let the other player know that the transaction failed
