@@ -355,8 +355,8 @@ async function joinContract(stakeUSD, contractAddress) {
 
   const txHash = web3.eth.sendTransaction(transaction);
   
-  txHash.catch((err) => {
     console.error(`An error occurred: ${err}`);
+    txHash.catch((err) => {
     // emit an event to the server to let the other player know that the transaction failed
     socket.emit('opponent_rejected_the_transaction', {
       playerAddress: accounts[0],
