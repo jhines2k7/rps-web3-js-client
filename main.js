@@ -267,6 +267,12 @@ function registerSocketIOEventListeners() {
     disableChoiceButtons();
     disableWagerButtons();
   });
+
+  socket.on('opponent_rejected_the_transaction', (data) => {
+    console.error(`The transaction failed: ${data.error}`);
+    joinContractStatus.innerText = 'Your opponent decided to reject the transaction. Refresh the page to start a new game.';
+    joinContractStatus.classList.remove('flashing');
+  });
 }
 
 async function dollarsToEthereum(dollars) {
@@ -348,8 +354,18 @@ async function joinContract(stakeUSD, contractAddress) {
   joinContractStatus.innerText = 'Joining players to contract...';
 
   const txHash = web3.eth.sendTransaction(transaction);
+  
   txHash.catch((err) => {
     console.error(`An error occurred: ${err}`);
+    // emit an event to the server to let the other player know that the transaction failed
+    socket.emit('opponent_rejected_the_transaction', {
+      playerAddress: accounts[0],
+      contractAddress: contractAddress,
+      error: err
+    });
+
+    joinContractStatus.innerText = 'You decided to reject the transaction. Refresh the page to start a new game.';
+    joinContractStatus.classList.remove('flashing');
   });
 
   txHash.on('transactionHash', function (hash) {
