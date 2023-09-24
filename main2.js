@@ -1,34 +1,35 @@
 let wagerConfimation;
 let wagerAccepted = false;
-let opponentWagerAccepted = false;
+let opponentWagerAcceptedP = false;
 let web3Provider;
 let contracts = {};
 let socket = null;
 let timeout;
 let buttons;
 
+let gameIdP;
 let gameId;
 let playerId;
 let wagerInput;
-let yourWagerInEther;
-let oppWagerStatus;
-let oppWagerOffer;
-let yourWagerStatus;
-let yourWagerOffer;
+let yourWagerPInEtherP;
+let oppWagerStatusP;
+let oppWagerOfferP;
+let yourWagerPStatusP;
+let yourWagerPOfferP;
 let wagerButtons;
 let acceptWagerBtn;
 let declineWagerBtn;
-let opponentId;
-let opponentWager;
-let oppWagerInEther;
-let yourWager;
-let oppWager;
-let acceptedWagerStatus;
-let results;
-let winLoseDraw;
-let yourChoice;
-let oppChoice;
-let outcome;
+let opponentJoinP;
+let opponentWagerP;
+let oppWagerInEtherP;
+let yourWagerP;
+let oppWagerP;
+let acceptedWagerStatusP;
+let resultsDiv;
+let winLoseDrawP;
+let yourChoiceP;
+let oppChoiceP;
+let outcomeP;
 let symbolChoiceDiv;
 let rockBtn;
 let paperBtn;
@@ -37,7 +38,10 @@ let offerWagerBtn;
 let oppWagerInDollars;
 let oppId;
 let wagerInputPlaceholder;
-let joinContractStatus;
+let joinContractStatusP;
+
+let accounts = [];
+let web3 = null;
 
 function disableChoiceButtons() {
   buttons.forEach((button) => {
@@ -62,24 +66,24 @@ function disableWagerButtons() {
 
 function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
-    oppWager.innerText = `Wagered ${oppWagerInDollars}`;
+    oppWagerP.innerText = `Wagered ${oppWagerInDollars}`;
     (async () => {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
-      oppWagerInEther.innerText = `in eth: ${wagerInEth}`;
+      oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
     })();
-    socket.emit('accept_wager');
+    socket.emit('accept_wager', { player_address: accounts[0], gameId: gameId });
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
-    oppWagerStatus.innerText = `You accepted the ${oppWagerInDollars} wager from ${oppId}`;
-    oppWagerOffer.innerText = '';
+    oppWagerStatusP.innerText = `You accepted the ${oppWagerInDollars} wager from your opponent.`;
+    oppWagerOfferP.innerText = '';
 
-    wagerAccepted = true;
+    // wagerAccepted = true;
 
-    if (wagerAccepted && opponentWagerAccepted) {
-      enableChoiceButtons();
-      disableWagerButtons();
-    }
+    // if (wagerAccepted && opponentWagerAcceptedP) {
+    //   enableChoiceButtons();
+    //   disableWagerButtons();
+    // }
   });
 
   offerWagerBtn.addEventListener('click', () => {
@@ -87,20 +91,20 @@ function registerDOMEventListeners() {
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue });
+    socket.emit('offer_wager', { wager: wagerValue, player_address: accounts[0], gameId: gameId });
 
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
-    if(!wagerAccepted) {
-      oppWagerStatus.innerText = '';
+    if (!wagerAccepted) {
+      oppWagerStatusP.innerText = '';
     }
-    oppWagerOffer.innerText = '';
-    yourWagerOffer.innerText = `You offered a ${wagerValue} wager. Waiting for ${oppId} to accept wager...`;
-    yourWagerStatus.innerText = '';
+    oppWagerOfferP.innerText = '';
+    yourWagerPOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
+    yourWagerPStatusP.innerText = '';
   });
 
   declineWagerBtn.addEventListener('click', () => {
-    socket.emit('decline_wager');
+    socket.emit('decline_wager', { player_address: accounts[0], game_id: gameId });
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -109,7 +113,7 @@ function registerDOMEventListeners() {
 
   wagerInput.addEventListener('input', function () {
     if (this.value === '' || this.value === '0' || this.value === '$') {
-      yourWagerInEther.innerText = 'in eth: 0.00000';
+      yourWagerPInEtherP.innerText = 'in eth: 0.00000';
       offerWagerBtn.disabled = true;
     } else {
       clearTimeout(timeout)
@@ -119,7 +123,7 @@ function registerDOMEventListeners() {
       timeout = setTimeout(async () => {
         try {
           const result = await dollarsToEthereum(dollars.replace(/^\$/, ''));
-          yourWagerInEther.innerText = `in eth: ${result}`;
+          yourWagerPInEtherP.innerText = `in eth: ${result}`;
           offerWagerBtn.disabled = false;
         } catch (err) {
           console.error(err);
@@ -141,12 +145,10 @@ function registerDOMEventListeners() {
   buttons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
       button.addEventListener('click', () => {
-        wagerAccepted = false;
-        opponentWagerAccepted = false;
-
         socket.emit('choice', {
+          game_id: gameId,
           choice: button.id,
-          wager: wagerInput.value.replace(/^\$/, '')
+          player_address: accounts[0]
         });
 
         disableChoiceButtons();
@@ -167,15 +169,16 @@ function removeOtherChoiceButtons(choice) {
 function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
-    oppWagerOffer.innerText = `You were offered a ${data.wager} wager from ${data.opponent_id}`;
-    oppWagerStatus.innerText = '';
+    oppWagerOfferP.innerText = `You were offered a ${data.wager} wager from ${data.opponent_id}`;
+    oppWagerStatusP.innerText = '';
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
   });
 
   socket.on('wager_declined', (data) => {
-    oppWagerOffer.innerText = '';
-    oppWagerStatus.innerText = `${data.playerId} declined your wager.`;
+    console.log(`Wager declined by opponent in game ${data.game_id}`)
+    oppWagerOfferP.innerText = '';
+    oppWagerStatusP.innerText = `Your opponent declined your wager.`;
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -183,95 +186,106 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('generating_contract', (data) => {
-    joinContractStatus.innerText = 'Generating contract...';
+    joinContractStatusP.innerText = 'Generating contract...';
+    console.log("Generating contract...");
+  });
+
+  socket.on('contract_created', (data) => {
+    const contractAddress = data.contract_address;
+    const yourWager = data.your_wager;
+    const opponentWager = data.opponent_wager;
+
+    console.log("Contract created...");
+    joinContractStatusP.innerText = 'Contract created...';
+    yourWagerP.innerText = `YOU wagered ${yourWager}`;
+    opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
+    enableChoiceButtons();
+    disableWagerButtons();
+
+    // join the created RPS contract
+    const stakeUSD = data.your_wager.replace(/^\$/, '');
+    console.log(`Wager accepted by both parties. Joining RPSContract with address: ${contractAddress}`)
+    console.log(`Stake in USD: ${stakeUSD}`);
+    joinContract(parseFloat(stakeUSD), contractAddress);
   });
 
   socket.on('wager_accepted', (data) => {
-    opponentWagerAccepted = true;
-    oppWagerStatus.innerText = '';
-    oppWagerOffer.innerText = '';
-    yourWagerOffer.innerText = '';
-    yourWagerStatus.innerText = `${data.opponent_id} accepted your wager.`;
+    opponentWagerAcceptedP = true;
+    oppWagerStatusP.innerText = '';
+    oppWagerOfferP.innerText = '';
+    yourWagerPOfferP.innerText = '';
+    yourWagerPStatusP.innerText = `Your opponent accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
-
-    if (data.your_wager && data.opponent_wager) {
-      yourWager.innerText = `YOU wagered ${data.your_wager}`;
-      opponentWager.innerText = `OPP wagered ${data.opponent_wager}`;
-      enableChoiceButtons();
-      disableWagerButtons();
-
-      // join the created RPS contract
-      const stakeUSD = data.your_wager.replace(/^\$/, '');
-      console.log(`Wager accepted by both parties. Joining RPSContract with address: ${data.contractAddress}`)
-      console.log(`Stake in USD: ${stakeUSD}`);
-      joinContract(parseFloat(stakeUSD), data.contractAddress);
-    }
   });
 
   socket.on('connect_error', (error) => {
     console.log(error);
   });
 
-  socket.on('connected', (data) => {
-    playerId.innerText = `(${data.playerId})`;
-    gameId.innerText = 'Game ID: ' + data.sessionId;
-    oppWagerStatus.innerText = '';
-    yourWager.innerText = '';
-    yourWagerInEther.innerText = 'in eth: 0.00000';
+  socket.on('game_started', (data) => {
+    gameId = data.gameId;
+    gameIdP.innerText = `Game ID: ${gameId}`;
+    opponentJoinP.innerText = '';
+    oppWagerStatusP.innerText = 'You\'ve got an opponent! Waiting for them to send you a wager...';
+    yourWagerP.innerText = '';
+    yourWagerPInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
-    yourWagerOffer.innerText = '';
-    yourWagerStatus.innerText = '';
-    oppWagerOffer.innerText = '';
-    oppWagerStatus.innerText = '';
+    yourWagerPOfferP.innerText = '';
+    yourWagerPStatusP.innerText = '';
+    oppWagerOfferP.innerText = '';
     disableChoiceButtons();
     disableWagerButtons();
-    if (data.opponentId) {
-      wagerInput.disabled = false;
-      offerWagerBtn.disabled = false;
-      opponentId.innerText = `(${data.opponentId})`;
-      opponentId.classList.remove('flashing');
-      oppId = data.opponentId;
-    }
-  });
-
-  socket.on('opponent_connected', (data) => {
-    opponentId.innerText = `(${data.opponentId})`;
-    opponentId.classList.remove('flashing');
-    oppId = data.opponentId;
-    wagerInput.disabled = false;
-    offerWagerBtn.disabled = false;
   });
 
   socket.on('opponent_disconnected', (data) => {
-    opponentId.innerText = 'Waiting for an opponent to join...';
-    opponentId.classList.add('flashing');
+    opponentJoinP.innerText = 'Waiting for an opponent to join...';
+    opponentJoinP.classList.add('flashing');
     disableChoiceButtons();
-    yourWagerOffer.innerText = '';
-    yourWagerStatus.innerText = '';
-    oppWagerOffer.innerText = '';
-    oppWagerStatus.innerText = '';
+    yourWagerPOfferP.innerText = '';
+    yourWagerPStatusP.innerText = '';
+    oppWagerOfferP.innerText = '';
+    oppWagerStatusP.innerText = '';
   });
 
-  socket.on('result', (data) => {
-    yourChoice.innerText = `YOU chose ${data.yourChoice.toUpperCase()}`;
-    oppChoice.innerText = `OPP chose ${data.opponentChoice.toUpperCase()}`;
-    console.log(`rock paper scissors result: ${JSON.stringify(data)}`);
-    if (data.winnings > 0) {
-      winLoseDraw.innerText = 'You won';
-      outcome.innerText = `YOU won $${data.winnings}`;
-    } else {
-      winLoseDraw.innerText = 'You lost';
-      outcome.innerText = `YOU lost $${Math.abs(data.winnings)}`;
-    }
-    
+  socket.on('you_win', (data) => {
+    console.log(`You win! ${JSON.stringify(data)}`);
+    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
+    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+    winLoseDrawP.innerText = 'You won';
+    outcomeP.innerText = `YOU won $${data.winnings}`;
+
     disableChoiceButtons();
     disableWagerButtons();
   });
 
-  socket.on('opponent_rejected_the_transaction', (data) => {
-    console.error(`The transaction failed: ${data.error}`);
-    joinContractStatus.innerText = 'Your opponent decided to reject the transaction. Refresh the page to start a new game.';
-    joinContractStatus.classList.remove('flashing');
+  socket.on('you_lose', (data) => {
+    console.log(`You lose! ${JSON.stringify(data)}`);
+    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
+    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+    winLoseDrawP.innerText = 'You lose!';
+    outcomeP.innerText = `YOU lost $${data.losses}`;
+
+    disableChoiceButtons();
+    disableWagerButtons();
+  });
+
+  socket.on('draw', (data) => {
+    console.log(`It was a draw! ${JSON.stringify(data)}`);
+    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
+    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+    winLoseDrawP.innerText = 'It was a draw!';
+    outcomeP.innerText = `You'll get back your wager minus gas and a small arbiter fee.`;
+
+    disableChoiceButtons();
+    disableWagerButtons();
+  });
+
+  socket.on('transaction_rejected', (data) => {
+    console.error(`The transaction was rejected: ${data.error}`);
+    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. 
+      If you have accepted the transaction, you will be refunded your wager minus gas fees. 
+      If you have not, refresh the page to start a new game.`;
+    joinContractStatusP.classList.remove('flashing');
   });
 }
 
@@ -286,10 +300,6 @@ async function dollarsToEthereum(dollars) {
     return console.log(err);
   }
 }
-
-window.addEventListener('beforeunload', (event) => {
-  socket.emit('refresh');
-});
 
 async function loadContractABI(name) {
   return fetch(name)
@@ -306,21 +316,6 @@ async function loadContractABI(name) {
 }
 
 async function joinContract(stakeUSD, contractAddress) {
-  // Wait for window.ethereum to be present
-  while (!window.ethereum) {
-    console.log('Waiting for MetaMask...');
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-
-  const web3 = new Web3(window.ethereum);
-  
-  // Request access to user's MetaMask accounts
-  await window.ethereum.request({ method: 'eth_requestAccounts' })
-
-  // Use web3.js
-  const accounts = await web3.eth.getAccounts();
-  console.log(`Your accounts: ${accounts}`);
-
   // Fetch the RPSContract
   const rpsContractABI = await loadContractABI('contracts/RPSContract.json');
   const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
@@ -351,35 +346,37 @@ async function joinContract(stakeUSD, contractAddress) {
     'data': encodedData,
   };
 
-  joinContractStatus.innerText = 'Joining players to contract...';
+  joinContractStatusP.innerText = 'Joining players to contract...';
 
   const txHash = web3.eth.sendTransaction(transaction);
-    console.error(`An error occurred: ${err}`);
-    txHash.catch((err) => {
+  console.error(`An error occurred: ${err}`);
+  txHash.catch((err) => {
     // emit an event to the server to let the other player know that the transaction failed
-    socket.emit('opponent_rejected_the_transaction', {
-      playerAddress: accounts[0],
-      contractAddress: contractAddress,
+    socket.emit('transaction_rejected', {
+      game_id: gameId,
+      player_address: accounts[0],
+      contract_address: contractAddress,
       error: err
     });
 
-    joinContractStatus.innerText = 'You decided to reject the transaction. Refresh the page to start a new game.';
-    joinContractStatus.classList.remove('flashing');
+    joinContractStatusP.innerText = 'You decided to reject the transaction. Refresh the page to start a new game.';
+    joinContractStatusP.classList.remove('flashing');
   });
 
   txHash.on('transactionHash', function (hash) {
-    joinContractStatus.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
+    joinContractStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
     socket.emit('join_contract_transaction_hash_received', {
-      transactionHash: hash,
-      playerAddress: accounts[0], 
-      contractAddress: contractAddress,
+      game_id: gameId,
+      transaction_hash: hash,
+      player_address: accounts[0],
+      contract_address: contractAddress,
     });
   });
 
   txHash.on('receipt', function (receipt) {
-    joinContractStatus.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
+    joinContractStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
     // Transaction receipt received
     console.log(`The receipt is ${receipt}`);
     // socket.emit('join_contract_transaction_receipt_received', {
@@ -388,8 +385,8 @@ async function joinContract(stakeUSD, contractAddress) {
   });
 
   txHash.on('confirmation', function (confirmation, receipt) {
-    joinContractStatus.innerText = 'Transaction confirmed.';
-    joinContractStatus.classList.remove('flashing');
+    joinContractStatusP.innerText = 'Transaction confirmed.';
+    joinContractStatusP.classList.remove('flashing');
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmation}`);
     // socket.emit('join_contract_confirmation_received', { 
@@ -404,7 +401,7 @@ async function joinContract(stakeUSD, contractAddress) {
   txHash.on('error', function (error) {
     // Transaction error occurred
     console.error(`An error occurred: ${error}`);
-  });  
+  });
 }
 
 async function getEtherPriceInUSD() {
@@ -423,48 +420,63 @@ async function convertUsdToEther(amountInUsd) {
   return amountInEther;
 }
 
-// (async () => {
-//   while (!window.ethereum) {
-//     console.log('Waiting for MetaMask...');
-//     await new Promise(resolve => setTimeout(resolve, 1000));
-//   }
-// })();
-
 document.addEventListener('DOMContentLoaded', () => {
   buttons = document.querySelectorAll('button');
-  gameId = document.getElementById('game-id');
+  gameIdP = document.getElementById('game-id');
   playerId = document.getElementById('player-id');
   wagerInput = document.getElementById('wager-input');
   wagerInputPlaceholder = wagerInput.placeholder;
-  yourWagerInEther = document.getElementById('your-wager-in-ether');
+  yourWagerPInEtherP = document.getElementById('your-wager-in-ether');
   wagerButtons = document.getElementById('wager-buttons');
   acceptWagerBtn = document.getElementById('accept-wager');
   declineWagerBtn = document.getElementById('decline-wager');
-  opponentId = document.getElementById('opp-id');
-  oppWagerInEther = document.getElementById('opp-wager-in-ether');
-  yourWager = document.getElementById('your-wager');
-  oppWager = document.getElementById('opp-wager');
-  acceptedWagerStatus = document.getElementById('accepted-wager-status');
-  results = document.getElementById('results');
-  winLoseDraw = document.getElementById('win-lose-draw');
-  yourChoice = document.getElementById('your-choice');
-  oppChoice = document.getElementById('opp-choice');
-  outcome = document.getElementById('outcome');
+  opponentJoinP = document.getElementById('opp-join');
+  oppWagerInEtherP = document.getElementById('opp-wager-in-ether');
+  yourWagerP = document.getElementById('your-wager');
+  oppWagerP = document.getElementById('opp-wager');
+  acceptedWagerStatusP = document.getElementById('accepted-wager-status');
+  resultsDiv = document.getElementById('resultsDiv');
+  winLoseDrawP = document.getElementById('win-lose-draw');
+  yourChoiceP = document.getElementById('your-choice');
+  oppChoiceP = document.getElementById('opp-choice');
+  outcomeP = document.getElementById('outcomeP');
   rockBtn = document.getElementById('rock');
   paperBtn = document.getElementById('paper');
   scissorsBtn = document.getElementById('scissors');
   offerWagerBtn = document.getElementById('offer-wager');
-  opponentWager = document.getElementById('opponent-wager');
-  yourWagerOffer = document.getElementById('your-wager-offer');
-  yourWagerStatus = document.getElementById('your-wager-status');
-  oppWagerOffer = document.getElementById('opp-wager-offer');
-  oppWagerStatus = document.getElementById('opp-wager-status');
-  joinContractStatus = document.getElementById('join-contract-status');
+  opponentWagerP = document.getElementById('opponent-wager');
+  yourWagerPOfferP = document.getElementById('your-wager-offer');
+  yourWagerPStatusP = document.getElementById('your-wager-status');
+  oppWagerOfferP = document.getElementById('opp-wager-offer');
+  oppWagerStatusP = document.getElementById('opp-wager-status');
+  joinContractStatusP = document.getElementById('join-contract-status');
 
-  // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
-  socket = io('https://dev.generalsolutions43.com', {transports: ['websocket']});
+  (async () => {
+    while (!window.ethereum) {
+      console.log('Waiting for MetaMask...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
-  disableChoiceButtons();
-  registerDOMEventListeners();
-  registerSocketIOEventListeners();
+    web3 = new Web3(window.ethereum);
+
+    // Request access to user's MetaMask accounts
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
+
+    // Use web3.js
+    accounts = await web3.eth.getAccounts();
+    console.log(`Your accounts: ${accounts}`);
+
+    // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
+    socket = io('https://dev.generalsolutions43.com',
+      {
+        transports: ['websocket'],
+        query: {
+          player_address: accounts[0]
+        }
+      });
+
+    disableChoiceButtons();
+    registerDOMEventListeners();
+    registerSocketIOEventListeners();
+  })();
 });
