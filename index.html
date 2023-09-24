@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rock Paper Scissors</title>
   <link rel="stylesheet" href="reset.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles2.css">
   <script>
     (function () {
       var src = "//cdn.jsdelivr.net/npm/eruda";
@@ -30,7 +30,6 @@
     <div id="game">
       <div class="column">
         <p id="you">YOU</p>
-        <p id="player-id"></p>
         <div id="place-wager">
           <input type="text" id="wager-input" name="wager-input" placeholder="Your wager in $USD" disabled>
           <button type="button" disabled id="offer-wager">Offer Wager</button>
@@ -48,7 +47,7 @@
           <p>VS</p>
         </div>
         <p id="opp">OPP</p>
-        <p class="flashing" id="opp-id">Waiting for an opponent to join...</p>
+        <p class="flashing" id="opp-join">Waiting for an opponent to join...</p>
         <div id="opp-status">
           <p id="opp-wager"></p>
           <p id="opp-wager-in-ether"></p>
@@ -88,7 +87,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"
     integrity="sha512-C/TYwf93EQ6sPW4g3F9axNydQuQrAQCTOR1Gz65YK96MwrZ0KDn3qjNMAlXLYyjm84JELTYHinAfvUjbNC4fuQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="main.js"></script>
+  <script src="main2.js"></script>
 </body>
 
 </html>
