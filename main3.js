@@ -224,7 +224,7 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('game_started', (data) => {
-    gameId = data.gameId;
+    gameId = data.game_id;
     gameIdP.innerText = `Game ID: ${gameId}`;
     opponentJoinP.innerText = '';
     oppWagerStatusP.innerText = 'You\'ve got an opponent! Waiting for them to send you a wager...';
