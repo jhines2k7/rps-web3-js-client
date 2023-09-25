@@ -42,6 +42,7 @@ let joinContractStatusP;
 
 let accounts = [];
 let web3 = null;
+let joinGameInterval;
 
 function disableChoiceButtons() {
   buttons.forEach((button) => {
@@ -235,6 +236,7 @@ function registerSocketIOEventListeners() {
     oppWagerOfferP.innerText = '';
     disableChoiceButtons();
     disableWagerButtons();
+    clearInterval(joinGameInterval);
   });
 
   socket.on('opponent_disconnected', (data) => {
@@ -474,6 +476,10 @@ document.addEventListener('DOMContentLoaded', () => {
           player_address: accounts[0]
         }
       });
+
+    joinGameInterval = setInterval(function() {
+      socket.emit('join_game', {});
+    }, 2000);
 
     disableChoiceButtons();
     registerDOMEventListeners();
