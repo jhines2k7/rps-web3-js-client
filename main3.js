@@ -72,7 +72,7 @@ function registerDOMEventListeners() {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
     })();
-    socket.emit('accept_wager', { player_address: accounts[0], game_id: gameId });
+    socket.emit('accept_wager', { address: accounts[0], game_id: gameId });
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
@@ -92,7 +92,7 @@ function registerDOMEventListeners() {
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue, player_address: accounts[0], game_id: gameId });
+    socket.emit('offer_wager', { wager: wagerValue, address: accounts[0], game_id: gameId });
 
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
@@ -105,7 +105,7 @@ function registerDOMEventListeners() {
   });
 
   declineWagerBtn.addEventListener('click', () => {
-    socket.emit('decline_wager', { player_address: accounts[0], game_id: gameId });
+    socket.emit('decline_wager', { address: accounts[0], game_id: gameId });
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -149,7 +149,7 @@ function registerDOMEventListeners() {
         socket.emit('choice', {
           game_id: gameId,
           choice: button.id,
-          player_address: accounts[0]
+          address: accounts[0]
         });
 
         disableChoiceButtons();
@@ -355,7 +355,7 @@ async function joinContract(stakeUSD, contractAddress) {
     // emit an event to the server to let the other player know that the transaction failed
     socket.emit('transaction_rejected', {
       game_id: gameId,
-      player_address: accounts[0],
+      address: accounts[0],
       contract_address: contractAddress,
       error: err
     });
@@ -371,7 +371,7 @@ async function joinContract(stakeUSD, contractAddress) {
     socket.emit('join_contract_transaction_hash_received', {
       game_id: gameId,
       transaction_hash: hash,
-      player_address: accounts[0],
+      address: accounts[0],
       contract_address: contractAddress,
     });
   });
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
       {
         transports: ['websocket'],
         query: {
-          player_address: accounts[0]
+          address: accounts[0]
         }
       });
 
