@@ -92,7 +92,7 @@ function registerDOMEventListeners() {
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue, player_address: accounts[0], gameId: gameId });
+    socket.emit('offer_wager', { wager: wagerValue, player_address: accounts[0], game_id: gameId });
 
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
