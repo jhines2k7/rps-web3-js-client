@@ -234,9 +234,7 @@ function registerSocketIOEventListeners() {
     yourWagerPOfferP.innerText = '';
     yourWagerPStatusP.innerText = '';
     oppWagerOfferP.innerText = '';
-    disableChoiceButtons();
-    disableWagerButtons();
-    // clearInterval(joinGameInterval);
+    wagerInput.disabled = false;
   });
 
   socket.on('opponent_disconnected', (data) => {
@@ -476,10 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
           player_address: accounts[0]
         }
       });
-
-    // joinGameInterval = setInterval(function() {
-    //   socket.emit('join_game');
-    // }, 2000);
 
     disableChoiceButtons();
     registerDOMEventListeners();
