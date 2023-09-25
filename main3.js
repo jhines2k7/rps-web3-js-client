@@ -72,7 +72,7 @@ function registerDOMEventListeners() {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
     })();
-    socket.emit('accept_wager', { player_address: accounts[0], gameId: gameId });
+    socket.emit('accept_wager', { player_address: accounts[0], game_id: gameId });
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
