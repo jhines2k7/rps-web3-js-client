@@ -170,7 +170,7 @@ function removeOtherChoiceButtons(choice) {
 function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
-    oppWagerOfferP.innerText = `You were offered a ${data.wager} wager from ${data.opponent_id}`;
+    oppWagerOfferP.innerText = `You were offered a ${data.wager} wager.`;
     oppWagerStatusP.innerText = '';
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
