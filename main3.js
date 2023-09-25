@@ -478,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
     joinGameInterval = setInterval(function() {
-      socket.emit('join_game', {});
+      socket.emit('join_game');
     }, 2000);
 
     disableChoiceButtons();
