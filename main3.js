@@ -14,8 +14,8 @@ let wagerInput;
 let yourWagerPInEtherP;
 let oppWagerStatusP;
 let oppWagerOfferP;
-let yourWagerPStatusP;
-let yourWagerPOfferP;
+let yourWagerStatusP;
+let yourWagerOfferP;
 let wagerButtons;
 let acceptWagerBtn;
 let declineWagerBtn;
@@ -100,8 +100,8 @@ function registerDOMEventListeners() {
       oppWagerStatusP.innerText = '';
     }
     oppWagerOfferP.innerText = '';
-    yourWagerPOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    yourWagerPStatusP.innerText = '';
+    yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
+    yourWagerStatusP.innerText = '';
   });
 
   declineWagerBtn.addEventListener('click', () => {
@@ -214,8 +214,8 @@ function registerSocketIOEventListeners() {
     opponentWagerAcceptedP = true;
     oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = '';
-    yourWagerPOfferP.innerText = '';
-    yourWagerPStatusP.innerText = `Your opponent accepted your wager.`;
+    yourWagerOfferP.innerText = '';
+    yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
   });
 
@@ -231,20 +231,22 @@ function registerSocketIOEventListeners() {
     yourWagerP.innerText = '';
     yourWagerPInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
-    yourWagerPOfferP.innerText = '';
-    yourWagerPStatusP.innerText = '';
+    yourWagerOfferP.innerText = '';
+    yourWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = '';
     wagerInput.disabled = false;
   });
 
-  socket.on('opponent_disconnected', (data) => {
-    opponentJoinP.innerText = 'Waiting for an opponent to join...';
+  socket.on('opponent_disconnected', () => {
+    opponentJoinP.innerText = `Your opponent disconnected. 
+      Refresh the page to start a new game.`;
     opponentJoinP.classList.add('flashing');
     disableChoiceButtons();
-    yourWagerPOfferP.innerText = '';
-    yourWagerPStatusP.innerText = '';
-    oppWagerOfferP.innerText = '';
-    oppWagerStatusP.innerText = '';
+    disableWagerButtons();
+    // yourWagerOfferP.innerText = '';
+    // yourWagerStatusP.innerText = '';
+    // oppWagerOfferP.innerText = '';
+    // oppWagerStatusP.innerText = '';
   });
 
   socket.on('you_win', (data) => {
@@ -446,8 +448,8 @@ document.addEventListener('DOMContentLoaded', () => {
   scissorsBtn = document.getElementById('scissors');
   offerWagerBtn = document.getElementById('offer-wager');
   opponentWagerP = document.getElementById('opponent-wager');
-  yourWagerPOfferP = document.getElementById('your-wager-offer');
-  yourWagerPStatusP = document.getElementById('your-wager-status');
+  yourWagerOfferP = document.getElementById('your-wager-offer');
+  yourWagerStatusP = document.getElementById('your-wager-status');
   oppWagerOfferP = document.getElementById('opp-wager-offer');
   oppWagerStatusP = document.getElementById('opp-wager-status');
   joinContractStatusP = document.getElementById('join-contract-status');
