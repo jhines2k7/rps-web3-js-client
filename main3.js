@@ -341,7 +341,7 @@ async function joinContract(stakeUSD, contractAddress) {
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
-    'value': web3.utils.toBigInt(stakeInWei).toString(16),
+    'value': web3.utils.toHex(stakeInWei),
     'nonce': nonce,
     'gas': 500000,  // You may need to change the gas limit
     'gasPrice': gasPricePlusTwoPercent,
