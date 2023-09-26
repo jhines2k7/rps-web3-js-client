@@ -212,7 +212,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
-    // oppWagerStatusP.innerText = '';
+    oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
@@ -334,14 +334,14 @@ async function joinContract(stakeUSD, contractAddress) {
 
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
-  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
+  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'wei');
   console.log(`The stake in Wei is ${stakeInWei}`);
 
   const encodedData = RPSContract.methods.joinContract().encodeABI();
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
-    'value': web3.utils.toHex(stakeInEther.toString(16)),
+    'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
     'gas': 500000,  // You may need to change the gas limit
     'gasPrice': gasPricePlusTwoPercent,
