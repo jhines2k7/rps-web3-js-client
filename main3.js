@@ -490,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-    // disableChoiceButtons();
     registerDOMEventListeners();
     registerSocketIOEventListeners();
   })();
