@@ -118,7 +118,7 @@ function registerDOMEventListeners() {
     } else {
       clearTimeout(timeout)
       this.value = this.value.replace(/^\$/, ''); // Remove $ if entered by the user
-      this.value = `$${this.value}`; // Add $ at the starting of the string    
+      this.value = `$${this.value}`; // Add $ at the beginning of the string    
       const dollars = this.value;
       timeout = setTimeout(async () => {
         try {
@@ -268,7 +268,7 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You won';
     outcomeP.innerText = `YOU won $${data.winnings}`;
 
-    disableChoiceButtons();
+    // disableChoiceButtons();
     disableWagerButtons();
   });
 
@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
     web3 = new Web3(window.ethereum);
 
     // Request access to user's MetaMask accounts
-    // await window.ethereum.request({ method: 'eth_requestAccounts' })
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
@@ -489,7 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
           address: accounts[0]
         }
       });
-
     registerDOMEventListeners();
     registerSocketIOEventListeners();
   })();

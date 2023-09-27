@@ -271,9 +271,10 @@ button:disabled, #offer-wager:disabled {
   margin: 0 0 5px 0;
 }
 
-/* #game-section {
+#game-section {
   display: none;
-} */
+  width: 100%;
+}
 
 @keyframes flash {
   0% {opacity: 1;}

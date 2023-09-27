@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rock Paper Scissors</title>
   <link rel="stylesheet" href="reset.css">
-  <link rel="stylesheet" href="styles3.css">
+  <link rel="stylesheet" href="styles5.css">
   <script>
     (function () {
       var src = "//cdn.jsdelivr.net/npm/eruda";
@@ -35,36 +35,36 @@
           <button type="button" disabled id="offer-wager">Offer Wager</button>
           <p id="your-wager-in-ether"></p>
         </div>
-        <p id="your-wager-offer">Your wager offer sphinx of black quartz judge my vow</p>
-        <p id="your-wager-status">Your wager status sphinx of black quartz judge my vow</p>
-        <p id="opp-wager-offer">Opp wager offer sphinx of black quartz judge my vow</p>
-        <p id="opp-wager-status">Opp wager status sphinx of black quartz judge my vow</p>
+        <p id="your-wager-offer"></p>
+        <p id="your-wager-status"></p>
+        <p id="opp-wager-offer"></p>
+        <p id="opp-wager-status"></p>
         <div id="wager-buttons">
           <button id="accept-wager" disabled>ACCEPT</button>
           <button id="decline-wager" disabled>DECLINE</button>
         </div>
         <p class="flashing" id="opp-join">Waiting for an opponent to join...</p>
         <div id="opp-status">
-          <p id="opp-wager">Opp wager sphinx of black quartz judge my vow</p>
-          <p id="opp-wager-in-ether">Opp wager in ether sphinx of black quartz judge my vow</p>
-          <p id="did-opp-accept-wager">Did opp accept wager sphinx of black quartz judge my vow</p>
+          <p id="opp-wager"></p>
+          <p id="opp-wager-in-ether"></p>
+          <p id="did-opp-accept-wager"></p>
         </div>
       </div>
       <div class="column">
-        <p class="flashing" id="join-contract-status">Join contract status sphinx of black quartz judge my vow</p>
+        <p class="flashing" id="join-contract-status"></p>
         <div id="game-section">
-          <p id="your-wager">Your wager sphinx of black quartz judge my vow</p>
-          <p id="opponent-wager">Opponent wager sphinx of black quartz judge my vow</p>
+          <p id="your-wager"></p>
+          <p id="opponent-wager"></p>
           <div id="symbol-choice">
             <p>Pick a symbol</p>
             <div id="buttons">
-              <button id="rock">
+              <button id="rock" disabled>
                 <p>R</p>
               </button>
-              <button id="paper">
+              <button id="paper" disabled>
                 <p>P</p>
               </button>
-              <button id="scissors">
+              <button id="scissors" disabled>
                 <p>S</p>
               </button>
             </div>
@@ -74,8 +74,8 @@
           </div>
         </div>
         <div id="results">
-          <p id="win-lose-draw">YOU WIN</p>
-          <p id="outcome">Outcome sphinx of black quartz judge my vow</p>
+          <p id="win-lose-draw"></p>
+          <p id="outcome"></p>
         </div>
       </div>
     </div>
@@ -84,7 +84,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"
     integrity="sha512-C/TYwf93EQ6sPW4g3F9axNydQuQrAQCTOR1Gz65YK96MwrZ0KDn3qjNMAlXLYyjm84JELTYHinAfvUjbNC4fuQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="main3.js"></script>
+  <script src="main5.js"></script>
 </body>
 
 </html>
