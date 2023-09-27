@@ -60,7 +60,6 @@ body {
 }
 
 .column {
-  padding: 20px;
   display: flex;          /* set the parent container to flex */
   flex-direction: column; /* align children vertically */
   align-items: center;    /* center children horizontally */
@@ -114,12 +113,12 @@ input[type="text"]:disabled {
   border: 1px solid #ccc;
 }
 
-#your-wager-in-ether, #opp-wager-in-ether {
-  margin: 15px 0 0;
+#your-wager-in-ether {
+  margin: 15px 0;
 }
 
 #opp-wager-in-ether {
-  margin: 5px 0 0;
+  margin: 5px 0;
 }
 
 button {
@@ -174,8 +173,7 @@ button:disabled, #offer-wager:disabled {
 }
 
 #symbol-choice {
-  margin: 20px 0;
-  width: 80%;
+  margin: 20px 0 0 0;
 }
 
 #symbol-choice p {
@@ -205,12 +203,24 @@ button:disabled, #offer-wager:disabled {
   background-color: red;
 }
 
+.xxx-large-peace-sans.red {
+  color: red;
+}
+
 #symbol-choice #buttons button#paper:hover:not(:disabled) {
   background-color: purple;
 }
 
+.xxx-large-peace-sans.purple {
+  color: purple;
+}
+
 #symbol-choice #buttons button#scissors:hover:not(:disabled) {
   background-color: seagreen;
+}
+
+.xxx-large-peace-sans.seagreen {
+  color: seagreen;
 }
 
 #symbol-choice #buttons button:disabled {
@@ -225,8 +235,14 @@ button:disabled, #offer-wager:disabled {
   font-size: x-large;
 }
 
+.xxx-large-peace-sans {
+  font-family: 'Peace Sans', sans-serif;
+  color: black;
+  font-size: xxx-large;
+}
+
 #results #win-lose-draw {
-  margin: 10px 0 20px 0;
+  margin: 10px 0;
   font-family: 'Peace Sans', sans-serif;
   font-size: 80px;
   text-transform: uppercase;
@@ -235,15 +251,15 @@ button:disabled, #offer-wager:disabled {
 
 #results #outcome {
   font-family: 'Peace Sans', sans-serif;
-  font-size: 42px;
-  margin: 20px 0 0 0;
+  font-size: 32px;
 }
 
 #results p {
   text-align: center;
 }
 
-#your-wager, #opponent-wager {
+#your-wager, #opponent-wager,
+#your-choice, #opp-choice {
   font-family: 'Peace Sans', sans-serif;
   font-size: 18px;
 }
@@ -252,12 +268,12 @@ button:disabled, #offer-wager:disabled {
 #your-wager-status,
 #opp-wager-offer,
 #opp-wager-status {
-  margin: 0 0 10px 0;
+  margin: 0 0 5px 0;
 }
 
-#game-section {
+/* #game-section {
   display: none;
-}
+} */
 
 @keyframes flash {
   0% {opacity: 1;}

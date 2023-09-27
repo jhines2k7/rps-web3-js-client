@@ -5,7 +5,7 @@ let web3Provider;
 let contracts = {};
 let socket = null;
 let timeout;
-let buttons;
+let choiceButtons;
 
 let gameIdP;
 let gameId;
@@ -30,7 +30,6 @@ let winLoseDrawP;
 let yourChoiceP;
 let oppChoiceP;
 let outcomeP;
-let symbolChoiceDiv;
 let rockBtn;
 let paperBtn;
 let scissorsBtn;
@@ -45,14 +44,14 @@ let web3 = null;
 let joinGameInterval;
 
 function disableChoiceButtons() {
-  buttons.forEach((button) => {
+  choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
       button.disabled = true;
   });
 }
 
 function enableChoiceButtons() {
-  buttons.forEach((button) => {
+  choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
       button.disabled = false;
     }
@@ -143,26 +142,39 @@ function registerDOMEventListeners() {
     }
   });
 
-  buttons.forEach((button) => {
+  choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', (event) => {
         socket.emit('choice', {
           game_id: gameId,
           choice: button.id,
           address: accounts[0]
         });
 
-        disableChoiceButtons();
-        removeOtherChoiceButtons(button.id);
-      });
-    }
-  });
-}
+        const choiceButtonsDiv = document.getElementById('buttons');
+        choiceButtonsDiv.remove();
 
-function removeOtherChoiceButtons(choice) {
-  buttons.forEach((button) => {
-    if (button.id !== choice) {
-      button.remove();
+        const choice = button.id;
+        console.log(`You chose ${choice}`);
+        document.querySelector('#symbol-choice p').innerText = `YOU chose`;
+
+        let playerChoiceP = document.createElement('p');
+        playerChoiceP.innerText = `${button.id.toUpperCase()}`;
+
+        const colors = {
+          'rock': 'red',
+          'paper': 'purple',
+          'scissors': 'seagreen'
+        }
+        playerChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+
+        let symbolChoiceDiv = document.getElementById('symbol-choice');
+
+        let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+        opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
+
+        symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
+      });
     }
   });
 }
@@ -424,7 +436,7 @@ async function convertUsdToEther(amountInUsd) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  buttons = document.querySelectorAll('button');
+  choiceButtons = document.querySelectorAll('#buttons button');
   gameIdP = document.getElementById('game-id');
   playerId = document.getElementById('player-id');
   wagerInput = document.getElementById('wager-input');
@@ -463,13 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
     web3 = new Web3(window.ethereum);
 
     // Request access to user's MetaMask accounts
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
+    // await window.ethereum.request({ method: 'eth_requestAccounts' })
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
     console.log(`Your accounts: ${accounts}`);
 
-    // socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
+    socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
     socket = io('https://dev.generalsolutions43.com',
       {
         transports: ['websocket'],
@@ -478,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-    disableChoiceButtons();
+    // disableChoiceButtons();
     registerDOMEventListeners();
     registerSocketIOEventListeners();
   })();
