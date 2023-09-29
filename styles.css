@@ -245,7 +245,7 @@ button:disabled, #offer-wager:disabled {
 #results #win-lose-draw {
   margin: 10px 0;
   font-family: 'Peace Sans', sans-serif;
-  font-size: 80px;
+  font-size: 65px;
   text-transform: uppercase;
   text-align: center;
 }

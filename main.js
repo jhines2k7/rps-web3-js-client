@@ -263,8 +263,10 @@ function registerSocketIOEventListeners() {
 
   socket.on('you_win', (data) => {
     console.log(`You win! ${JSON.stringify(data)}`);
+    let oppChoseP = document.createElement('p');
+    oppChoseP.innerText = `OPP chose`;
     let oppChoiceP = document.createElement('p');
-    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+    oppChoiceP.innerText = `${data.opp_choice.toUpperCase()}`;
 
     const colors = {
       'rock': 'red',
@@ -278,6 +280,7 @@ function registerSocketIOEventListeners() {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = '';
 
+    symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You won';
@@ -288,7 +291,8 @@ function registerSocketIOEventListeners() {
 
   socket.on('you_lose', (data) => {
     console.log(`You lose! ${JSON.stringify(data)}`);
-
+    let oppChoseP = document.createElement('p');
+    oppChoseP.innerText = `OPP chose`;
     let oppChoiceP = document.createElement('p');
     oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
 
@@ -304,6 +308,7 @@ function registerSocketIOEventListeners() {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = '';
 
+    symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
     
     winLoseDrawP.innerText = 'You lose!';
@@ -482,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
   resultsDiv = document.getElementById('resultsDiv');
   winLoseDrawP = document.getElementById('win-lose-draw');
   yourChoiceP = document.getElementById('your-choice');
-  outcomeP = document.getElementById('outcomeP');
+  outcomeP = document.getElementById('outcome');
   rockBtn = document.getElementById('rock');
   paperBtn = document.getElementById('paper');
   scissorsBtn = document.getElementById('scissors');
