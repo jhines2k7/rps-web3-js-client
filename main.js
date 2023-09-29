@@ -183,7 +183,7 @@ function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
     oppWagerOfferP.innerText = `You were offered a ${data.wager} wager.`;
-    oppWagerStatusP.innerText = '';
+    // oppWagerStatusP.innerText = '';
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
   });
@@ -224,7 +224,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
-    oppWagerStatusP.innerText = '';
+    // oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
@@ -381,8 +381,6 @@ async function joinContract(stakeUSD, contractAddress) {
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
-  // const stakeInWei = web3.utils.toWei('0.0023996064645398153', 'ether');
-  //0.0023996064645398153
   console.log(`The stake in Wei is ${stakeInWei}`);
 
   const encodedData = RPSContract.methods.joinContract().encodeABI();
