@@ -278,7 +278,7 @@ function registerSocketIOEventListeners() {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = '';
 
-    symbolChoiceDiv.insertBefore(opponentChoiceStatus, oppChoiceP);
+    symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You won';
     outcomeP.innerText = `YOU won $${data.winnings}`;
@@ -304,7 +304,7 @@ function registerSocketIOEventListeners() {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = '';
 
-    symbolChoiceDiv.insertBefore(opponentChoiceStatus, oppChoiceP);
+    symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
     
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost $${data.losses}`;
