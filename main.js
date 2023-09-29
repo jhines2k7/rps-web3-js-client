@@ -481,7 +481,6 @@ document.addEventListener('DOMContentLoaded', () => {
     accounts = await web3.eth.getAccounts();
     console.log(`Your accounts: ${accounts}`);
 
-    socket = io('http://24.144.112.170:8000', { transports: ['websocket'] });
     socket = io('https://dev.generalsolutions43.com',
       {
         transports: ['websocket'],
