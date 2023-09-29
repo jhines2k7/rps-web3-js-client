@@ -263,23 +263,52 @@ function registerSocketIOEventListeners() {
 
   socket.on('you_win', (data) => {
     console.log(`You win! ${JSON.stringify(data)}`);
-    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
+    let oppChoiceP = document.createElement('p');
     oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+
+    const colors = {
+      'rock': 'red',
+      'paper': 'purple',
+      'scissors': 'seagreen'
+    }
+    oppChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+
+    let symbolChoiceDiv = document.getElementById('symbol-choice');
+
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = '';
+
+    symbolChoiceDiv.insertBefore(opponentChoiceStatus, oppChoiceP);
+
     winLoseDrawP.innerText = 'You won';
     outcomeP.innerText = `YOU won $${data.winnings}`;
 
-    // disableChoiceButtons();
     disableWagerButtons();
   });
 
   socket.on('you_lose', (data) => {
     console.log(`You lose! ${JSON.stringify(data)}`);
-    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
+
+    let oppChoiceP = document.createElement('p');
     oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+
+    const colors = {
+      'rock': 'red',
+      'paper': 'purple',
+      'scissors': 'seagreen'
+    }
+    oppChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+
+    let symbolChoiceDiv = document.getElementById('symbol-choice');
+
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = '';
+
+    symbolChoiceDiv.insertBefore(opponentChoiceStatus, oppChoiceP);
+    
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost $${data.losses}`;
 
-    disableChoiceButtons();
     disableWagerButtons();
   });
 
@@ -453,7 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
   resultsDiv = document.getElementById('resultsDiv');
   winLoseDrawP = document.getElementById('win-lose-draw');
   yourChoiceP = document.getElementById('your-choice');
-  oppChoiceP = document.getElementById('opp-choice');
   outcomeP = document.getElementById('outcomeP');
   rockBtn = document.getElementById('rock');
   paperBtn = document.getElementById('paper');
