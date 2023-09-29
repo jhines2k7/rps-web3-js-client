@@ -380,7 +380,8 @@ async function joinContract(stakeUSD, contractAddress) {
 
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
-  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'wei');
+  // const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'wei');
+  const stakeInWei = web3.utils.toWei("11", 'ether');
   console.log(`The stake in Wei is ${stakeInWei}`);
 
   const encodedData = RPSContract.methods.joinContract().encodeABI();
