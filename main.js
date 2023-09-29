@@ -66,7 +66,7 @@ function disableWagerButtons() {
 
 function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
-    oppWagerP.innerText = `Wagered ${oppWagerInDollars}`;
+    oppWagerP.innerText = `Your opponent wagered ${oppWagerInDollars}`;
     (async () => {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
@@ -77,17 +77,10 @@ function registerDOMEventListeners() {
 
     oppWagerStatusP.innerText = `You accepted the ${oppWagerInDollars} wager from your opponent.`;
     oppWagerOfferP.innerText = '';
-
-    // wagerAccepted = true;
-
-    // if (wagerAccepted && opponentWagerAcceptedP) {
-    //   enableChoiceButtons();
-    //   disableWagerButtons();
-    // }
   });
 
   offerWagerBtn.addEventListener('click', () => {
-    var wagerValue = wagerInput.value;
+    let wagerValue = wagerInput.value;
 
     console.log(`wagerValue: ${wagerValue}`);
 
@@ -95,9 +88,9 @@ function registerDOMEventListeners() {
 
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
-    if (!wagerAccepted) {
-      oppWagerStatusP.innerText = '';
-    }
+    // if (!wagerAccepted) {
+    //   oppWagerStatusP.innerText = '';
+    // }
     oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
     yourWagerStatusP.innerText = '';
