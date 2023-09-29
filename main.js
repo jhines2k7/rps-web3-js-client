@@ -283,7 +283,7 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
-    winLoseDrawP.innerText = 'You won';
+    winLoseDrawP.innerText = 'You win!';
     outcomeP.innerText = `YOU won ${data.winnings}`;
 
     disableWagerButtons();
@@ -322,7 +322,7 @@ function registerSocketIOEventListeners() {
     yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
     oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
     winLoseDrawP.innerText = 'It was a draw!';
-    outcomeP.innerText = `You'll get back your wager minus gas and a small arbiter fee.`;
+    outcomeP.innerText = `You'll get back your wager minus gas fees.`;
 
     disableChoiceButtons();
     disableWagerButtons();
