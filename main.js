@@ -90,7 +90,7 @@ function registerDOMEventListeners() {
 
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;    
-    // oppWagerStatusP.innerText = ''
+    oppWagerStatusP.innerText = ''
     // oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
     // yourWagerStatusP.innerText = '';
