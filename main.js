@@ -222,7 +222,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
-    // oppWagerStatusP.innerText = '';
+    oppWagerStatusP.innerText = '';
     // oppWagerOfferP.innerText = '';
     // yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
