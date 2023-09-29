@@ -76,7 +76,9 @@ function registerDOMEventListeners() {
     declineWagerBtn.disabled = true;
 
     oppWagerStatusP.innerText = `You accepted the ${oppWagerInDollars} wager from your opponent.`;
-    oppWagerOfferP.innerText = '';
+    // oppWagerOfferP.innerText = '';
+    // yourWagerOfferP.innerText = '';
+    // yourWagerStatusP.innerText = '';
   });
 
   offerWagerBtn.addEventListener('click', () => {
@@ -89,9 +91,9 @@ function registerDOMEventListeners() {
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;    
     // oppWagerStatusP.innerText = ''
-    oppWagerOfferP.innerText = '';
+    // oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    yourWagerStatusP.innerText = '';
+    // yourWagerStatusP.innerText = '';
   });
 
   declineWagerBtn.addEventListener('click', () => {
@@ -100,6 +102,7 @@ function registerDOMEventListeners() {
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
+    oppWagerStatusP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
   });
 
   wagerInput.addEventListener('input', function () {
@@ -172,17 +175,21 @@ function registerDOMEventListeners() {
 
 function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
-    oppWagerInDollars = data.wager;
+    // oppWagerInDollars = data.wager;
+    // oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = `You were offered a ${data.wager} wager.`;
-    oppWagerStatusP.innerText = '';
+    // yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
+    // yourWagerStatusP.innerText = '';
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
   });
 
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
-    oppWagerOfferP.innerText = '';
+    // oppWagerOfferP.innerText = '';
     oppWagerStatusP.innerText = `Your opponent declined your wager.`;
+    // yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
+    // yourWagerStatusP.innerText = '';
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -216,8 +223,8 @@ function registerSocketIOEventListeners() {
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
     // oppWagerStatusP.innerText = '';
-    oppWagerOfferP.innerText = '';
-    yourWagerOfferP.innerText = '';
+    // oppWagerOfferP.innerText = '';
+    // yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
   });
