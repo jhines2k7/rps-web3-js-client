@@ -176,7 +176,7 @@ function registerDOMEventListeners() {
 function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     // oppWagerInDollars = data.wager;
-    // oppWagerStatusP.innerText = '';
+    oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = `You were offered a ${data.wager} wager.`;
     // yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
     // yourWagerStatusP.innerText = '';
@@ -222,7 +222,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
-    oppWagerStatusP.innerText = '';
+    // oppWagerStatusP.innerText = '';
     // oppWagerOfferP.innerText = '';
     // yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
