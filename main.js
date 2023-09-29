@@ -284,7 +284,7 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You won';
-    outcomeP.innerText = `YOU won $${data.winnings}`;
+    outcomeP.innerText = `YOU won ${data.winnings}`;
 
     disableWagerButtons();
   });
@@ -294,7 +294,7 @@ function registerSocketIOEventListeners() {
     let oppChoseP = document.createElement('p');
     oppChoseP.innerText = `OPP chose`;
     let oppChoiceP = document.createElement('p');
-    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
+    oppChoiceP.innerText = `${data.opp_choice.toUpperCase()}`;
 
     const colors = {
       'rock': 'red',
@@ -312,7 +312,7 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
     
     winLoseDrawP.innerText = 'You lose!';
-    outcomeP.innerText = `YOU lost $${data.losses}`;
+    outcomeP.innerText = `YOU lost ${data.losses}`;
 
     disableWagerButtons();
   });
