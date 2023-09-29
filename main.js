@@ -271,7 +271,7 @@ function registerSocketIOEventListeners() {
       'paper': 'purple',
       'scissors': 'seagreen'
     }
-    oppChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+    oppChoiceP.classList.add('xxx-large-peace-sans', colors[data.opp_choice]);
 
     let symbolChoiceDiv = document.getElementById('symbol-choice');
 
@@ -297,7 +297,7 @@ function registerSocketIOEventListeners() {
       'paper': 'purple',
       'scissors': 'seagreen'
     }
-    oppChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+    oppChoiceP.classList.add('xxx-large-peace-sans', colors[data.opp_choice]);
 
     let symbolChoiceDiv = document.getElementById('symbol-choice');
 
