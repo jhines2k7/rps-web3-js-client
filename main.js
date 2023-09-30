@@ -66,7 +66,6 @@ function disableWagerButtons() {
 
 function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
-    // oppWagerP.innerText = `Your opponent wagered ${oppWagerInDollars}`;
     (async () => {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
@@ -77,8 +76,6 @@ function registerDOMEventListeners() {
 
     oppWagerStatusP.innerText = `You accepted the ${oppWagerInDollars} wager from your opponent.`;
     oppWagerOfferP.innerText = '';
-    // yourWagerOfferP.innerText = '';
-    // yourWagerStatusP.innerText = '';
   });
 
   offerWagerBtn.addEventListener('click', () => {
@@ -91,9 +88,7 @@ function registerDOMEventListeners() {
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;    
     oppWagerStatusP.innerText = ''
-    // oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    // yourWagerStatusP.innerText = '';
   });
 
   declineWagerBtn.addEventListener('click', () => {
@@ -176,21 +171,15 @@ function registerDOMEventListeners() {
 function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
-    // oppWagerInDollars = data.wager;
     oppWagerStatusP.innerText = '';
     oppWagerOfferP.innerText = `You were offered a ${data.wager} wager.`;
-    // yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    // yourWagerStatusP.innerText = '';
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
   });
 
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
-    // oppWagerOfferP.innerText = '';
     oppWagerStatusP.innerText = `Your opponent declined your wager.`;
-    // yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    // yourWagerStatusP.innerText = '';
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -223,8 +212,6 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_accepted', (data) => {
     opponentWagerAcceptedP = true;
-    // oppWagerStatusP.innerText = '';
-    // oppWagerOfferP.innerText = '';
     yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
@@ -238,7 +225,7 @@ function registerSocketIOEventListeners() {
     gameId = data.game_id;
     gameIdP.innerText = `Game ID: ${gameId}`;
     opponentJoinP.innerText = '';
-    oppWagerStatusP.innerText = 'You\'ve got an opponent! Try sending them a wager...';
+    oppWagerStatusP.innerText = `You\'ve got an opponent! Try sending them a wager...`;
     yourWagerP.innerText = '';
     yourWagerPInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
@@ -249,15 +236,9 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('opponent_disconnected', () => {
-    opponentJoinP.innerText = `Your opponent disconnected. 
-      Refresh the page to start a new game.`;
+    opponentJoinP.innerText = `Your opponent disconnected. Refresh the page to start a new game.`;
     opponentJoinP.classList.add('flashing');
-    disableChoiceButtons();
     disableWagerButtons();
-    // yourWagerOfferP.innerText = '';
-    // yourWagerStatusP.innerText = '';
-    // oppWagerOfferP.innerText = '';
-    // oppWagerStatusP.innerText = '';
   });
 
   socket.on('you_win', (data) => {
@@ -327,11 +308,9 @@ function registerSocketIOEventListeners() {
     disableWagerButtons();
   });
 
-  socket.on('transaction_rejected', (data) => {
+  socket.on('join_contract_transaction_rejected', (data) => {
     console.error(`The transaction was rejected: ${data.error}`);
-    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. 
-      If you have accepted the transaction, you will be refunded your wager minus gas fees. 
-      If you have not, refresh the page to start a new game.`;
+    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. If you have not, refresh the page to start a new game.`;
     joinContractStatusP.classList.remove('flashing');
   });
 }
@@ -400,7 +379,7 @@ async function joinContract(stakeUSD, contractAddress) {
   txHash.catch((err) => {
     console.error(`An error occurred: ${err}`);
     // emit an event to the server to let the other player know that the transaction failed
-    socket.emit('transaction_rejected', {
+    socket.emit('join_contract_transaction_rejected', {
       game_id: gameId,
       address: accounts[0],
       contract_address: contractAddress,
