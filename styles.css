@@ -255,6 +255,10 @@ button:disabled, #offer-wager:disabled {
   font-size: 32px;
 }
 
+#results #outcome.draw {
+  font-size: 16px;
+}
+
 #results p {
   text-align: center;
 }

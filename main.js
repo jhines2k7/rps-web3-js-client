@@ -267,7 +267,6 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You win!';
     outcomeP.innerText = `YOU won ${data.winnings}`;
 
-    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
@@ -296,7 +295,6 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost ${data.losses}`;
 
-    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
@@ -325,9 +323,9 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'DRAW!';
+    outcomeP.addClassName = 'draw';
     outcomeP.innerText = `You'll get back your wager minus a small arbiter fee and gas fees.`;
 
-    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
