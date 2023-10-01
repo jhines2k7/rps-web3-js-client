@@ -323,7 +323,7 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'DRAW!';
-    outcomeP.addClassName = 'draw';
+    outcomeP.classList.add('draw');
     outcomeP.innerText = `You'll get back your wager minus a small arbiter fee and gas fees.`;
 
     disableWagerButtons();
