@@ -50,6 +50,7 @@ function disableChoiceButtons() {
   });
 }
 
+
 function enableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
@@ -266,6 +267,7 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You win!';
     outcomeP.innerText = `YOU won ${data.winnings}`;
 
+    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
@@ -294,17 +296,39 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost ${data.losses}`;
 
+    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
   socket.on('draw', (data) => {
     console.log(`It was a draw! ${JSON.stringify(data)}`);
-    yourChoiceP.innerText = `YOU chose ${data.your_choice.toUpperCase()}`;
-    oppChoiceP.innerText = `OPP chose ${data.opp_choice.toUpperCase()}`;
     winLoseDrawP.innerText = 'It was a draw!';
     outcomeP.innerText = `You'll get back your wager minus gas fees.`;
+    
+    let oppChoseP = document.createElement('p');
+    oppChoseP.innerText = `OPP chose`;
+    let oppChoiceP = document.createElement('p');
+    oppChoiceP.innerText = `${data.opp_choice.toUpperCase()}`;
 
-    disableChoiceButtons();
+    const colors = {
+      'rock': 'red',
+      'paper': 'purple',
+      'scissors': 'seagreen'
+    }
+    oppChoiceP.classList.add('xxx-large-peace-sans', colors[data.opp_choice]);
+
+    let symbolChoiceDiv = document.getElementById('symbol-choice');
+
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = '';
+
+    symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
+    symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
+
+    winLoseDrawP.innerText = 'DRAW!`';
+    outcomeP.innerText = `YOU won ${data.winnings}`;
+
+    document.getElementById('buttons').remove();
     disableWagerButtons();
   });
 
