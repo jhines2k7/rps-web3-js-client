@@ -303,7 +303,6 @@ function registerSocketIOEventListeners() {
   socket.on('draw', (data) => {
     console.log(`It was a draw! ${JSON.stringify(data)}`);
     winLoseDrawP.innerText = 'It was a draw!';
-    outcomeP.innerText = `You'll get back your wager minus gas fees.`;
     
     let oppChoseP = document.createElement('p');
     oppChoseP.innerText = `OPP chose`;
@@ -325,8 +324,8 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
-    winLoseDrawP.innerText = 'DRAW!`';
-    outcomeP.innerText = `YOU won ${data.winnings}`;
+    winLoseDrawP.innerText = 'DRAW!';
+    outcomeP.innerText = `You'll get back your wager minus a small arbiter fee and gas fees.`;
 
     document.getElementById('buttons').remove();
     disableWagerButtons();
