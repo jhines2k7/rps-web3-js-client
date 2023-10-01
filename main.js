@@ -69,7 +69,7 @@ function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
-      oppWagerInEtherP.innerText = `in eth: ${wagerInEth}`;
+      oppWagerInEtherP.innerText = `You accepted a ${wagerInEth} wager in eth`;
     })();
     socket.emit('accept_wager', { address: accounts[0], game_id: gameId });
     acceptWagerBtn.disabled = true;
@@ -113,7 +113,7 @@ function registerDOMEventListeners() {
       timeout = setTimeout(async () => {
         try {
           const result = await dollarsToEthereum(dollars.replace(/^\$/, ''));
-          yourWagerPInEtherP.innerText = `in eth: ${result}`;
+          yourWagerPInEtherP.innerText = `Your wager in eth: ${result}`;
           offerWagerBtn.disabled = false;
         } catch (err) {
           console.error(err);
