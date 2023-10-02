@@ -140,7 +140,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   background-color: #BDBDBD; /* lighter shade of gray on hover */
 }
 
-#decline-wager:disabled, #accept-wager:disabled, #offer-wager:disabled {
+#decline-wager:disabled, #accept-wager:disabled, #offer-wager:disabled, button:disabled {
   background-color: #808080; /* change the color of your button when it is disabled */
   color: #C0C0C0;  /* change the text color when it is disabled */
   cursor: not-allowed; /* indicates that the button is not available for interaction */
@@ -150,8 +150,16 @@ button:hover { /* this will change the color of your button when the mouse over 
   background-color: green;
 }
 
+#accept-wager:hover {
+  background-color: #4CAF50;
+}
+
 #decline-wager {
   background-color: red;
+}
+
+#decline-wager:hover {
+  background-color: #ff9999; /*This is a light shade of red*/
 }
 
 #opp-wagered {
