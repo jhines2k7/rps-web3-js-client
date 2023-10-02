@@ -180,8 +180,10 @@ function registerSocketIOEventListeners() {
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
     oppWagerStatusP.innerText = `Your opponent declined your wager.`;
+    yourWagerOfferP.innerText = '';
+    oppWagerOfferP.innerText = '';
     offerWagerBtn.disabled = false;
-    wagerInput.disabled = false;
+    // wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
   });
