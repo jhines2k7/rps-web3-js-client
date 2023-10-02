@@ -279,8 +279,8 @@ function registerSocketIOEventListeners() {
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings.replace(/^\$/, ''));
       let winningsInEthP = document.createElement('p');
-      winningsInEthP.innerText = `You lost ${winningsInEth} eth`;
-      outcomeP.appendChild(losssesInEthP);
+      winningsInEthP.innerText = `You won ${winningsInEth} eth`;
+      resultsDiv.appendChild(winningsInEthP);
     })();
 
     disableWagerButtons();
@@ -312,10 +312,10 @@ function registerSocketIOEventListeners() {
     outcomeP.innerText = `YOU lost ${data.losses}`;
 
     (async () => {
-      const lossesInEth = await dollarsToEthereum(data.loses.replace(/^\$/, ''));
-      let losssesInEthP = document.createElement('p');
-      losssesInEthP.innerText = `You lost ${lossesInEth} eth`;
-      outcomeP.appendChild(losssesInEthP);
+      const lossesInEth = await dollarsToEthereum(data.losses.replace(/^\$/, ''));
+      let lossesInEthP = document.createElement('p');
+      lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
+      resultsDiv.appendChild(lossesInEthP);
     })();
 
     disableWagerButtons();
