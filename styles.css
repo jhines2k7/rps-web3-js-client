@@ -116,10 +116,12 @@ input[type="text"]:disabled {
 
 #your-wager-in-ether {
   margin: 15px 0;
+  text-align: center;
 }
 
 #opp-wager-in-ether {
   margin: 5px 0;
+  text-align: center;
 }
 
 button {
