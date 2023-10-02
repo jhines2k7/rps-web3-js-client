@@ -68,13 +68,13 @@ function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
       const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
-      oppWagerInEtherP.innerText = `You accepted a ${wagerInEth} wager in eth`;
+      oppWagerInEtherP.innerText = `Your opponent wager in eth: ${wagerInEth}`;
     })();
     socket.emit('accept_wager', { address: accounts[0], game_id: gameId });
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
-    oppWagerStatusP.innerText = `Opponent wager in eth: ${oppWagerInDollars}`;
+    oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
     oppWagerOfferP.innerText = '';
   });
 
@@ -180,7 +180,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
-    oppWagerStatusP.innerText = `Your opponent declined your wager.`;
+    oppWagerStatusP.innerText = 'Your opponent declined your wager. Try to offer a different amount.';
     yourWagerOfferP.innerText = '';
     oppWagerOfferP.innerText = '';
     offerWagerBtn.disabled = false;
