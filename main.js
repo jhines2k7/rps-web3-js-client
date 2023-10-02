@@ -41,7 +41,8 @@ let joinContractStatusP;
 
 let accounts = [];
 let web3 = null;
-let joinGameInterval;
+
+let playerRejectedTransaction = true;
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
@@ -346,14 +347,15 @@ function registerSocketIOEventListeners() {
 
     winLoseDrawP.innerText = 'DRAW!';
     outcomeP.classList.add('draw');
-    outcomeP.innerText = `You'll get back your wager minus a small arbiter fee and gas fees.`;
+    outcomeP.innerText = "You'll get back your wager minus a small arbiter fee and gas fees.";
 
     disableWagerButtons();
   });
 
   socket.on('join_contract_transaction_rejected', (data) => {
     console.error(`The transaction was rejected: ${data.error}`);
-    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. If you have not, refresh to start a new game.`;
+    playerRejectedTransaction = false;
+    joinContractStatusP.innerText = 'Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. Refresh to start a new game.';
     joinContractStatusP.classList.remove('flashing');
   });
 }
@@ -422,16 +424,18 @@ async function joinContract(stakeUSD, contractAddress) {
   txHash.catch((error) => {
     if(error.innerError.code === 4001) {
       console.error(error.innerError.message);
-      // emit an event to the server to let the other player know that the transaction failed
-      socket.emit('join_contract_transaction_rejected', {
-        game_id: gameId,
-        address: accounts[0],
-        contract_address: contractAddress,
-        error: error
-      });
+      if(playerRejectedTransaction) {        
+        // emit an event to the server to let the other player know that the transaction failed
+        socket.emit('join_contract_transaction_rejected', {
+          game_id: gameId,
+          address: accounts[0],
+          contract_address: contractAddress,
+          error: error
+        });
 
-      joinContractStatusP.innerText = 'You decided to reject the transaction. We\'ve notified your opponent. Refresh to start a new game.';
-      joinContractStatusP.classList.remove('flashing');
+        joinContractStatusP.innerText = "You decided to reject the transaction. Your opponent has been notified. Refresh to start a new game.";
+        joinContractStatusP.classList.remove('flashing');
+      }
     }
   });
 
