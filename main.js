@@ -50,7 +50,6 @@ function disableChoiceButtons() {
   });
 }
 
-
 function enableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
