@@ -70,9 +70,6 @@ body {
 }
 
 #place-wager {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
   margin: 15px 0;
 }
 
@@ -84,7 +81,6 @@ input[type="text"] {
   border-radius: 0; /* Optional: Remove rounded corners */
   font-family: 'Peace Sans', sans-serif;
   text-align: center;
-  flex: 2;
 }
 
 #offer-wager {
@@ -97,7 +93,6 @@ input[type="text"] {
   transition-duration: 0.4s;  /* this will make the hover effect an smooth transition */
   font-family: 'Peace Sans', sans-serif;
   font-size: smaller;
-  flex: 1;
 }
 
 #offer-wager:hover { /* this will change the color of your button when the mouse over it */
