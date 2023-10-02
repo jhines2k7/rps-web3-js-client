@@ -427,7 +427,7 @@ async function joinContract(stakeUSD, contractAddress) {
         game_id: gameId,
         address: accounts[0],
         contract_address: contractAddress,
-        error: err
+        error: error
       });
 
       joinContractStatusP.innerText = 'You decided to reject the transaction. We\'ve notified your opponent. Refresh to start a new game.';
