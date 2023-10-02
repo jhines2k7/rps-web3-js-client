@@ -98,6 +98,7 @@ function registerDOMEventListeners() {
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
     oppWagerStatusP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
+    oppWagerOfferP.innerText = '';
   });
 
   wagerInput.addEventListener('input', function () {
@@ -183,7 +184,7 @@ function registerSocketIOEventListeners() {
     yourWagerOfferP.innerText = '';
     oppWagerOfferP.innerText = '';
     offerWagerBtn.disabled = false;
-    // wagerInput.disabled = false;
+    wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
   });
