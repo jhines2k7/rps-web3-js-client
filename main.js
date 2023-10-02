@@ -75,7 +75,7 @@ function registerDOMEventListeners() {
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
-    oppWagerStatusP.innerText = `You accepted the ${oppWagerInDollars} wager from your opponent.`;
+    oppWagerStatusP.innerText = `Opponent wager in eth: ${oppWagerInDollars}`;
     oppWagerOfferP.innerText = '';
   });
 
@@ -267,6 +267,13 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'You win!';
     outcomeP.innerText = `YOU won ${data.winnings}`;
 
+    (async () => {
+      const winningsInEth = await dollarsToEthereum(data.winnings.replace(/^\$/, ''));
+      let winningsInEthP = document.createElement('p');
+      winningsInEthP.innerText = `You lost ${winningsInEth} eth`;
+      outcomeP.appendChild(losssesInEthP);
+    })();
+
     disableWagerButtons();
   });
 
@@ -294,6 +301,13 @@ function registerSocketIOEventListeners() {
     
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost ${data.losses}`;
+
+    (async () => {
+      const lossesInEth = await dollarsToEthereum(data.loses.replace(/^\$/, ''));
+      let losssesInEthP = document.createElement('p');
+      losssesInEthP.innerText = `You lost ${lossesInEth} eth`;
+      outcomeP.appendChild(losssesInEthP);
+    })();
 
     disableWagerButtons();
   });
