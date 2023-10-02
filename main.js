@@ -240,6 +240,7 @@ function registerSocketIOEventListeners() {
     opponentJoinP.classList.add('flashing');
     wagerInput.disabled = true;
     oppWagerStatusP.innerText = '';
+    yourWagerInEtherP.innerText = '';
     disableWagerButtons();
   });
 
