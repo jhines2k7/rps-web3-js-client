@@ -238,6 +238,7 @@ function registerSocketIOEventListeners() {
   socket.on('opponent_disconnected', () => {
     opponentJoinP.innerText = `Your opponent disconnected. Refresh the page to start a new game.`;
     opponentJoinP.classList.add('flashing');
+    wagerInput.disabled = true;
     disableWagerButtons();
   });
 
