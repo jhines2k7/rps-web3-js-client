@@ -81,6 +81,7 @@ input[type="text"] {
   border-radius: 0; /* Optional: Remove rounded corners */
   font-family: 'Peace Sans', sans-serif;
   text-align: center;
+  width: 50%;
 }
 
 #offer-wager {
