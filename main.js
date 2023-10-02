@@ -242,7 +242,7 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('opponent_disconnected', () => {
-    opponentJoinP.innerText = `Your opponent disconnected. Refresh the page to start a new game.`;
+    opponentJoinP.innerText = `Your opponent disconnected. Refresh to start a new game.`;
     opponentJoinP.classList.add('flashing');
     wagerInput.disabled = true;
     oppWagerStatusP.innerText = '';
@@ -353,7 +353,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('join_contract_transaction_rejected', (data) => {
     console.error(`The transaction was rejected: ${data.error}`);
-    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. If you have not, refresh the page to start a new game.`;
+    joinContractStatusP.innerText = `Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. If you have not, refresh to start a new game.`;
     joinContractStatusP.classList.remove('flashing');
   });
 }
@@ -419,18 +419,20 @@ async function joinContract(stakeUSD, contractAddress) {
 
   const txHash = web3.eth.sendTransaction(transaction);
 
-  txHash.catch((err) => {
-    console.error(`An error occurred: ${err}`);
-    // emit an event to the server to let the other player know that the transaction failed
-    socket.emit('join_contract_transaction_rejected', {
-      game_id: gameId,
-      address: accounts[0],
-      contract_address: contractAddress,
-      error: err
-    });
+  txHash.catch((error) => {
+    if(error.innerError.code === 4001) {
+      console.error(error.innerError.message);
+      // emit an event to the server to let the other player know that the transaction failed
+      socket.emit('join_contract_transaction_rejected', {
+        game_id: gameId,
+        address: accounts[0],
+        contract_address: contractAddress,
+        error: err
+      });
 
-    joinContractStatusP.innerText = 'You decided to reject the transaction. Refresh the page to start a new game.';
-    joinContractStatusP.classList.remove('flashing');
+      joinContractStatusP.innerText = 'You decided to reject the transaction. We\'ve notified your opponent. Refresh to start a new game.';
+      joinContractStatusP.classList.remove('flashing');
+    }
   });
 
   txHash.on('transactionHash', function (hash) {
