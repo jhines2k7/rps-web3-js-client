@@ -86,8 +86,11 @@ function registerDOMEventListeners() {
     socket.emit('offer_wager', { wager: wagerValue, address: accounts[0], game_id: gameId });
 
     offerWagerBtn.disabled = true;
-    wagerInput.disabled = true;    
-    // oppWagerStatusP.innerText = ''
+    wagerInput.disabled = true;
+    // if oppWagerStatusP.innerText is not empty, then clear it
+    if (oppWagerStatusP.innerText !== '') {
+      oppWagerStatusP.innerText = '';
+    }
     yourWagerOfferP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
   });
 
