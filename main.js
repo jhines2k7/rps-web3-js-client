@@ -11,7 +11,7 @@ let gameIdP;
 let gameId;
 let playerId;
 let wagerInput;
-let yourWagerPInEtherP;
+let yourWagerInEtherP;
 let oppWagerStatusP;
 let oppWagerOfferP;
 let yourWagerStatusP;
@@ -102,7 +102,7 @@ function registerDOMEventListeners() {
 
   wagerInput.addEventListener('input', function () {
     if (this.value === '' || this.value === '0' || this.value === '$') {
-      yourWagerPInEtherP.innerText = 'in eth: 0.00000';
+      yourWagerInEtherP.innerText = 'in eth: 0.00000';
       offerWagerBtn.disabled = true;
     } else {
       clearTimeout(timeout)
@@ -112,7 +112,7 @@ function registerDOMEventListeners() {
       timeout = setTimeout(async () => {
         try {
           const result = await dollarsToEthereum(dollars.replace(/^\$/, ''));
-          yourWagerPInEtherP.innerText = `Your wager in eth: ${result}`;
+          yourWagerInEtherP.innerText = `Your wager in eth: ${result}`;
           offerWagerBtn.disabled = false;
         } catch (err) {
           console.error(err);
@@ -227,7 +227,7 @@ function registerSocketIOEventListeners() {
     opponentJoinP.innerText = '';
     oppWagerStatusP.innerText = `You\'ve got an opponent! Try sending them a wager...`;
     yourWagerP.innerText = '';
-    yourWagerPInEtherP.innerText = 'in eth: 0.00000';
+    yourWagerInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
     yourWagerOfferP.innerText = '';
     yourWagerStatusP.innerText = '';
@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   playerId = document.getElementById('player-id');
   wagerInput = document.getElementById('wager-input');
   wagerInputPlaceholder = wagerInput.placeholder;
-  yourWagerPInEtherP = document.getElementById('your-wager-in-ether');
+  yourWagerInEtherP = document.getElementById('your-wager-in-ether');
   wagerButtons = document.getElementById('wager-buttons');
   acceptWagerBtn = document.getElementById('accept-wager');
   declineWagerBtn = document.getElementById('decline-wager');
