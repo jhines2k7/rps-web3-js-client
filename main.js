@@ -372,8 +372,8 @@ async function dollarsToEthereum(dollars) {
   }
 }
 
-async function loadContractABI(name) {
-  return fetch(name)
+async function loadContractABI() {
+  return fetch("https://dev.generalsolutions43.com/rps-contract-abi")
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
@@ -388,7 +388,7 @@ async function loadContractABI(name) {
 
 async function joinContract(stakeUSD, contractAddress) {
   // Fetch the RPSContract
-  const rpsContractABI = await loadContractABI('contracts/RPSContract.json');
+  const rpsContractABI = await loadContractABI();
   const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
 
   const nonce = await web3.eth.getTransactionCount(accounts[0]);
