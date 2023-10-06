@@ -13,9 +13,7 @@ let playerId;
 let wagerInput;
 let yourWagerInEtherP;
 let oppWagerStatusP;
-let oppWagerOfferP;
 let yourWagerStatusP;
-let yourWagerOfferP;
 let wagerButtons;
 let acceptWagerBtn;
 let declineWagerBtn;
@@ -90,6 +88,7 @@ function registerDOMEventListeners() {
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
     yourWagerStatusP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
+    oppWagerStatusP.innerText = '';
   });
 
   declineWagerBtn.addEventListener('click', () => {
