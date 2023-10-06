@@ -377,7 +377,7 @@ async function loadContractABI() {
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
-      console.log(data);
+      console.log(`The RPSContract ABI is ${data.abi}`)
       return data;
     })
     .catch(error => {
