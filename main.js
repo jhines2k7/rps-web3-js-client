@@ -400,7 +400,7 @@ async function joinContract(stakeUSD, contractAddress) {
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${stakeInWei}`);
 
-  const encodedData = RPSContract.methods.joinContract().encodeABI();
+  const encodedData = RPSContract.methods.joinContract(gameId).encodeABI();
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
