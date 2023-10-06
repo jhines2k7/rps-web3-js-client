@@ -173,6 +173,7 @@ function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
     oppWagerStatusP.innerText = `You were offered a ${data.wager} wager.`;
+    oppWagerStatusP.classList.remove('flashing');
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
     opponentJoinP.innerText = '';
