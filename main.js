@@ -228,7 +228,10 @@ function registerSocketIOEventListeners() {
     gameId = data.game_id;
     gameIdP.innerText = `Game ID: ${gameId}`;
     opponentJoinP.innerText = 'You\'ve got an opponent! Try sending them a wager...';
-    oppWagerStatusP.innerText = '';
+    
+    oppWagerStatusP.innerText = 'Waiting for your opponent to send you a wager...';
+    oppWagerStatusP.classList.add('flashing');
+
     yourWagerP.innerText = '';
     yourWagerInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
