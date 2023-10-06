@@ -429,6 +429,9 @@ async function joinContract(stakeUSD, contractAddress) {
 
         joinContractStatusP.innerText = "You decided to reject the transaction. Your opponent has been notified. Refresh to start a new game.";
         joinContractStatusP.classList.remove('flashing');
+      } else {
+        joinContractStatusP.innerText = "You and your opponent have decided to reject the transaction. Refresh to start a new game.";
+        joinContractStatusP.classList.remove('flashing');
       }
     }
   });
