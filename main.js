@@ -419,7 +419,7 @@ async function joinContract(stakeUSD, contractAddress) {
     if(error.innerError.code === 4001) {
       console.error(error.innerError.message);
       if(playerRejectedTransaction) {        
-        // emit an event to the server to let the other player know that the transaction failed
+        // emit an event to the server to let the other player know you rejected the transaction
         socket.emit('join_contract_transaction_rejected', {
           game_id: gameId,
           address: accounts[0],
