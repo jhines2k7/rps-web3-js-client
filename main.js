@@ -349,6 +349,8 @@ function registerSocketIOEventListeners() {
     playerRejectedTransaction = false;
     joinContractStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     joinContractStatusP.classList.remove('flashing');
+
+    gameSection.remove()
   });
 }
 
