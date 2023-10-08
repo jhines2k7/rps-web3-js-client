@@ -136,11 +136,14 @@ button {
   font-size: smaller;
 }
 
-button:hover { /* this will change the color of your button when the mouse over it */
+button:hover { /* this will change the color of your button when the mouse hovers it */
   background-color: #BDBDBD; /* lighter shade of gray on hover */
 }
 
-#decline-wager:disabled, #accept-wager:disabled, #offer-wager:disabled, button:disabled {
+#decline-wager:disabled:hover, 
+#accept-wager:disabled:hover, 
+#offer-wager:disabled:hover, 
+button:disabled:hover {
   background-color: #808080; /* change the color of your button when it is disabled */
   color: #C0C0C0;  /* change the text color when it is disabled */
   cursor: not-allowed; /* indicates that the button is not available for interaction */
@@ -219,7 +222,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   transition-duration: 0.4s;  /* this will make the hover effect an smooth transition */
 }
 
-#symbol-choice #buttons button#rock:hover :not(:disabled) {
+#symbol-choice #buttons button#rock:hover {
   background-color: red;
 }
 
@@ -227,7 +230,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   color: red;
 }
 
-#symbol-choice #buttons button#paper:hover :not(:disabled) {
+#symbol-choice #buttons button#paper:hover {
   background-color: purple;
 }
 
@@ -235,7 +238,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   color: purple;
 }
 
-#symbol-choice #buttons button#scissors:hover :not(:disabled) {
+#symbol-choice #buttons button#scissors:hover {
   background-color: seagreen;
 }
 
