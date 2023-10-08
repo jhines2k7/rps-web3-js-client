@@ -345,11 +345,12 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('player_stake_refunded', (data) => {
-    console.error(`Your opponent decided not to join the contract: ${data.error}`);
+    console.error(`Your opponent decided not to join the contract: ${data.transaction_hash}`);
     playerRejectedTransaction = false;
     joinContractStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     joinContractStatusP.classList.remove('flashing');
-
+    
+    let gameSection = document.getElementById('game-section');
     gameSection.remove()
   });
 }
