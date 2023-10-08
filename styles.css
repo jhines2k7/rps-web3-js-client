@@ -219,7 +219,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   transition-duration: 0.4s;  /* this will make the hover effect an smooth transition */
 }
 
-#symbol-choice #buttons button#rock:hover:not(:disabled) {
+#symbol-choice #buttons button#rock:hover :not(:disabled) {
   background-color: red;
 }
 
@@ -227,7 +227,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   color: red;
 }
 
-#symbol-choice #buttons button#paper:hover:not(:disabled) {
+#symbol-choice #buttons button#paper:hover :not(:disabled) {
   background-color: purple;
 }
 
@@ -235,7 +235,7 @@ button:hover { /* this will change the color of your button when the mouse over 
   color: purple;
 }
 
-#symbol-choice #buttons button#scissors:hover:not(:disabled) {
+#symbol-choice #buttons button#scissors:hover :not(:disabled) {
   background-color: seagreen;
 }
 
