@@ -40,8 +40,6 @@ let joinContractStatusP;
 let accounts = [];
 let web3 = null;
 
-let playerRejectedTransaction = true;
-
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -346,10 +344,10 @@ function registerSocketIOEventListeners() {
     disableWagerButtons();
   });
 
-  socket.on('join_contract_transaction_rejected', (data) => {
-    console.error(`The transaction was rejected: ${data.error}`);
+  socket.on('player_stake_refunded', (data) => {
+    console.error(`Your opponent decided not to join the contract: ${data.error}`);
     playerRejectedTransaction = false;
-    joinContractStatusP.innerText = 'Your opponent decided to reject the transaction. If you have accepted the transaction, you will be refunded your wager minus gas fees. Refresh to start a new game.';
+    joinContractStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     joinContractStatusP.classList.remove('flashing');
   });
 }
@@ -418,21 +416,16 @@ async function joinContract(stakeUSD, contractAddress) {
   txHash.catch((error) => {
     if(error.innerError.code === 4001) {
       console.error(error.innerError.message);
-      if(playerRejectedTransaction) {        
-        // emit an event to the server to let the other player know you rejected the transaction
-        socket.emit('join_contract_transaction_rejected', {
-          game_id: gameId,
-          address: accounts[0],
-          contract_address: contractAddress,
-          error: error
-        });
+      // emit an event to the server to let the other player know you rejected the transaction
+      socket.emit('contract_rejected', {
+        game_id: gameId,
+        address: accounts[0],
+        contract_address: contractAddress,
+        error: error
+      });
 
-        joinContractStatusP.innerText = "You decided to reject the transaction. Your opponent has been notified. Refresh to start a new game.";
-        joinContractStatusP.classList.remove('flashing');
-      } else {
-        joinContractStatusP.innerText = "You and your opponent have decided to reject the transaction. Refresh to start a new game.";
-        joinContractStatusP.classList.remove('flashing');
-      }
+      joinContractStatusP.innerText = "You decided not to join the contract. Refresh to start a new game.";
+      joinContractStatusP.classList.remove('flashing');
     }
   });
 
