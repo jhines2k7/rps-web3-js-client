@@ -299,7 +299,7 @@ function registerSocketIOEventListeners() {
 
     symbolChoiceDiv.insertBefore(oppChoseP, opponentChoiceStatus);
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
-    
+
     winLoseDrawP.innerText = 'You lose!';
     outcomeP.innerText = `YOU lost ${data.losses}`;
 
@@ -316,7 +316,7 @@ function registerSocketIOEventListeners() {
   socket.on('draw', (data) => {
     console.log(`It was a draw! ${JSON.stringify(data)}`);
     winLoseDrawP.innerText = 'It was a draw!';
-    
+
     let oppChoseP = document.createElement('p');
     oppChoseP.innerText = `OPP chose`;
     let oppChoiceP = document.createElement('p');
@@ -348,12 +348,16 @@ function registerSocketIOEventListeners() {
     console.error(`Your opponent decided not to join the contract: ${data.transaction_hash}`);
     let wagerRefundStatusP = document.getElementById('wager-refund-status');
     wagerRefundStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
-    
+
     joinContractStatusP.innerText = '';
     joinContractStatusP.classList.remove('flashing');
-    
+
     let gameSection = document.getElementById('game-section');
     gameSection.remove()
+  });
+
+  socket.on('heartbeat_response', (data) => {
+    console.log(`Heartbeat received: ${JSON.stringify(data)}`);
   });
 }
 
@@ -419,7 +423,7 @@ async function joinContract(stakeUSD, contractAddress) {
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
-    if(error.innerError.code === 4001) {
+    if (error.innerError.code === 4001) {
       console.error(error.innerError.message);
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
@@ -541,6 +545,11 @@ document.addEventListener('DOMContentLoaded', () => {
           address: accounts[0]
         }
       });
+
+    setInterval(function () {
+      socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+    }, 2500); // Send heartbeat every 2.5 seconds
+
     registerDOMEventListeners();
     registerSocketIOEventListeners();
   })();
