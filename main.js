@@ -436,6 +436,13 @@ async function joinContract(stakeUSD, contractAddress) {
       joinContractStatusP.innerText = "You decided not to join the contract. Refresh to start a new game.";
       joinContractStatusP.classList.remove('flashing');
     }
+
+    if (error.innerError.code === -32000) {
+      console.error(error.innerError.message);
+
+      joinContractStatusP.innerText = error.innerError.message;
+      joinContractStatusP.classList.remove('flashing');
+    }
   });
 
   txHash.on('transactionHash', function (hash) {
