@@ -64,10 +64,10 @@ function disableWagerButtons() {
 function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
-      const wagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
-      oppWagerInEtherP.innerText = `Your opponent wager in eth: ${wagerInEth}`;
+      const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
+      oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
+      socket.emit('accept_wager', { address: accounts[0], opp_wager_in_eth: oppWagerInEth, game_id: gameId });
     })();
-    socket.emit('accept_wager', { address: accounts[0], game_id: gameId });
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
