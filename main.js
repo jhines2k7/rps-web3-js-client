@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setInterval(function () {
       socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-    }, 2500); // Send heartbeat every 2.5 seconds
+    }, 7500); // Send heartbeat every 7.5 seconds
 
     registerDOMEventListeners();
     registerSocketIOEventListeners();
