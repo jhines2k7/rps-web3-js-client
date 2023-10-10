@@ -455,7 +455,7 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "There was an insufficient balance in your account to join the contract due to the way Metamask sometimes calculates ether. We've notified your opponent. Refresh to start a new game.";
+      joinContractStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This is sometimes due to the way Metamask calculates ether. We've notified your opponent. Refresh to start a new game.";
       joinContractStatusP.style.color = 'red';
       joinContractStatusP.classList.remove('flashing');
     }
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setInterval(function () {
       socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-    }, 7500); // Send heartbeat every 7.5 seconds
+    }, 10000); // Send heartbeat every 10 seconds
 
     registerDOMEventListeners();
     registerSocketIOEventListeners();
