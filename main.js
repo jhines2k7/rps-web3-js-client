@@ -472,6 +472,7 @@ async function joinContract(stakeUSD, contractAddress) {
       contract_address: contractAddress,
     });
   });
+  
 
   txHash.on('receipt', function (receipt) {
     joinContractStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
