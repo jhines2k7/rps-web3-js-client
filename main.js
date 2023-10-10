@@ -345,9 +345,17 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('player_stake_refunded', (data) => {
-    console.error(`Your opponent decided not to join the contract: ${data.transaction_hash}`);
+    const reason = data.reason;
+
     let wagerRefundStatusP = document.getElementById('wager-refund-status');
-    wagerRefundStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+
+    if (reason === 'insufficient_funds') {
+      console.error(`Opponent insufficient funds: ${data.transaction_hash}`);
+      wagerRefundStatusP.innerText = 'Your opponent didn\'t have the funds to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+    } else {
+      console.error(`Your opponent decided not to join the contract: ${data.transaction_hash}`);
+      wagerRefundStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+    }
 
     joinContractStatusP.innerText = '';
     joinContractStatusP.classList.remove('flashing');
@@ -440,7 +448,15 @@ async function joinContract(stakeUSD, contractAddress) {
     if (error.innerError.code === -32000) {
       console.error(error.innerError.message);
 
-      joinContractStatusP.innerText = error.innerError.message;
+      socket.emit('insufficient_funds', {
+        game_id: gameId,
+        address: accounts[0],
+        contract_address: contractAddress,
+        error: error
+      });
+
+      joinContractStatusP.innerText = "There was an insufficient balance in your account to join the contract due to the way Metamask sometimes calculates ether. We've notified your opponent. Refresh to start a new game.";
+      joinContractStatusP.style.color = 'red';
       joinContractStatusP.classList.remove('flashing');
     }
   });
