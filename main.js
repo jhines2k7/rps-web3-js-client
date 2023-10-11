@@ -353,6 +353,18 @@ function registerSocketIOEventListeners() {
     disableWagerButtons();
   });
 
+  socket.on('contract_creation_error', () => {
+    console.error('Error creating contract');
+    joinContractStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
+    joinContractStatusP.classList.add('red');
+  });
+
+  socket.on('decide_winner_error', () => {
+    console.error('Error deciding winner');
+    joinContractStatusP.innerText = 'There was an error deciding the winner. Refresh to start a new game.';
+    joinContractStatusP.classList.add('red');
+  });
+
   socket.on('player_stake_refunded', (data) => {
     const reason = data.reason;
 
