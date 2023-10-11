@@ -492,8 +492,8 @@ async function joinContract(stakeUSD, contractAddress) {
     console.log(`The confirmation number is ${confirmation}`);
     socket.emit('join_contract_confirmation', {
       game_id: gameId,
-      playerAddress: accounts[0], 
-      contractAddress: contractAddress, 
+      address: accounts[0],
+      contract_address: contractAddress,
       // confirmation: confirmation 
     });
     let gameSection = document.getElementById('game-section');
