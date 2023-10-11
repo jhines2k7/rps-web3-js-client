@@ -441,7 +441,7 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "You decided not to join the contract. Refresh to start a new game.";
+      joinContractStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. Refresh to start a new game.";
       joinContractStatusP.classList.remove('flashing');
     }
 
@@ -573,9 +573,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-    setInterval(function () {
-      socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-    }, 10000); // Send heartbeat every 10 seconds
+    // setInterval(function () {
+    //   socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+    // }, 5000); // Send heartbeat every 10 seconds
 
     registerDOMEventListeners();
     registerSocketIOEventListeners();
