@@ -136,10 +136,6 @@ button {
   font-size: smaller;
 }
 
-button:hover { /* this will change the color of your button when the mouse hovers it */
-  background-color: #BDBDBD; /* lighter shade of gray on hover */
-}
-
 #decline-wager:disabled, 
 #accept-wager:disabled, 
 #offer-wager:disabled, 
@@ -161,7 +157,7 @@ button:disabled:hover {
   background-color: green;
 }
 
-#accept-wager:hover {
+#accept-wager:hover, #offer-wager:hover {
   background-color: #4CAF50;
 }
 
