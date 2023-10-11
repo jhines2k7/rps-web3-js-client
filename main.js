@@ -465,7 +465,7 @@ async function joinContract(stakeUSD, contractAddress) {
     joinContractStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
-    socket.emit('join_contract_transaction_hash_received', {
+    socket.emit('join_contract_hash', {
       game_id: gameId,
       transaction_hash: hash,
       address: accounts[0],
@@ -478,9 +478,11 @@ async function joinContract(stakeUSD, contractAddress) {
     joinContractStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
     // Transaction receipt received
     console.log(`The receipt is ${receipt}`);
-    // socket.emit('join_contract_transaction_receipt_received', {
-    //   receipt: receipt
-    // });
+    socket.emit('join_contract_receipt', {
+      game_id: gameId,
+      address: accounts[0],
+      contract_address: contractAddress,
+    });
   });
 
   txHash.on('confirmation', function (confirmation, receipt) {
@@ -488,11 +490,12 @@ async function joinContract(stakeUSD, contractAddress) {
     joinContractStatusP.classList.remove('flashing');
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmation}`);
-    // socket.emit('join_contract_confirmation_received', { 
-    //   playerAddress: accounts[0], 
-    //   contractAddress: contractAddress, 
-    //   confirmation: confirmation 
-    // });
+    socket.emit('join_contract_confirmation', {
+      game_id: gameId,
+      playerAddress: accounts[0], 
+      contractAddress: contractAddress, 
+      // confirmation: confirmation 
+    });
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'contents';
   });
