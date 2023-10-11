@@ -556,28 +556,29 @@ document.addEventListener('DOMContentLoaded', () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    web3 = new Web3(window.ethereum);
-
     // Request access to user's MetaMask accounts
     await window.ethereum.request({ method: 'eth_requestAccounts' })
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
+
     console.log(`Your accounts: ${accounts}`);
-
-    socket = io('https://dev.generalsolutions43.com',
-      {
-        transports: ['websocket'],
-        query: {
-          address: accounts[0]
-        }
-      });
-
-    // setInterval(function () {
-    //   socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-    // }, 5000); // Send heartbeat every 10 seconds
-
-    registerDOMEventListeners();
-    registerSocketIOEventListeners();
   })();
+
+  socket = io('https://dev.generalsolutions43.com',
+    {
+      transports: ['websocket'],
+      query: {
+        address: accounts[0]
+      }
+    });
+
+  registerDOMEventListeners();
+  registerSocketIOEventListeners();
+
+  web3 = new Web3(window.ethereum);
+
+  setInterval(function () {
+    socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+  }, 5000); // Send heartbeat every 10 seconds
 });
