@@ -40,6 +40,8 @@ let joinContractStatusP;
 let accounts = [];
 let web3 = null;
 
+let heartbeatInterval;
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -61,7 +63,7 @@ function disableWagerButtons() {
   declineWagerBtn.disabled = true;
 }
 
-function registerDOMEventListeners() {
+function registerDOMEventListeners() {  
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
@@ -76,6 +78,8 @@ function registerDOMEventListeners() {
   });
 
   offerWagerBtn.addEventListener('click', () => {
+    clearInterval(heartbeatInterval);
+
     let wagerValue = wagerInput.value;
 
     console.log(`wagerValue: ${wagerValue}`);
@@ -86,10 +90,12 @@ function registerDOMEventListeners() {
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
     yourWagerStatusP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    
-    setInterval(function () {
-      socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-    }, 10000); // Send heartbeat every 10 seconds
+
+    if(!heartbeatInterval) {
+      heartbeatInterval = setInterval(function () {
+        socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+      }, 10000); // Send heartbeat every 10 seconds
+    }
   });
 
   declineWagerBtn.addEventListener('click', () => {
@@ -562,6 +568,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Request access to user's MetaMask accounts
     await window.ethereum.request({ method: 'eth_requestAccounts' })
 
+    web3 = new Web3(window.ethereum);
+
     // Use web3.js
     accounts = await web3.eth.getAccounts();
 
@@ -577,7 +585,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     registerDOMEventListeners();
     registerSocketIOEventListeners();
-
-    web3 = new Web3(window.ethereum);
   })();
 });
