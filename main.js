@@ -86,7 +86,10 @@ function registerDOMEventListeners() {
     offerWagerBtn.disabled = true;
     wagerInput.disabled = true;
     yourWagerStatusP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
-    // oppWagerStatusP.innerText = '';
+    
+    setInterval(function () {
+      socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+    }, 10000); // Send heartbeat every 10 seconds
   });
 
   declineWagerBtn.addEventListener('click', () => {
@@ -231,7 +234,7 @@ function registerSocketIOEventListeners() {
     yourWagerInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
-    wagerInput.disabled = false;
+    wagerInput.disabled = false;    
   });
 
   socket.on('opponent_disconnected', () => {
@@ -472,7 +475,7 @@ async function joinContract(stakeUSD, contractAddress) {
       contract_address: contractAddress,
     });
   });
-  
+
 
   txHash.on('receipt', function (receipt) {
     joinContractStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
@@ -563,22 +566,18 @@ document.addEventListener('DOMContentLoaded', () => {
     accounts = await web3.eth.getAccounts();
 
     console.log(`Your accounts: ${accounts}`);
+
+    socket = io('https://dev.generalsolutions43.com',
+      {
+        transports: ['websocket'],
+        query: {
+          address: accounts[0]
+        }
+      });
+
+    registerDOMEventListeners();
+    registerSocketIOEventListeners();
+
+    web3 = new Web3(window.ethereum);
   })();
-
-  socket = io('https://dev.generalsolutions43.com',
-    {
-      transports: ['websocket'],
-      query: {
-        address: accounts[0]
-      }
-    });
-
-  registerDOMEventListeners();
-  registerSocketIOEventListeners();
-
-  web3 = new Web3(window.ethereum);
-
-  setInterval(function () {
-    socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-  }, 5000); // Send heartbeat every 10 seconds
 });
