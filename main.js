@@ -462,7 +462,9 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. Refresh to start a new game.";
+      joinContractStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " + 
+      "Refresh to start a new game.";
+      
       joinContractStatusP.classList.remove('flashing');
     }
 
@@ -476,7 +478,10 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This is sometimes due to the way Metamask calculates ether. We've notified your opponent. Refresh to start a new game.";
+      joinContractStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " + 
+      " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " + 
+      "in a few minutes of refresh now to start a new game.";
+
       joinContractStatusP.style.color = 'red';
       joinContractStatusP.classList.remove('flashing');
     }
