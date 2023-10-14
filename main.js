@@ -592,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(`Your accounts: ${accounts}`);
 
-    socket = io('https://dev.generalsolutions43.com',
+    socket = io('https://test.generalsolutions43.com',
       {
         transports: ['websocket'],
         query: {
