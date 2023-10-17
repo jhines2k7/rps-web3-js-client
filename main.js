@@ -240,7 +240,8 @@ function registerSocketIOEventListeners() {
     yourWagerInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
-    wagerInput.disabled = false;    
+    wagerInput.disabled = false;
+    // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
   });
 
   socket.on('opponent_disconnected', () => {
@@ -282,6 +283,11 @@ function registerSocketIOEventListeners() {
       let winningsInEthP = document.createElement('p');
       winningsInEthP.innerText = `You won ${winningsInEth} eth`;
       resultsDiv.appendChild(winningsInEthP);
+
+      const etherscanLink = document.createElement("a");
+      etherscanLink.setAttribute("href", data.etherscan_link);
+      etherscanLink.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(etherscanLink);
     })();
 
     disableWagerButtons();
@@ -317,6 +323,11 @@ function registerSocketIOEventListeners() {
       let lossesInEthP = document.createElement('p');
       lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
       resultsDiv.appendChild(lossesInEthP);
+
+      const etherscanLink = document.createElement("a");
+      etherscanLink.setAttribute("href", data.etherscan_link);
+      etherscanLink.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(etherscanLink);
     })();
 
     disableWagerButtons();
@@ -350,6 +361,11 @@ function registerSocketIOEventListeners() {
     outcomeP.classList.add('draw');
     outcomeP.innerText = "You'll get back your wager minus a small arbiter fee and gas fees.";
 
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+    resultsDiv.appendChild(etherscanLink);
+
     disableWagerButtons();
   });
 
@@ -380,6 +396,12 @@ function registerSocketIOEventListeners() {
 
     joinContractStatusP.innerText = '';
     joinContractStatusP.classList.remove('flashing');
+
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+
+    resultsDiv.appendChild(etherscanLink);
 
     let gameSection = document.getElementById('game-section');
     gameSection.remove()
@@ -592,7 +614,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(`Your accounts: ${accounts}`);
 
-    socket = io('https://test.generalsolutions43.com',
+    if(typeof accounts[0] !== 'undefined') {
+      socket = io('https://test.generalsolutions43.com',
       {
         transports: ['websocket'],
         query: {
@@ -600,7 +623,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-    registerDOMEventListeners();
-    registerSocketIOEventListeners();
+      registerDOMEventListeners();
+      registerSocketIOEventListeners();
+    }
   })();
 });
