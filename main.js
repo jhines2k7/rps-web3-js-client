@@ -284,10 +284,10 @@ function registerSocketIOEventListeners() {
       winningsInEthP.innerText = `You won ${winningsInEth} eth`;
       resultsDiv.appendChild(winningsInEthP);
 
-      const etherscanLinkA = document.createElement("a");
-      etherscanLinkA.setAttribute("href", data.etherscan_link);
-      etherscanLinkA.textContent = "View on Block Explorer";
-      resultsDiv.appendChild(etherscanLinkA);
+      const etherscanLink = document.createElement("a");
+      etherscanLink.setAttribute("href", data.etherscan_link);
+      etherscanLink.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(etherscanLink);
     })();
 
     disableWagerButtons();
@@ -324,10 +324,10 @@ function registerSocketIOEventListeners() {
       lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
       resultsDiv.appendChild(lossesInEthP);
 
-      const etherscanLinkA = document.createElement("a");
-      etherscanLinkA.setAttribute("href", data.etherscan_link);
-      etherscanLinkA.textContent = "View on Block Explorer";
-      resultsDiv.appendChild(etherscanLinkA);
+      const etherscanLink = document.createElement("a");
+      etherscanLink.setAttribute("href", data.etherscan_link);
+      etherscanLink.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(etherscanLink);
     })();
 
     disableWagerButtons();
@@ -361,10 +361,10 @@ function registerSocketIOEventListeners() {
     outcomeP.classList.add('draw');
     outcomeP.innerText = "You'll get back your wager minus a small arbiter fee and gas fees.";
 
-    const etherscanLinkA = document.createElement("a");
-    etherscanLinkA.setAttribute("href", data.etherscan_link);
-    etherscanLinkA.textContent = "View on Block Explorer";
-    resultsDiv.appendChild(etherscanLinkA);
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+    resultsDiv.appendChild(etherscanLink);
 
     disableWagerButtons();
   });
@@ -396,6 +396,12 @@ function registerSocketIOEventListeners() {
 
     joinContractStatusP.innerText = '';
     joinContractStatusP.classList.remove('flashing');
+
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+
+    resultsDiv.appendChild(etherscanLink);
 
     let gameSection = document.getElementById('game-section');
     gameSection.remove()
