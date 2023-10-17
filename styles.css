@@ -292,7 +292,9 @@ button:disabled:hover {
 #results a {
   font-family: 'RedHatDisplay Variable';
   text-decoration: none;
-  color: goldenrod
+  color: goldenrod;
+  font-weight: bold;
+  
 }
 
 #your-wager, #opponent-wager,
