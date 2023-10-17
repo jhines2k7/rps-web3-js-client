@@ -296,6 +296,7 @@ button:disabled:hover {
   font-weight: bold;
   display: block;
   margin: 5px 0 auto;
+  text-align: center;
 }
 
 #your-wager, #opponent-wager,
