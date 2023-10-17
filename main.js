@@ -282,6 +282,11 @@ function registerSocketIOEventListeners() {
       let winningsInEthP = document.createElement('p');
       winningsInEthP.innerText = `You won ${winningsInEth} eth`;
       resultsDiv.appendChild(winningsInEthP);
+
+      const etherscanLinkA = document.createElement("a");
+      etherscanLinkA.setAttribute("href", data.etherscan_link);
+      etherscanLinkA.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(anchor);
     })();
 
     disableWagerButtons();
@@ -317,6 +322,11 @@ function registerSocketIOEventListeners() {
       let lossesInEthP = document.createElement('p');
       lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
       resultsDiv.appendChild(lossesInEthP);
+
+      const etherscanLinkA = document.createElement("a");
+      etherscanLinkA.setAttribute("href", data.etherscan_link);
+      etherscanLinkA.textContent = "View on Block Explorer";
+      resultsDiv.appendChild(anchor);
     })();
 
     disableWagerButtons();
@@ -349,6 +359,11 @@ function registerSocketIOEventListeners() {
     winLoseDrawP.innerText = 'DRAW!';
     outcomeP.classList.add('draw');
     outcomeP.innerText = "You'll get back your wager minus a small arbiter fee and gas fees.";
+
+    const etherscanLinkA = document.createElement("a");
+    etherscanLinkA.setAttribute("href", data.etherscan_link);
+    etherscanLinkA.textContent = "View on Block Explorer";
+    resultsDiv.appendChild(anchor);
 
     disableWagerButtons();
   });
