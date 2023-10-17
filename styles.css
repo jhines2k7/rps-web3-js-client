@@ -290,9 +290,9 @@ button:disabled:hover {
 }
 
 #results a {
-  font-family: 'Peace Sans', sans-serif;
+  font-family: 'RedHatDisplay Variable';
   text-decoration: none;
-  color: gold
+  color: goldenrod
 }
 
 #your-wager, #opponent-wager,
