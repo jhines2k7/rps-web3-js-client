@@ -286,7 +286,7 @@ function registerSocketIOEventListeners() {
       const etherscanLinkA = document.createElement("a");
       etherscanLinkA.setAttribute("href", data.etherscan_link);
       etherscanLinkA.textContent = "View on Block Explorer";
-      resultsDiv.appendChild(anchor);
+      resultsDiv.appendChild(etherscanLinkA);
     })();
 
     disableWagerButtons();
@@ -326,7 +326,7 @@ function registerSocketIOEventListeners() {
       const etherscanLinkA = document.createElement("a");
       etherscanLinkA.setAttribute("href", data.etherscan_link);
       etherscanLinkA.textContent = "View on Block Explorer";
-      resultsDiv.appendChild(anchor);
+      resultsDiv.appendChild(etherscanLinkA);
     })();
 
     disableWagerButtons();
@@ -363,7 +363,7 @@ function registerSocketIOEventListeners() {
     const etherscanLinkA = document.createElement("a");
     etherscanLinkA.setAttribute("href", data.etherscan_link);
     etherscanLinkA.textContent = "View on Block Explorer";
-    resultsDiv.appendChild(anchor);
+    resultsDiv.appendChild(etherscanLinkA);
 
     disableWagerButtons();
   });
