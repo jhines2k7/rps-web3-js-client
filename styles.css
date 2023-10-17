@@ -295,7 +295,7 @@ button:disabled:hover {
   color: goldenrod;
   font-weight: bold;
   display: block;
-  margin: 0 auto;
+  margin: 5px 0 auto;
 }
 
 #your-wager, #opponent-wager,
