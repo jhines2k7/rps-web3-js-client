@@ -240,7 +240,8 @@ function registerSocketIOEventListeners() {
     yourWagerInEtherP.innerText = 'in eth: 0.00000';
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
-    wagerInput.disabled = false;    
+    wagerInput.disabled = false;
+    // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
   });
 
   socket.on('opponent_disconnected', () => {
@@ -607,7 +608,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(`Your accounts: ${accounts}`);
 
-    socket = io('https://dev.generalsolutions43.com',
+    if(typeof accounts[0] !== 'undefined') {
+      socket = io('https://dev.generalsolutions43.com',
       {
         transports: ['websocket'],
         query: {
@@ -615,7 +617,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-    registerDOMEventListeners();
-    registerSocketIOEventListeners();
+      registerDOMEventListeners();
+      registerSocketIOEventListeners();
+    }
   })();
 });
