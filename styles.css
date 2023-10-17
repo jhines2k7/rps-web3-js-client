@@ -290,8 +290,9 @@ button:disabled:hover {
 }
 
 #results a {
+  font-family: 'Peace Sans', sans-serif;
   text-decoration: none;
-  color: black;
+  color: gold
 }
 
 #your-wager, #opponent-wager,
