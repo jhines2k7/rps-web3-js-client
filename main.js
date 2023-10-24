@@ -109,7 +109,7 @@ function registerDOMEventListeners() {
   });
 
   wagerInput.addEventListener('input', function (e) {
-    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+    var ASCIICode = (e.which) ? e.which : e.keyCode
     if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
         return false;
 
