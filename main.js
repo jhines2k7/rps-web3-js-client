@@ -63,7 +63,7 @@ function disableWagerButtons() {
   declineWagerBtn.disabled = true;
 }
 
-function registerDOMEventListeners() {  
+function registerDOMEventListeners() {
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
@@ -91,7 +91,7 @@ function registerDOMEventListeners() {
     wagerInput.disabled = true;
     yourWagerStatusP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
 
-    if(!heartbeatInterval) {
+    if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
         socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
       }, 10000); // Send heartbeat every 10 seconds
@@ -108,7 +108,13 @@ function registerDOMEventListeners() {
     oppWagerStatusP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
   });
 
-  wagerInput.addEventListener('input', function () {
+  wagerInput.addEventListener('input', function (e) {
+    if (!((e.keyCode > 95 && e.keyCode < 106)
+      || (e.keyCode > 47 && e.keyCode < 58)
+      || e.keyCode == 8)) {
+      e.preventDefault();
+    }
+
     if (this.value === '' || this.value === '0' || this.value === '$') {
       yourWagerInEtherP.innerText = 'in eth: 0.00000';
       offerWagerBtn.disabled = true;
@@ -237,13 +243,14 @@ function registerSocketIOEventListeners() {
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
     // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
+    // will attempt to reload the page instead
     payStakeStatusP.innerText = '';
     let wagerRefundStatusP = document.getElementById('wager-refund-status');
     wagerRefundStatusP.innerText = '';
 
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'none';
-    
+
     winLoseDrawP.innerText = '';
     outcomeP.innerText = '';
 
@@ -496,9 +503,9 @@ async function payStake(stakeUSD, contractAddress) {
         error: error
       });
 
-      payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " + 
-      "Refresh to start a new game.";
-      
+      payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
+        "Refresh to start a new game.";
+
       payStakeStatusP.classList.remove('flashing');
     }
 
@@ -512,9 +519,9 @@ async function payStake(stakeUSD, contractAddress) {
         error: error
       });
 
-      payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " + 
-      " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " + 
-      "in a few minutes of refresh now to start a new game.";
+      payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " +
+        " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
+        "in a few minutes of refresh now to start a new game.";
 
       payStakeStatusP.style.color = 'red';
       payStakeStatusP.classList.remove('flashing');
@@ -625,14 +632,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(`Your accounts: ${accounts}`);
 
-    if(typeof accounts[0] !== 'undefined') {
+    if (typeof accounts[0] !== 'undefined') {
       socket = io('https://test.generalsolutions43.com',
-      {
-        transports: ['websocket'],
-        query: {
-          address: accounts[0]
-        }
-      });
+        {
+          transports: ['websocket'],
+          query: {
+            address: accounts[0]
+          }
+        });
 
       registerDOMEventListeners();
       registerSocketIOEventListeners();
