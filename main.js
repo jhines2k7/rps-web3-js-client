@@ -237,6 +237,13 @@ function registerSocketIOEventListeners() {
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
     // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
+    payStakeStatusP.innerText = '';
+    wagerRefundStatusP.innerText = '';
+
+    let gameSection = document.getElementById('game-section');
+    gameSection.style.display = 'none';
+    
+    resultsDiv.style.display = 'none';
   });
 
   socket.on('opponent_disconnected', () => {
