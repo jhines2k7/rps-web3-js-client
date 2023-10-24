@@ -73,7 +73,7 @@ body {
   margin: 15px 0;
 }
 
-input[type="text"] {
+input[type="number"] {
   background-color: black;
   color: white;
   border: none; /* Remove default borders */
