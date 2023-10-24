@@ -42,6 +42,8 @@ let web3 = null;
 
 let heartbeatInterval;
 
+let disconnected = false;
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -229,15 +231,13 @@ function registerSocketIOEventListeners() {
   socket.on('connect_error', (error) => {
     console.log(`Connection error: ${error}`);
 
-    let disconnected = false;
+    gameIdP.innerText = '';
 
     if (!disconnected) {
       let headerH3 = document.querySelector('#header h3');
       headerH3.innerText = 'Your connection to the server was lost. Refresh to start a new game.';
       headerH3.style.color = 'red';
       headerH3.classList.add('flashing');
-
-      gameIdP.innerText = '';
 
       var gameDiv = document.getElementById('game');
 
