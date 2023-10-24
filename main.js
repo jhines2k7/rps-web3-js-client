@@ -246,7 +246,7 @@ function registerSocketIOEventListeners() {
       }
 
       let rpsDiv = document.getElementById('rps');
-      rpsDiv.style.width = '100%';
+      rpsDiv.style.width = 'max-content';
 
       disconnected = true;
     }
