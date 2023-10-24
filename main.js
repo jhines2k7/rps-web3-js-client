@@ -244,7 +244,8 @@ function registerSocketIOEventListeners() {
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'none';
     
-    resultsDiv.style.display = 'none';
+    winLoseDrawP.innerText = '';
+    outcomeP.innerText = '';
   });
 
   socket.on('opponent_disconnected', () => {
