@@ -109,11 +109,9 @@ function registerDOMEventListeners() {
   });
 
   wagerInput.addEventListener('input', function (e) {
-    if (!((e.keyCode > 95 && e.keyCode < 106)
-      || (e.keyCode > 47 && e.keyCode < 58)
-      || e.keyCode == 8)) {
-      e.preventDefault();
-    }
+    var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+    if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+        return false;
 
     if (this.value === '' || this.value === '0' || this.value === '$') {
       yourWagerInEtherP.innerText = 'in eth: 0.00000';
