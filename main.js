@@ -256,11 +256,11 @@ function registerSocketIOEventListeners() {
 
     oppWagerInEtherP.innerText = '';
 
-    let etherscanLink = document.querySelector('#results a');
-    etherscanLink.remove();
+    // let etherscanLink = document.querySelector('#results a');
+    // etherscanLink.remove();
 
-    let lastPResults = resultsDiv.querySelector('p:last-of-type');
-    lastPResults.remove();
+    // let lastPResults = resultsDiv.querySelector('p:last-of-type');
+    // lastPResults.remove();
   });
 
   socket.on('opponent_disconnected', () => {
