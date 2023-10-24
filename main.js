@@ -35,7 +35,7 @@ let offerWagerBtn;
 let oppWagerInDollars;
 let oppId;
 let wagerInputPlaceholder;
-let joinContractStatusP;
+let payStakeStatusP;
 
 let accounts = [];
 let web3 = null;
@@ -196,18 +196,13 @@ function registerSocketIOEventListeners() {
     opponentJoinP.innerText = '';
   });
 
-  socket.on('generating_contract', (data) => {
-    joinContractStatusP.innerText = 'Generating contract...';
-    console.log("Generating contract...");
-  });
-
-  socket.on('contract_created', (data) => {
+  socket.on('both_wagers_accepted', (data) => {
     const contractAddress = data.contract_address;
     const yourWager = data.your_wager;
     const opponentWager = data.opponent_wager;
 
-    console.log("Contract created...");
-    joinContractStatusP.innerText = 'Contract created...';
+    console.log("Paying stakes...");
+    payStakeStatusP.innerText = 'Paying stakes...';
     yourWagerP.innerText = `YOU wagered ${yourWager}`;
     opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
     enableChoiceButtons();
@@ -215,9 +210,9 @@ function registerSocketIOEventListeners() {
 
     // join the created RPS contract
     const stakeUSD = data.your_wager.replace(/^\$/, '');
-    console.log(`Wager accepted by both parties. Joining RPSContract with address: ${contractAddress}`)
+    console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
     console.log(`Stake in USD: ${stakeUSD}`);
-    joinContract(parseFloat(stakeUSD), contractAddress);
+    payStake(parseFloat(stakeUSD), contractAddress);
   });
 
   socket.on('wager_accepted', (data) => {
@@ -371,14 +366,14 @@ function registerSocketIOEventListeners() {
 
   socket.on('contract_creation_error', () => {
     console.error('Error creating contract');
-    joinContractStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
-    joinContractStatusP.style.color = 'red';
+    payStakeStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
+    payStakeStatusP.style.color = 'red';
   });
 
-  socket.on('decide_winner_error', () => {
-    console.error('Error deciding winner');
-    joinContractStatusP.innerText = 'There was an error deciding the winner. Refresh to start a new game.';
-    joinContractStatusP.style.color = 'red';
+  socket.on('pay_winner_error', () => {
+    console.error('Error paying winner');
+    payStakeStatusP.innerText = 'There was an error paying the winner. Refresh to start a new game.';
+    payStakeStatusP.style.color = 'red';
   });
 
   socket.on('player_stake_refunded', (data) => {
@@ -394,8 +389,8 @@ function registerSocketIOEventListeners() {
       wagerRefundStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     }
 
-    joinContractStatusP.innerText = '';
-    joinContractStatusP.classList.remove('flashing');
+    payStakeStatusP.innerText = '';
+    payStakeStatusP.classList.remove('flashing');
 
     const etherscanLink = document.createElement("a");
     etherscanLink.setAttribute("href", data.etherscan_link);
@@ -438,7 +433,7 @@ async function loadContractABI() {
     });
 }
 
-async function joinContract(stakeUSD, contractAddress) {
+async function payStake(stakeUSD, contractAddress) {
   // Fetch the RPSContract
   const rpsContractABI = await loadContractABI();
   const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
@@ -451,14 +446,14 @@ async function joinContract(stakeUSD, contractAddress) {
 
   // Increase the gas price by 2%
   const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
-  console.log(`Calling joinContract(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
+  console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
 
   let stakeInEther = await convertUsdToEther(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${stakeInWei}`);
 
-  const encodedData = RPSContract.methods.joinContract(gameId).encodeABI();
+  const encodedData = RPSContract.methods.payStake().encodeABI();
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
     'to': web3.utils.toChecksumAddress(contractAddress),
@@ -469,7 +464,7 @@ async function joinContract(stakeUSD, contractAddress) {
     'data': encodedData,
   };
 
-  joinContractStatusP.innerText = 'Joining players to contract...';
+  payStakeStatusP.innerText = 'Submitting transaction...';
 
   const txHash = web3.eth.sendTransaction(transaction);
 
@@ -484,10 +479,10 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " + 
+      payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " + 
       "Refresh to start a new game.";
       
-      joinContractStatusP.classList.remove('flashing');
+      payStakeStatusP.classList.remove('flashing');
     }
 
     if (error.innerError.code === -32000) {
@@ -500,20 +495,20 @@ async function joinContract(stakeUSD, contractAddress) {
         error: error
       });
 
-      joinContractStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " + 
+      payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " + 
       " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " + 
       "in a few minutes of refresh now to start a new game.";
 
-      joinContractStatusP.style.color = 'red';
-      joinContractStatusP.classList.remove('flashing');
+      payStakeStatusP.style.color = 'red';
+      payStakeStatusP.classList.remove('flashing');
     }
   });
 
   txHash.on('transactionHash', function (hash) {
-    joinContractStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
+    payStakeStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
     // Transaction hash received
     console.log(`The transaction hash is ${hash}`);
-    socket.emit('join_contract_hash', {
+    socket.emit('pay_stake_hash', {
       game_id: gameId,
       transaction_hash: hash,
       address: accounts[0],
@@ -521,12 +516,11 @@ async function joinContract(stakeUSD, contractAddress) {
     });
   });
 
-
   txHash.on('receipt', function (receipt) {
-    joinContractStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
+    payStakeStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
     // Transaction receipt received
     console.log(`The receipt is ${receipt}`);
-    socket.emit('join_contract_receipt', {
+    socket.emit('pay_stake_receipt', {
       game_id: gameId,
       address: accounts[0],
       contract_address: contractAddress,
@@ -534,11 +528,11 @@ async function joinContract(stakeUSD, contractAddress) {
   });
 
   txHash.on('confirmation', function (confirmation, receipt) {
-    joinContractStatusP.innerText = 'Transaction confirmed.';
-    joinContractStatusP.classList.remove('flashing');
+    payStakeStatusP.innerText = 'Transaction confirmed.';
+    payStakeStatusP.classList.remove('flashing');
     // Transaction confirmed
     console.log(`The confirmation number is ${confirmation}`);
-    socket.emit('join_contract_confirmation', {
+    socket.emit('pay_stake_confirmation', {
       game_id: gameId,
       address: accounts[0],
       contract_address: contractAddress,
@@ -596,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
   opponentWagerP = document.getElementById('opponent-wager');
   yourWagerStatusP = document.getElementById('your-wager-status');
   oppWagerStatusP = document.getElementById('opp-wager-status');
-  joinContractStatusP = document.getElementById('join-contract-status');
+  payStakeStatusP = document.getElementById('pay-stake-status');
 
   (async () => {
     while (!window.ethereum) {
