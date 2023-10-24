@@ -245,6 +245,9 @@ function registerSocketIOEventListeners() {
         gameDiv.removeChild(gameDiv.firstChild);
       }
 
+      let rpsDiv = document.getElementById('rps');
+      rpsDiv.style.width = '100%';
+
       disconnected = true;
     }
   });
