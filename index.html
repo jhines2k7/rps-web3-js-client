@@ -7,6 +7,7 @@
   <title>Rock Paper Scissors</title>
   <link rel="stylesheet" href="reset.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="toast.css">
   <script>
     (function () {
       var src = "//cdn.jsdelivr.net/npm/eruda";
@@ -27,11 +28,25 @@
       <h3>Rock Paper Scissors</h1>
         <p id="game-id"></p>
     </div>
+    <div class="toast">
+      <div class="toast-content">
+        <i class="fas fa-solid fa-check check"></i>
+
+        <div class="message">
+          <span class="text text-1">Success</span>
+          <span class="text text-2">Your changes has been saved</span>
+        </div>
+      </div>
+      <i class="fa-solid fa-xmark close"></i>
+
+      <div class="progress"></div>
+    </div>
     <div id="game">
       <div class="column">
         <p id="you">YOU</p>
         <div id="place-wager">
-          <input type="text" id="wager-input" name="wager-input" placeholder="Your wager in $USD" disabled autocomplete="off">
+          <input type="text" id="wager-input" name="wager-input" placeholder="Your wager in $USD" disabled
+            autocomplete="off">
           <button type="button" disabled id="offer-wager">Offer Wager</button>
           <p id="your-wager-in-ether"></p>
         </div>

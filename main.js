@@ -42,6 +42,23 @@ let web3 = null;
 
 let heartbeatInterval;
 
+const toast = document.querySelector(".toast")
+closeIcon = document.querySelector(".close"),
+    progress = document.querySelector(".progress");
+
+let timer1, timer2;
+
+closeIcon.addEventListener("click", () => {
+    toast.classList.remove("active");
+
+    setTimeout(() => {
+        progress.classList.remove("active");
+    }, 300);
+
+    clearTimeout(timer1);
+    clearTimeout(timer2);
+});
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -228,7 +245,29 @@ function registerSocketIOEventListeners() {
 
   socket.on('connect_error', (error) => {
     console.log(`Connection error: ${error}`);
-    location.reload();
+
+    let disconnected = false;
+
+    if (!disconnected) {
+      var gameDiv = document.getElementById('game');
+
+      while (gameDiv.firstChild) {
+        gameDiv.removeChild(gameDiv.firstChild);
+      }
+
+      toast.classList.add("active");
+      progress.classList.add("active");
+  
+      timer1 = setTimeout(() => {
+          toast.classList.remove("active");
+      }, 5000); //1s = 1000 milliseconds
+  
+      timer2 = setTimeout(() => {
+          progress.classList.remove("active");
+      }, 5300);
+
+      disconnected = true;
+    }
   });
 
   socket.on('game_started', (data) => {
