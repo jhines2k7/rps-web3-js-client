@@ -227,7 +227,7 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('connect_error', (error) => {
-    console.log(error);
+    console.log(`Connection error: ${error}`);
   });
 
   socket.on('game_started', (data) => {
