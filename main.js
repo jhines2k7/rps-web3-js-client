@@ -246,6 +246,14 @@ function registerSocketIOEventListeners() {
     
     winLoseDrawP.innerText = '';
     outcomeP.innerText = '';
+
+    oppWagerInEtherP.innerText = '';
+
+    let etherscanLink = document.querySelector('#results a');
+    etherscanLink.remove();
+
+    let lastPResults = resultsDiv.querySelector('p:last-of-type');
+    lastPResults.remove();
   });
 
   socket.on('opponent_disconnected', () => {
