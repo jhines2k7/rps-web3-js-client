@@ -228,6 +228,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('connect_error', (error) => {
     console.log(`Connection error: ${error}`);
+    location.reload();
   });
 
   socket.on('game_started', (data) => {
@@ -240,25 +241,6 @@ function registerSocketIOEventListeners() {
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
-    // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
-    // will attempt to reload the page instead
-    payStakeStatusP.innerText = '';
-    let wagerRefundStatusP = document.getElementById('wager-refund-status');
-    wagerRefundStatusP.innerText = '';
-
-    let gameSection = document.getElementById('game-section');
-    gameSection.style.display = 'none';
-
-    winLoseDrawP.innerText = '';
-    outcomeP.innerText = '';
-
-    oppWagerInEtherP.innerText = '';
-
-    // let etherscanLink = document.querySelector('#results a');
-    // etherscanLink.remove();
-
-    // let lastPResults = resultsDiv.querySelector('p:last-of-type');
-    // lastPResults.remove();
   });
 
   socket.on('opponent_disconnected', () => {
