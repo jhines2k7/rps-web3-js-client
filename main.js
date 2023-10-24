@@ -238,6 +238,7 @@ function registerSocketIOEventListeners() {
     wagerInput.disabled = false;
     // will need to get rid of #your-wager, #opponent-wager, #symbol-choice, #results
     payStakeStatusP.innerText = '';
+    let wagerRefundStatusP = document.getElementById('wager-refund-status');
     wagerRefundStatusP.innerText = '';
 
     let gameSection = document.getElementById('game-section');
