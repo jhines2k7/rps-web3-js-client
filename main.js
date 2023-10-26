@@ -77,6 +77,7 @@ function registerDOMEventListeners() {
 
     opponentJoinP.innerText = '';
     oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
+    oppWagerStatusP.classList.remove('flashing');
   });
 
   offerWagerBtn.addEventListener('click', () => {
