@@ -256,7 +256,9 @@ function registerSocketIOEventListeners() {
 
   socket.on('game_started', (data) => {
     gameId = data.game_id;
-    gameIdP.innerText = `Game ID: ${gameId}`;
+    if(!disconnected) {
+      gameIdP.innerText = `Game ID: ${gameId}`;
+    }
     opponentJoinP.innerText = 'You\'ve got an opponent! Try sending them a wager...';
     oppWagerStatusP.innerText = 'Waiting for your opponent to send you a wager...';
     yourWagerP.innerText = '';
