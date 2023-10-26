@@ -414,6 +414,9 @@ function registerSocketIOEventListeners() {
     if (reason === 'insufficient_funds') {
       console.error(`Opponent insufficient funds: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'Your opponent didn\'t have the funds to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+    } else if(reason == 'rpc_error') {
+      console.error(`Opponent JSON-RPC error: ${data.transaction_hash}`);
+      wagerRefundStatusP.innerText = 'An error occurred when your opponent payed their wager. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     } else {
       console.error(`Your opponent decided not to join the contract: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'Your opponent decided not to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
@@ -528,6 +531,22 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " +
         " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
         "in a few minutes of refresh now to start a new game.";
+
+      payStakeStatusP.style.color = 'red';
+      payStakeStatusP.classList.remove('flashing');
+    }
+
+    if (error.innerError.code === -32603) {
+      console.error(error.innerError.message);
+
+      socket.emit('rpc_error', {
+        game_id: gameId,
+        address: accounts[0],
+        contract_address: contractAddress,
+        error: error
+      });
+
+      payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
 
       payStakeStatusP.style.color = 'red';
       payStakeStatusP.classList.remove('flashing');
