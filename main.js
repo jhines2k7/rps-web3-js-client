@@ -112,10 +112,6 @@ function registerDOMEventListeners() {
   });
 
   wagerInput.addEventListener('input', function (e) {
-    // var ASCIICode = (e.which) ? e.which : e.keyCode
-    // if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-    //     return false;
-
     if (this.value === '' || this.value === '0' || this.value === '$') {
       yourWagerInEtherP.innerText = 'in eth: 0.00000';
       offerWagerBtn.disabled = true;
@@ -481,7 +477,7 @@ async function payStake(stakeUSD, contractAddress) {
   const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
   console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
 
-  let stakeInEther = await convertUsdToEther(stakeUSD);
+  let stakeInEther = await dollarsToEthereum(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${stakeInWei}`);
@@ -492,8 +488,8 @@ async function payStake(stakeUSD, contractAddress) {
     'to': web3.utils.toChecksumAddress(contractAddress),
     'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
-    // 'gas': 500000,  // You may need to change the gas limit
-    // 'gasPrice': gasPricePlusTwoPercent,
+    'maxFeePerGas': web3.eth.getGasPrice(),
+    'maxPriorityFeePerGas': web3.eth.getGasPrice(),
     'data': encodedData,
   };
 
@@ -595,22 +591,6 @@ async function payStake(stakeUSD, contractAddress) {
     // Transaction error occurred
     console.error(`An error occurred: ${error}`);
   });
-}
-
-async function getEtherPriceInUSD() {
-  try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await response.json();
-    return data.ethereum.usd;
-  } catch (err) {
-    console.error(`An error occurred: ${err}`);
-  }
-}
-
-async function convertUsdToEther(amountInUsd) {
-  const priceOfEtherInUsd = await getEtherPriceInUSD();
-  const amountInEther = amountInUsd / priceOfEtherInUsd;
-  return amountInEther;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
