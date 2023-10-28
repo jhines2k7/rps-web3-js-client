@@ -254,7 +254,8 @@ function registerSocketIOEventListeners() {
       }
 
       let rpsDiv = document.getElementById('rps');
-      rpsDiv.style.width = 'max-content';
+      rpsDiv.style.width = '90vw';
+      rpsDiv.style.maxWidth = '364px';
 
       disconnected = true;
     }
