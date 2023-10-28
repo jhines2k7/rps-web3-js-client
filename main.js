@@ -449,7 +449,7 @@ async function dollarsToEthereum(dollars) {
 }
 
 async function loadContractABI() {
-  return fetch("https://dev.generalsolutions43.com/rps-contract-abi")
+  return fetch("https://test.generalsolutions43.com/rps-contract-abi")
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`Your accounts: ${accounts}`);
 
     if (typeof accounts[0] !== 'undefined') {
-      socket = io('https://dev.generalsolutions43.com',
+      socket = io('https://test.generalsolutions43.com',
         {
           transports: ['websocket'],
           query: {
