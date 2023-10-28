@@ -76,7 +76,7 @@ function registerDOMEventListeners() {
     declineWagerBtn.disabled = true;
 
     opponentJoinP.innerText = '';
-    yourWagerStatusP.innerText = 'Try sending your opponent a wager...';
+    yourWagerStatusP.innerText = 'Try to offer a wager to your opponent...';
     yourWagerStatusP.classList.add('flashing');
     yourWagerStatusP.style.color = 'green';
     oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
