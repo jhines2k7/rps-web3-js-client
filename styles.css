@@ -289,6 +289,16 @@ button:disabled:hover {
   text-align: center;
 }
 
+#results a {
+  font-family: 'RedHatDisplay Variable';
+  text-decoration: none;
+  color: goldenrod;
+  font-weight: bold;
+  display: block;
+  margin: 5px 0 auto;
+  text-align: center;
+}
+
 #your-wager, #opponent-wager,
 #your-choice, #opp-choice {
   font-family: 'Peace Sans', sans-serif;
