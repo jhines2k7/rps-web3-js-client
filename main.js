@@ -657,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
       registerDOMEventListeners();
+      
       registerSocketIOEventListeners();
     }
   })();
