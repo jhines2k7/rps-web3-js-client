@@ -106,7 +106,7 @@ function registerDOMEventListeners() {
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
         socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-      }, 10000); // Send heartbeat every 10 seconds
+      }, 20000); // Send heartbeat every 20 seconds
     }
   });
 
@@ -307,10 +307,10 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You win!';
-    outcomeP.innerText = `YOU won ${data.winnings}`;
+    outcomeP.innerText = `YOU won $${data.winnings}`;
 
     (async () => {
-      const winningsInEth = await dollarsToEthereum(data.winnings.replace(/^\$/, ''));
+      const winningsInEth = await dollarsToEthereum(data.winnings);
       let winningsInEthP = document.createElement('p');
       winningsInEthP.innerText = `You won ${winningsInEth} eth`;
       resultsDiv.appendChild(winningsInEthP);
@@ -412,6 +412,23 @@ function registerSocketIOEventListeners() {
     payStakeStatusP.style.color = 'red';
   });
 
+  socket.on('uncaught_exception_occured', (data) => {
+    let wagerRefundStatusP = document.getElementById('wager-refund-status');
+    wagerRefundStatusP.innerText = 'An error occured. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+
+    payStakeStatusP.innerText = '';
+    payStakeStatusP.classList.remove('flashing');
+
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+
+    resultsDiv.appendChild(etherscanLink);
+
+    let gameSection = document.getElementById('game-section');
+    gameSection.remove()
+  });
+
   socket.on('player_stake_refunded', (data) => {
     const reason = data.reason;
 
@@ -508,7 +525,17 @@ async function payStake(stakeUSD, contractAddress) {
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
-    if (error.innerError.code === 4001) {
+    console.error(JSON.stringify(error));
+
+    let adaptorError = {}
+
+    if(error.innerError) {
+      adaptorError['error'] = error.innerError
+    } else {
+      adaptorError['error'] = error.error      
+    }
+
+    if (adaptorError.error.code === 4001) {
       console.error(error.innerError.message);
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
@@ -524,7 +551,7 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (error.innerError.code === -32000) {
+    if (adaptorError.error.code === -32000) {
       console.error(error.innerError.message);
 
       socket.emit('insufficient_funds', {
@@ -536,13 +563,13 @@ async function payStake(stakeUSD, contractAddress) {
 
       payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " +
         " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
-        "in a few minutes of refresh now to start a new game.";
+        "in a few minutes or refresh now to start a new game.";
 
       payStakeStatusP.style.color = 'red';
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (error.innerError.code === -32603) {
+    if (adaptorError.error.code === -32603) {
       console.error(error.innerError.message);
 
       socket.emit('rpc_error', {
@@ -657,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
       registerDOMEventListeners();
+      
       registerSocketIOEventListeners();
     }
   })();
