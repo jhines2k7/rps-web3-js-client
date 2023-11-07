@@ -307,10 +307,10 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You win!';
-    outcomeP.innerText = `YOU won ${data.winnings}`;
+    outcomeP.innerText = `YOU won $${data.winnings}`;
 
     (async () => {
-      const winningsInEth = await dollarsToEthereum(data.winnings.replace(/^\$/, ''));
+      const winningsInEth = await dollarsToEthereum(data.winnings);
       let winningsInEthP = document.createElement('p');
       winningsInEthP.innerText = `You won ${winningsInEth} eth`;
       resultsDiv.appendChild(winningsInEthP);
@@ -659,6 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
       registerDOMEventListeners();
+      
       registerSocketIOEventListeners();
     }
   })();
