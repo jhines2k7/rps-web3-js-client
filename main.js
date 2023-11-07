@@ -527,16 +527,16 @@ async function payStake(stakeUSD, contractAddress) {
   txHash.catch((error) => {
     console.error(JSON.stringify(error));
 
-    let adaptorError = {}
+    let compatibleError = {}
 
     if(error.innerError) {
-      adaptorError['error'] = error.innerError
+      compatibleError['error'] = error.innerError
     } else {
-      adaptorError['error'] = error.error      
+      compatibleError['error'] = error.error      
     }
 
-    if (adaptorError.error.code === 4001) {
-      console.error(error.innerError.message);
+    if (compatibleError.error.code === 4001) {
+      console.error(compatibleError.error.message);
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
         game_id: gameId,
@@ -551,8 +551,8 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (adaptorError.error.code === -32000) {
-      console.error(error.innerError.message);
+    if (compatibleError.error.code === -32000) {
+      console.error(compatibleError.error.message);
 
       socket.emit('insufficient_funds', {
         game_id: gameId,
@@ -569,8 +569,8 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (adaptorError.error.code === -32603) {
-      console.error(error.innerError.message);
+    if (compatibleError.error.code === -32603) {
+      console.error(compatibleError.error.message);
 
       socket.emit('rpc_error', {
         game_id: gameId,
