@@ -526,25 +526,16 @@ async function payStake(stakeUSD, contractAddress) {
 
   txHash.catch((error) => {
     console.error(JSON.stringify(error));
-    if(error.error.code === -32000) {
-      console.error(error.error.message);
 
-      socket.emit('insufficient_funds', {
-        game_id: gameId,
-        address: accounts[0],
-        contract_address: contractAddress,
-        error: error
-      });
+    let adaptorError = {}
 
-      payStakeStatusP.innerText = "Check your account balance. Your wallet thinks you have insufficient funds. This " +
-        " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
-        "in a few minutes or refresh now to start a new game.";
-
-      payStakeStatusP.style.color = 'red';
-      payStakeStatusP.classList.remove('flashing');
+    if(error.innerError) {
+      adaptorError['error'] = error.innerError
+    } else {
+      adaptorError['error'] = error.error      
     }
 
-    if (error.innerError.code === 4001) {
+    if (adaptorError.error.code === 4001) {
       console.error(error.innerError.message);
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
@@ -560,7 +551,7 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (error.innerError.code === -32000) {
+    if (adaptorError.error.code === -32000) {
       console.error(error.innerError.message);
 
       socket.emit('insufficient_funds', {
@@ -578,7 +569,7 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (error.innerError.code === -32603) {
+    if (adaptorError.error.code === -32603) {
       console.error(error.innerError.message);
 
       socket.emit('rpc_error', {
