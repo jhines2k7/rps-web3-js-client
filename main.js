@@ -525,7 +525,7 @@ async function payStake(stakeUSD, contractAddress) {
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
-    console.error(error.innerError.message);
+    console.error(JSON.stringify(error));
     if (error.innerError.code === 4001) {
       console.error(error.innerError.message);
       // emit an event to the server to let the other player know you rejected the transaction
