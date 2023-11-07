@@ -106,7 +106,7 @@ function registerDOMEventListeners() {
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
         socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
-      }, 10000); // Send heartbeat every 10 seconds
+      }, 20000); // Send heartbeat every 20 seconds
     }
   });
 
