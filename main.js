@@ -412,6 +412,23 @@ function registerSocketIOEventListeners() {
     payStakeStatusP.style.color = 'red';
   });
 
+  socket.on('uncaught_exception_occured', (data) => {
+    let wagerRefundStatusP = document.getElementById('wager-refund-status');
+    wagerRefundStatusP.innerText = 'An error occured. You will be refunded your wager minus gas fees. Refresh to start a new game.';
+
+    payStakeStatusP.innerText = '';
+    payStakeStatusP.classList.remove('flashing');
+
+    const etherscanLink = document.createElement("a");
+    etherscanLink.setAttribute("href", data.etherscan_link);
+    etherscanLink.textContent = "View on Block Explorer";
+
+    resultsDiv.appendChild(etherscanLink);
+
+    let gameSection = document.getElementById('game-section');
+    gameSection.remove()
+  });
+
   socket.on('player_stake_refunded', (data) => {
     const reason = data.reason;
 
