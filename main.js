@@ -548,9 +548,9 @@ async function payStake(stakeUSD, contractAddress) {
   //   })
   // });
 
-  const maxFeePerGas = BigInt(gasOracle.suggestBaseFee) * 2n + BigInt(gasOracle.FastGasPrice);
+  const maxFeePerGas = web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei') * 2 + web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'); 
   console.log(`The maxFeePerGas is ${maxFeePerGas}`);
-  
+
   transaction['gas'] = gasEstimate;
   transaction['maxFeePerGas'] = maxFeePerGas.toString();
   transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.FastGasPrice, 'gwei');
