@@ -536,9 +536,8 @@ async function payStake(stakeUSD, contractAddress) {
 
   const gasEstimate = await web3.eth.estimateGas(transaction);
   const gasOracle = await getGasOracle();
-  suggestBaseFee = web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei');
 
-  const estimatedGasFees = gasEstimate * suggestBaseFee;
+  const estimatedGasFees = gasEstimate * gasOracle.suggestBaseFee;
 
   payStakeStatusP.innerText = 'Submitting transaction...';
 
