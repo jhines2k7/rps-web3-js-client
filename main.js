@@ -535,6 +535,7 @@ async function payStake(stakeUSD, contractAddress) {
   };
 
   const gasEstimate = await web3.eth.estimateGas(transaction);
+  console.log(`The gas estimate is ${gasEstimate}`);
   const gasOracle = await getGasOracle();
 
   payStakeStatusP.innerText = 'Submitting transaction...';
@@ -548,7 +549,7 @@ async function payStake(stakeUSD, contractAddress) {
   //   })
   // });
 
-  const maxFeePerGas = web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei') * 2 + web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'); 
+  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
   console.log(`The maxFeePerGas is ${maxFeePerGas}`);
 
   transaction['gas'] = gasEstimate;
