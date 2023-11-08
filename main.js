@@ -475,6 +475,20 @@ async function dollarsToEthereum(dollars) {
   }
 }
 
+async function getGasOracle() {
+  return fetch("https://dev.generalsolutions43.com/gas-oracle")
+    .then(response => response.json())
+    .then(data => {
+      // Use the loaded JSON data here
+      console.log(`The gas oracle is ${data.gasOracle}`)
+      return data;
+    })
+    .catch(error => {
+      // Handle any potential errors
+      console.error(`Error: ${error}`);
+    });
+}
+
 async function loadContractABI() {
   return fetch("https://dev.generalsolutions43.com/rps-contract-abi")
     .then(response => response.json())
@@ -497,12 +511,12 @@ async function payStake(stakeUSD, contractAddress) {
   const nonce = await web3.eth.getTransactionCount(accounts[0]);
   console.log(`The nonce for your address is ${nonce}`);
 
-  const gasPrice = await web3.eth.getGasPrice();
-  let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
+  // const gasPrice = await web3.eth.getGasPrice();
+  // let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
 
   // Increase the gas price by 2%
-  const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
-  console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
+  // const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
+  // console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
 
   let stakeInEther = await dollarsToEthereum(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
@@ -520,17 +534,25 @@ async function payStake(stakeUSD, contractAddress) {
     'data': encodedData,
   };
 
+  const gasEstimate = await web3.eth.estimateGas(transaction);
+  const gasOracle = await getGasOracle();
+  suggestBaseFee = web3.utils.toWei(gasOracle.result.suggestBaseFee, 'gwei');
+
+  const estimatedGasFees = web3.utils.toBigInt(gasEstimate) * web3.utils.toBigInt(suggestBaseFee);
+
   payStakeStatusP.innerText = 'Submitting transaction...';
 
-  web3.eth.estimateGas(transaction).then(gasEstimate => {
-    console.log(`The estimated gas is ${gasEstimate}`);
-    web3.eth.getGasPrice().then(gasPrice => {
-      console.log(`The gas price in wei is ${gasPrice}`);
-      const totalCost = web3.utils.toBigInt(stakeInWei) + web3.utils.toBigInt(gasEstimate * gasPrice);
-      console.log(`The estimated total cost of the transaction is ${totalCost}`);
-    })
-  });
+  // web3.eth.estimateGas(transaction).then(gasEstimate => {
+  //   console.log(`The estimated gas is ${gasEstimate}`);
+  //   web3.eth.getGasPrice().then(gasPrice => {
+  //     console.log(`The gas price in wei is ${gasPrice}`);
+  //     const totalCost = web3.utils.toBigInt(stakeInWei) + web3.utils.toBigInt(gasEstimate * gasPrice);
+  //     console.log(`The estimated total cost of the transaction is ${totalCost}`);
+  //   })
+  // });
 
+  transaction['maxFeePerGas'] = estimatedGasFees;
+  transaction['maxPriorityFeePerGas'] = estimatedGasFees;
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
