@@ -521,7 +521,6 @@ async function payStake(stakeUSD, contractAddress) {
   };
 
   payStakeStatusP.innerText = 'Submitting transaction...';
-
   web3.eth.estimateGas(transaction).then(gasEstimate => {
     console.log(`The estimated gas is ${gasEstimate}`);
     web3.eth.getGasPrice().then(gasPrice => {
