@@ -569,7 +569,7 @@ async function payStake(stakeUSD, contractAddress) {
         error: error
       });
 
-      payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " +
+      payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
         " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
         "in a few minutes or refresh now to start a new game.";
 
