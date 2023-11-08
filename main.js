@@ -480,8 +480,8 @@ async function getGasOracle() {
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
-      console.log(`The gas oracle is ${data.gasOracle}`)
-      return data;
+      console.log(`The gas oracle is ${data.result}`)
+      return data.result;
     })
     .catch(error => {
       // Handle any potential errors
@@ -536,7 +536,7 @@ async function payStake(stakeUSD, contractAddress) {
 
   const gasEstimate = await web3.eth.estimateGas(transaction);
   const gasOracle = await getGasOracle();
-  suggestBaseFee = web3.utils.toWei(gasOracle.result.suggestBaseFee, 'gwei');
+  suggestBaseFee = web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei');
 
   const estimatedGasFees = web3.utils.toBigInt(gasEstimate) * web3.utils.toBigInt(suggestBaseFee);
 
