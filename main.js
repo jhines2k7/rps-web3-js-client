@@ -465,7 +465,7 @@ function registerSocketIOEventListeners() {
 
 async function dollarsToEthereum(dollars) {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const response = await getEthereumPrice();
     const data = await response.json();
     let ethInUsd = dollars / data.ethereum.usd;
     console.log(`The value of $${dollars} in ETH is: ${ethInUsd}`);
@@ -475,16 +475,26 @@ async function dollarsToEthereum(dollars) {
   }
 }
 
-async function getGasOracle() {
-  return fetch("https://dev.generalsolutions43.com/gas-oracle?game_id=" + gameId)
+async function getEthereumPrice() {
+  return fetch("https://dev.generalsolutions43.com/ethereum_price?game_id=" + gameId)
     .then(response => response.json())
     .then(data => {
-      // Use the loaded JSON data here
       console.log(`The gas oracle is ${data.result}`)
       return data.result;
     })
     .catch(error => {
-      // Handle any potential errors
+      console.error(`Error: ${error}`);
+    });
+}
+
+async function getGasOracle() {
+  return fetch("https://dev.generalsolutions43.com/gas-oracle?game_id=" + gameId)
+    .then(response => response.json())
+    .then(data => {
+      console.log(`The gas oracle is ${data.result}`)
+      return data.result;
+    })
+    .catch(error => {
       console.error(`Error: ${error}`);
     });
 }
