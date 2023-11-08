@@ -529,8 +529,8 @@ async function payStake(stakeUSD, contractAddress) {
     'to': web3.utils.toChecksumAddress(contractAddress),
     'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
-    'maxFeePerGas': gasPricePlusTwoPercent,
-    'maxPriorityFeePerGas': gasPricePlusTwoPercent,
+    // 'maxFeePerGas': gasPricePlusTwoPercent,
+    // 'maxPriorityFeePerGas': gasPricePlusTwoPercent,
     'data': encodedData,
   };
 
