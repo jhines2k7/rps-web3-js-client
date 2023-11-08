@@ -522,6 +522,13 @@ async function payStake(stakeUSD, contractAddress) {
 
   payStakeStatusP.innerText = 'Submitting transaction...';
 
+  web3.eth.estimateGas(transaction, (error, gasEstimate) => {
+    web3.eth.getGasPrice().then((gasPrice) => {
+      const totalCost = stakeInWei + (gasEstimate * gasPrice);
+      console.log(`The estimated total cost of the transaction is ${totalCost}`);
+    })
+  });
+
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
