@@ -476,7 +476,7 @@ async function dollarsToEthereum(dollars) {
 }
 
 async function getGasOracle() {
-  return fetch("https://dev.generalsolutions43.com/gas-oracle")
+  return fetch("https://dev.generalsolutions43.com/gas-oracle?game_id=" + gameId)
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
