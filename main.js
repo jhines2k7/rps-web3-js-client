@@ -279,8 +279,8 @@ function registerSocketIOEventListeners() {
     wagerInput.disabled = false;
 
     let emailAddress = 'contact@crypto-rockpaperscissors.com';
-    let subject = `Game ID: ${gameId}`;
-    let emailBody = `How can I help you?%0D%0A%0D%0APlayer address: ${accounts[0]}%0D%0A`;
+    let subject = `Game ID: ${gameId} - Player address: ${accounts[0]}`;
+    let emailBody = `How can I help you?`;
 
     let mailtoLink = document.createElement('a');
     mailtoLink.href = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
