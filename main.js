@@ -707,7 +707,10 @@ document.addEventListener('DOMContentLoaded', () => {
   opponentWagerP = document.getElementById('opponent-wager');
   yourWagerStatusP = document.getElementById('your-wager-status');
   oppWagerStatusP = document.getElementById('opp-wager-status');
+
   payStakeStatusP = document.getElementById('pay-stake-status');
+  payStakeStatusP.style.marginBottom = '10px';
+  
   modal = document.querySelector('.modal');
   overlay = document.querySelector('.overlay');
   closeModalBtn = document.querySelector('.close-modal');

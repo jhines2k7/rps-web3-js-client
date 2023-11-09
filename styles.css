@@ -180,7 +180,7 @@ button:disabled:hover {
 }
 
 #wager-buttons {
-  margin: 20px 0;
+  margin: 20px 0 10px 0;
   padding: 0 65px;
   display: flex;
   justify-content: space-between;
@@ -200,7 +200,7 @@ button:disabled:hover {
 }
 
 #opp-status {
-  margin: 20px 0;
+  margin: 0 0 10px 0;
 }
 
 #symbol-choice {
@@ -300,7 +300,7 @@ button:disabled:hover {
   color: goldenrod;
   font-weight: bold;
   display: block;
-  margin: 10px 0 auto;
+  margin: 20px 0 auto;
   text-align: center;
 }
 
@@ -344,7 +344,7 @@ button:disabled:hover {
   color: goldenrod;
   text-decoration: none;
   cursor: pointer;
-  margin: 5px 0 0 0;
+  margin: 10px 0 0 0;
 }
 
 .modal p {
