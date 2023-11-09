@@ -44,6 +44,8 @@ let heartbeatInterval;
 
 let disconnected = false;
 
+let initialBalanceInWei = 0;
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -307,7 +309,12 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You win!';
-    outcomeP.innerText = `YOU won $${data.winnings}`;
+    const currentBalanceInWei = web3.eth.getBalance(accounts[0]);
+    const winningsInWei = currentBalanceInWei - initialBalanceInWei;
+    const winningsInEth = web3.utils.fromWei(winningsInWei.toString(), 'ether');
+    const winningsInDollars = winningsInEth * getEthereumPrice();
+    console.log(`The winnings in dollars is ${winningsInDollars}`);
+    outcomeP.innerText = `YOU won $${winningsInDollars}`;
 
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings);
@@ -713,6 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
+    initialBalanceInWei = await web3.eth.getBalance(accounts[0]);
 
     console.log(`Your accounts: ${accounts}`);
 
