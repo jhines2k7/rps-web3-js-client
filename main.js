@@ -101,16 +101,16 @@ function registerDOMEventListeners() {
   });
 
   function closeModal() {
-    modal.classList.add("hidden");
-    overlay.classList.add("hidden");
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
   };
   
   function showModal() {
-    modal.classList.remove("hidden");
-    overlay.classList.remove("hidden");
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
     
     let modalP = document.querySelector('.modal p');
-    modalP.innerText = `Be sure to include your game ID: <b>${gameId}</b> and address: <b>${accounts[0]}</b> in your message.`;
+    modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
   };
 
   offerWagerBtn.addEventListener('click', () => {
@@ -299,6 +299,8 @@ function registerSocketIOEventListeners() {
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
+
+    contactP.innerText = 'contact@crypto-rockpaperscissors.com';
   });
 
   socket.on('opponent_disconnected', () => {
