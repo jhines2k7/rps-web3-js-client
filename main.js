@@ -312,7 +312,7 @@ function registerSocketIOEventListeners() {
     
     web3.eth.getBalance(accounts[0]).then((balance) => {
       console.log(`Your current balance is ${balance}`);
-      const winningsInWei = balance - initialBalanceInWei;
+      const winningsInWei = initialBalanceInWei - balance;
       const winningsInEth = web3.utils.fromWei(winningsInWei.toString(), 'ether');
        
       getEthereumPrice().then((ethInUSD) => {
