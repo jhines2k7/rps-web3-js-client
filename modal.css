@@ -1,8 +1,8 @@
 .close-modal {
   position: absolute;
-  top: 1.2rem;
-  right: 2rem;
-  font-size: 5rem;
+  top: -0.8rem;
+  right: -0.5rem;
+  font-size: 3rem;
   color: #333;
   cursor: pointer;
   border: none;
@@ -19,7 +19,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw;
+  width: 60vw;
   max-width: 364px;
 
   background-color: white;
