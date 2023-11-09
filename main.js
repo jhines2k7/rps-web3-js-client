@@ -465,9 +465,8 @@ function registerSocketIOEventListeners() {
 
 async function dollarsToEthereum(dollars) {
   try {
-    const response = await getEthereumPrice();
-    const data = await response.json();
-    let ethInUsd = dollars / data.ethereum.usd;
+    const ethInUSD = await getEthereumPrice();
+    let ethInUsd = dollars / ethInUSD;
     console.log(`The value of $${dollars} in ETH is: ${ethInUsd}`);
     return ethInUsd;
   } catch (err) {
