@@ -479,8 +479,8 @@ async function getEthereumPrice() {
   return fetch(`https://dev.generalsolutions43.com/ethereum-price?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
-      console.log(`The gas oracle is ${data.result}`)
-      return data.result;
+      console.log(`The gas oracle is ${data}`)
+      return data;
     })
     .catch(error => {
       console.error(`Error: ${error}`);
