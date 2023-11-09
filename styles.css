@@ -343,10 +343,10 @@ button:disabled:hover {
   font-size: xx-small;
   color: goldenrod;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .modal p {
   font-family: 'RedHatDisplay Variable';
   overflow: auto;
-  cursor: pointer;
 }
