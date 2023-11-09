@@ -46,6 +46,8 @@ let disconnected = false;
 
 let initialBalanceInWei = 0;
 
+const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -489,7 +491,7 @@ async function dollarsToEthereum(dollars) {
 }
 
 async function getEthereumPrice() {
-  return fetch(`https://test.wss1.crypto-rockpaperscissors.com/ethereum-price?game_id=${gameId}`)
+  return fetch(`${domain}/ethereum-price?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
       console.log(`The gas oracle is ${data}`)
@@ -501,7 +503,7 @@ async function getEthereumPrice() {
 }
 
 async function getGasOracle() {
-  return fetch(`https://test.wss1.crypto-rockpaperscissors.com/gas-oracle?game_id=${gameId}`)
+  return fetch(`${domain}/gas-oracle?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
       console.log(`Gas oracle: ${data.result}`)
@@ -513,7 +515,7 @@ async function getGasOracle() {
 }
 
 async function loadContractABI() {
-  return fetch("https://test.wss1.crypto-rockpaperscissors.com/rps-contract-abi")
+  return fetch(`${domain}/rps-contract-abi`)
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
@@ -715,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`Your accounts: ${accounts}`);
 
     if (typeof accounts[0] !== 'undefined') {
-      socket = io('https://test.wss1.crypto-rockpaperscissors.com',
+      socket = io(domain,
         {
           transports: ['websocket'],
           query: {
