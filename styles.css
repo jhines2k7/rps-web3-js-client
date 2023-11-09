@@ -338,7 +338,7 @@ button:disabled:hover {
   margin: 0 0 20px 0;
 }
 
-a[href^="mailto:"] {
+#contact {
   font-family: 'RedHatDisplay Regular';
   font-size: xx-small;
   color: goldenrod;

@@ -46,6 +46,11 @@ let disconnected = false;
 
 let initialBalanceInWei = 0;
 
+let modal;
+let overlay;
+let closeModalBtn;
+let contactP;
+
 const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
 
 function disableChoiceButtons() {
@@ -70,6 +75,10 @@ function disableWagerButtons() {
 }
 
 function registerDOMEventListeners() {
+  closeModalBtn.addEventListener("click", closeModal);
+  overlay.addEventListener("click", closeModal);
+  contactP.addEventListener("click", showModal);
+
   acceptWagerBtn.addEventListener('click', () => {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
@@ -82,7 +91,7 @@ function registerDOMEventListeners() {
     opponentJoinP.innerText = '';
     
     if(yourWagerStatusP.innerText === '') {
-      yourWagerStatusP.innerText = 'Try to offer a wager to your opponent...';
+      yourWagerStatusP.innerText = 'Try to offer your opponent a wager...';
       yourWagerStatusP.classList.add('flashing');
       yourWagerStatusP.style.color = 'green';
     }
@@ -90,6 +99,16 @@ function registerDOMEventListeners() {
     oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
     oppWagerStatusP.classList.remove('flashing');
   });
+
+  function closeModal() {
+    modal.classList.add("hidden");
+    overlay.classList.add("hidden");
+  };
+  
+  function showModal() {
+    modal.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  };
 
   offerWagerBtn.addEventListener('click', () => {
     clearInterval(heartbeatInterval);
@@ -277,18 +296,6 @@ function registerSocketIOEventListeners() {
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
-
-    let emailAddress = 'contact@crypto-rockpaperscissors.com';
-    let subject = `Game ID: ${gameId} - Player address: ${accounts[0]}`;
-    let emailBody = `How can I help you?`;
-
-    let mailtoLink = document.createElement('a');
-    mailtoLink.href = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-    mailtoLink.innerText = emailAddress;
-
-    let column = document.querySelectorAll('.column')[1];
-
-    column.appendChild(mailtoLink);
   });
 
   socket.on('opponent_disconnected', () => {
@@ -697,6 +704,10 @@ document.addEventListener('DOMContentLoaded', () => {
   yourWagerStatusP = document.getElementById('your-wager-status');
   oppWagerStatusP = document.getElementById('opp-wager-status');
   payStakeStatusP = document.getElementById('pay-stake-status');
+  modal = document.querySelector('.modal');
+  overlay = document.querySelector('.overlay');
+  closeModalBtn = document.querySelector('.close-modal');
+  contactP = document.getElementById('contact');
 
   (async () => {
     while (!window.ethereum) {
@@ -726,7 +737,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
       registerDOMEventListeners();
-      
       registerSocketIOEventListeners();
     }
   })();

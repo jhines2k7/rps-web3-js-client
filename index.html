@@ -7,6 +7,7 @@
   <title>Rock Paper Scissors</title>
   <link rel="stylesheet" href="reset.css">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="modal.css">
   <script>
     (function () {
       var src = "//cdn.jsdelivr.net/npm/eruda";
@@ -75,9 +76,21 @@
           <p id="win-lose-draw"></p>
           <p id="outcome"></p>
         </div>
+        <p id="contact">contact@crypto-rockpaperscissors.com</p>
       </div>
     </div>
   </div>
+  <div class="modal hidden">
+    <button class="close-modal">&times;</button>
+    <h1>I'm a modal window 😍</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+      mollit anim id est laborum.
+    </p>
+  </div>
+  <div class="overlay hidden"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.1.1/web3.min.js"
     integrity="sha512-C/TYwf93EQ6sPW4g3F9axNydQuQrAQCTOR1Gz65YK96MwrZ0KDn3qjNMAlXLYyjm84JELTYHinAfvUjbNC4fuQ=="
