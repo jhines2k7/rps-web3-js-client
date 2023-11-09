@@ -110,7 +110,7 @@ function registerDOMEventListeners() {
     overlay.classList.remove('hidden');
     
     let modalP = document.querySelector('.modal p');
-    modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
+    modalP.innerHtml = `Be sure to include your game ID: <strong>${gameId}</strong> and address: <strong>${accounts[0]}</strong> in your message.`;
   };
 
   offerWagerBtn.addEventListener('click', () => {
