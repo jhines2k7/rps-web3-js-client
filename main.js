@@ -44,6 +44,8 @@ let heartbeatInterval;
 
 let disconnected = false;
 
+let initialBalanceInWei = 0;
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -465,14 +467,37 @@ function registerSocketIOEventListeners() {
 
 async function dollarsToEthereum(dollars) {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-    const data = await response.json();
-    let ethInUsd = dollars / data.ethereum.usd;
+    const ethInUSD = await getEthereumPrice();
+    let ethInUsd = dollars / ethInUSD;
     console.log(`The value of $${dollars} in ETH is: ${ethInUsd}`);
     return ethInUsd;
   } catch (err) {
     return console.log(err);
   }
+}
+
+async function getEthereumPrice() {
+  return fetch(`https://dev.generalsolutions43.com/ethereum-price?game_id=${gameId}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(`The gas oracle is ${data}`)
+      return data;
+    })
+    .catch(error => {
+      console.error(`Error: ${error}`);
+    });
+}
+
+async function getGasOracle() {
+  return fetch(`https://dev.generalsolutions43.com/gas-oracle?game_id=${gameId}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(`The gas oracle is ${data.result}`)
+      return data.result;
+    })
+    .catch(error => {
+      console.error(`Error: ${error}`);
+    });
 }
 
 async function loadContractABI() {
@@ -497,12 +522,12 @@ async function payStake(stakeUSD, contractAddress) {
   const nonce = await web3.eth.getTransactionCount(accounts[0]);
   console.log(`The nonce for your address is ${nonce}`);
 
-  const gasPrice = await web3.eth.getGasPrice();
-  let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
+  // const gasPrice = await web3.eth.getGasPrice();
+  // let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
 
   // Increase the gas price by 2%
-  const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
-  console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
+  // const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
+  // console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
 
   let stakeInEther = await dollarsToEthereum(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
@@ -515,28 +540,47 @@ async function payStake(stakeUSD, contractAddress) {
     'to': web3.utils.toChecksumAddress(contractAddress),
     'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
-    'maxFeePerGas': gasPricePlusTwoPercent,
-    'maxPriorityFeePerGas': gasPricePlusTwoPercent,
+    // 'maxFeePerGas': gasPricePlusTwoPercent,
+    // 'maxPriorityFeePerGas': gasPricePlusTwoPercent,
     'data': encodedData,
   };
 
+  const gasEstimate = await web3.eth.estimateGas(transaction);
+  console.log(`The gas estimate is ${gasEstimate}`);
+  const gasOracle = await getGasOracle();
+
   payStakeStatusP.innerText = 'Submitting transaction...';
 
+  // web3.eth.estimateGas(transaction).then(gasEstimate => {
+  //   console.log(`The estimated gas is ${gasEstimate}`);
+  //   web3.eth.getGasPrice().then(gasPrice => {
+  //     console.log(`The gas price in wei is ${gasPrice}`);
+  //     const totalCost = web3.utils.toBigInt(stakeInWei) + web3.utils.toBigInt(gasEstimate * gasPrice);
+  //     console.log(`The estimated total cost of the transaction is ${totalCost}`);
+  //   })
+  // });
+
+  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
+  console.log(`The maxFeePerGas is ${maxFeePerGas}`);
+
+  transaction['gas'] = gasEstimate;
+  transaction['maxFeePerGas'] = maxFeePerGas.toString();
+  transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.FastGasPrice, 'gwei');
   const txHash = web3.eth.sendTransaction(transaction);
 
   txHash.catch((error) => {
     console.error(JSON.stringify(error));
 
-    let adaptorError = {}
+    let dappError = {}
 
     if(error.innerError) {
-      adaptorError['error'] = error.innerError
+      dappError['error'] = error.innerError
     } else {
-      adaptorError['error'] = error.error      
+      dappError['error'] = error.error      
     }
 
-    if (adaptorError.error.code === 4001) {
-      console.error(error.innerError.message);
+    if (dappError.error.code === 4001) {
+      console.error(dappError.error.message);
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
         game_id: gameId,
@@ -551,8 +595,8 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (adaptorError.error.code === -32000) {
-      console.error(error.innerError.message);
+    if (dappError.error.code === -32000) {
+      console.error(dappError.error.message);
 
       socket.emit('insufficient_funds', {
         game_id: gameId,
@@ -561,7 +605,7 @@ async function payStake(stakeUSD, contractAddress) {
         error: error
       });
 
-      payStakeStatusP.innerText = "Check your account balance. Metamask thinks you have insufficient funds. This " +
+      payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
         " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
         "in a few minutes or refresh now to start a new game.";
 
@@ -569,8 +613,8 @@ async function payStake(stakeUSD, contractAddress) {
       payStakeStatusP.classList.remove('flashing');
     }
 
-    if (adaptorError.error.code === -32603) {
-      console.error(error.innerError.message);
+    if (dappError.error.code === -32603) {
+      console.error(dappError.error.message);
 
       socket.emit('rpc_error', {
         game_id: gameId,
@@ -671,6 +715,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
+    initialBalanceInWei = await web3.eth.getBalance(accounts[0]);
+    console.log(`Initial balance ${initialBalanceInWei}`);
 
     console.log(`Your accounts: ${accounts}`);
 
