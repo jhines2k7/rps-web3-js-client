@@ -8,6 +8,16 @@
   src: url('fonts/Aaargh-webfont.woff') format('woff');
 }
 
+@font-face {
+  font-family: 'RedHatDisplay Variable';
+  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('ttf');
+}
+
+@font-face {
+  font-family: 'RedHatDisplay Regular';
+  src: url('fonts/RedHatDisplay-Regular.ttf') format('ttf');
+}
+
 html {
   background-color: #f2f3f4;
 }
@@ -32,7 +42,7 @@ body {
 }
 
 #rps #header p {
-  font-family: 'Aaargh';
+  font-family: 'RedHatDisplay Regular';
   font-size: small;
   text-align: center;
 }
@@ -61,7 +71,7 @@ body {
 }
 
 .column p,span {
-  font-family: 'Aaargh';
+  font-family: 'RedHatDisplay Regular';
 }
 
 #place-wager {
@@ -329,7 +339,7 @@ button:disabled:hover {
 }
 
 a[href^="mailto:"] {
-  font-family: 'Aaargh';
+  font-family: 'RedHatDisplay Regular';
   font-size: xx-small;
   color: goldenrod;
   text-decoration: none;
