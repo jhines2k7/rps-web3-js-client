@@ -347,4 +347,6 @@ button:disabled:hover {
 
 .modal p {
   font-family: 'RedHatDisplay Variable';
+  overflow: auto;
+  cursor: pointer;
 }
