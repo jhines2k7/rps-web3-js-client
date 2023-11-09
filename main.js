@@ -316,8 +316,7 @@ function registerSocketIOEventListeners() {
       const winningsInDollars = winningsInEth * getEthereumPrice();
       console.log(`The winnings in dollars is ${winningsInDollars}`);
       outcomeP.innerText = `YOU won $${winningsInDollars}`;
-    }
-
+    });
 
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings);
