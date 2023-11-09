@@ -108,7 +108,6 @@ function registerDOMEventListeners() {
   function showModal() {
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
-    
     let modalP = document.querySelector('.modal p');
     modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
   };
