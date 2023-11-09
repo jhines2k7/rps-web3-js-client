@@ -280,7 +280,7 @@ function registerSocketIOEventListeners() {
       }
 
       let rpsDiv = document.getElementById('rps');
-      rpsDiv.style.width = '90vw';
+      rpsDiv.style.width = '70vw';
       rpsDiv.style.maxWidth = '364px';
 
       disconnected = true;
