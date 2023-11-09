@@ -275,6 +275,18 @@ function registerSocketIOEventListeners() {
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
+
+    let emailAddress = 'contact@crypto-rockpaperscissors.com';
+    let subject = `Game ID: ${gameId}`;
+    let emailBody = `How can I help you?<br><br>Player address: ${accounts[0]}`;
+
+    let mailtoLink = document.createElement('a');
+    mailtoLink.href = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    mailtoLink.innerText = emailAddress;
+
+    let column = document.querySelectorAll('.column')[1];
+
+    column.appendChild(mailtoLink);
   });
 
   socket.on('opponent_disconnected', () => {
@@ -492,7 +504,7 @@ async function getGasOracle() {
   return fetch(`https://test.wss1.crypto-rockpaperscissors.com/gas-oracle?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
-      console.log(`The gas oracle is ${data.result}`)
+      console.log(`Gas oracle: ${data.result}`)
       return data.result;
     })
     .catch(error => {
