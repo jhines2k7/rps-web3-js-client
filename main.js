@@ -477,7 +477,7 @@ async function dollarsToEthereum(dollars) {
 }
 
 async function getEthereumPrice() {
-  return fetch(`https://dev.generalsolutions43.com/ethereum-price?game_id=${gameId}`)
+  return fetch(`https://test.wss1.crypto-rockpaperscissors.com/ethereum-price?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
       console.log(`The gas oracle is ${data}`)
@@ -489,7 +489,7 @@ async function getEthereumPrice() {
 }
 
 async function getGasOracle() {
-  return fetch(`https://dev.generalsolutions43.com/gas-oracle?game_id=${gameId}`)
+  return fetch(`https://test.wss1.crypto-rockpaperscissors.com/gas-oracle?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
       console.log(`The gas oracle is ${data.result}`)
