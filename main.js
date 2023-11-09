@@ -309,13 +309,17 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You win!';
+    
     web3.eth.getBalance(accounts[0]).then((balance) => {
       console.log(`Your current balance is ${balance}`);
       const winningsInWei = balance - initialBalanceInWei;
       const winningsInEth = web3.utils.fromWei(winningsInWei.toString(), 'ether');
-      const winningsInDollars = winningsInEth * getEthereumPrice();
-      console.log(`The winnings in dollars is ${winningsInDollars}`);
-      outcomeP.innerText = `YOU won $${winningsInDollars}`;
+       
+      getEthereumPrice().then((ethInUSD) => {
+        const winningsInDollars = winningsInEth * ethInUSD;
+        console.log(`The winnings in dollars is ${winningsInDollars}`);
+        outcomeP.innerText = `YOU won $${winningsInDollars}`;
+      });
     });
 
     (async () => {
