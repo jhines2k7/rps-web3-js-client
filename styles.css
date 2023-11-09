@@ -8,11 +8,6 @@
   src: url('fonts/Aaargh-webfont.woff') format('woff');
 }
 
-@font-face {
-  font-family: 'RedHatDisplay Variable';
-  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('ttf');
-}
-
 html {
   background-color: #f2f3f4;
 }
@@ -37,7 +32,7 @@ body {
 }
 
 #rps #header p {
-  font-family: 'RedHatDisplay Variable', sans-serif;
+  font-family: 'Aaargh';
   font-size: small;
   text-align: center;
 }
@@ -66,7 +61,7 @@ body {
 }
 
 .column p,span {
-  font-family: 'RedHatDisplay Variable', sans-serif;
+  font-family: 'Aaargh';
 }
 
 #place-wager {
@@ -290,7 +285,7 @@ button:disabled:hover {
 }
 
 #results a {
-  font-family: 'RedHatDisplay Variable';
+  font-family: 'Aaargh';
   text-decoration: none;
   color: goldenrod;
   font-weight: bold;
@@ -331,4 +326,11 @@ button:disabled:hover {
 
 #join-contract-status {
   margin: 0 0 20px 0;
+}
+
+a[href^="mailto:"] {
+  font-family: 'Aaargh';
+  font-size: xx-small;
+  color: goldenrod;
+  text-decoration: none;
 }
