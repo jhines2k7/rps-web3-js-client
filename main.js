@@ -46,6 +46,8 @@ let disconnected = false;
 
 let initialBalanceInWei = 0;
 
+const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
+
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
     if (button.id !== 'offer-wager')
@@ -275,6 +277,18 @@ function registerSocketIOEventListeners() {
     wagerInput.value = '';
     yourWagerStatusP.innerText = '';
     wagerInput.disabled = false;
+
+    let emailAddress = 'contact@crypto-rockpaperscissors.com';
+    let subject = `Game ID: ${gameId} - Player address: ${accounts[0]}`;
+    let emailBody = `How can I help you?`;
+
+    let mailtoLink = document.createElement('a');
+    mailtoLink.href = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+    mailtoLink.innerText = emailAddress;
+
+    let column = document.querySelectorAll('.column')[1];
+
+    column.appendChild(mailtoLink);
   });
 
   socket.on('opponent_disconnected', () => {
@@ -477,7 +491,7 @@ async function dollarsToEthereum(dollars) {
 }
 
 async function getEthereumPrice() {
-  return fetch(`https://prod.wss1.crypto-rockpaperscissors.com/ethereum-price?game_id=${gameId}`)
+  return fetch(`${domain}/ethereum-price?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
       console.log(`The gas oracle is ${data}`)
@@ -489,10 +503,10 @@ async function getEthereumPrice() {
 }
 
 async function getGasOracle() {
-  return fetch(`https://prod.wss1.crypto-rockpaperscissors.com/gas-oracle?game_id=${gameId}`)
+  return fetch(`${domain}/gas-oracle?game_id=${gameId}`)
     .then(response => response.json())
     .then(data => {
-      console.log(`The gas oracle is ${data.result}`)
+      console.log(`Gas oracle: ${data.result}`)
       return data.result;
     })
     .catch(error => {
@@ -501,7 +515,7 @@ async function getGasOracle() {
 }
 
 async function loadContractABI() {
-  return fetch("https://prod.wss1.crypto-rockpaperscissors.com/rps-contract-abi")
+  return fetch(`${domain}/rps-contract-abi`)
     .then(response => response.json())
     .then(data => {
       // Use the loaded JSON data here
@@ -522,13 +536,6 @@ async function payStake(stakeUSD, contractAddress) {
   const nonce = await web3.eth.getTransactionCount(accounts[0]);
   console.log(`The nonce for your address is ${nonce}`);
 
-  // const gasPrice = await web3.eth.getGasPrice();
-  // let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
-
-  // Increase the gas price by 2%
-  // const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
-  // console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
-
   let stakeInEther = await dollarsToEthereum(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
@@ -540,8 +547,6 @@ async function payStake(stakeUSD, contractAddress) {
     'to': web3.utils.toChecksumAddress(contractAddress),
     'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
-    // 'maxFeePerGas': gasPricePlusTwoPercent,
-    // 'maxPriorityFeePerGas': gasPricePlusTwoPercent,
     'data': encodedData,
   };
 
@@ -550,15 +555,6 @@ async function payStake(stakeUSD, contractAddress) {
   const gasOracle = await getGasOracle();
 
   payStakeStatusP.innerText = 'Submitting transaction...';
-
-  // web3.eth.estimateGas(transaction).then(gasEstimate => {
-  //   console.log(`The estimated gas is ${gasEstimate}`);
-  //   web3.eth.getGasPrice().then(gasPrice => {
-  //     console.log(`The gas price in wei is ${gasPrice}`);
-  //     const totalCost = web3.utils.toBigInt(stakeInWei) + web3.utils.toBigInt(gasEstimate * gasPrice);
-  //     console.log(`The estimated total cost of the transaction is ${totalCost}`);
-  //   })
-  // });
 
   const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
   console.log(`The maxFeePerGas is ${maxFeePerGas}`);
@@ -721,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`Your accounts: ${accounts}`);
 
     if (typeof accounts[0] !== 'undefined') {
-      socket = io('https://prod.wss1.crypto-rockpaperscissors.com',
+      socket = io(domain,
         {
           transports: ['websocket'],
           query: {

@@ -10,7 +10,12 @@
 
 @font-face {
   font-family: 'RedHatDisplay Variable';
-  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('ttf');
+  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'RedHatDisplay Regular';
+  src: url('fonts/RedHatDisplay-Regular.ttf') format('truetype');
 }
 
 html {
@@ -37,7 +42,7 @@ body {
 }
 
 #rps #header p {
-  font-family: 'RedHatDisplay Variable', sans-serif;
+  font-family: 'RedHatDisplay Regular';
   font-size: small;
   text-align: center;
 }
@@ -66,7 +71,7 @@ body {
 }
 
 .column p,span {
-  font-family: 'RedHatDisplay Variable', sans-serif;
+  font-family: 'RedHatDisplay Regular';
 }
 
 #place-wager {
@@ -290,7 +295,7 @@ button:disabled:hover {
 }
 
 #results a {
-  font-family: 'RedHatDisplay Variable';
+  font-family: 'Aaargh';
   text-decoration: none;
   color: goldenrod;
   font-weight: bold;
@@ -331,4 +336,11 @@ button:disabled:hover {
 
 #join-contract-status {
   margin: 0 0 20px 0;
+}
+
+a[href^="mailto:"] {
+  font-family: 'RedHatDisplay Regular';
+  font-size: xx-small;
+  color: goldenrod;
+  text-decoration: none;
 }
