@@ -522,13 +522,6 @@ async function payStake(stakeUSD, contractAddress) {
   const nonce = await web3.eth.getTransactionCount(accounts[0]);
   console.log(`The nonce for your address is ${nonce}`);
 
-  // const gasPrice = await web3.eth.getGasPrice();
-  // let gasPriceBigInt = web3.utils.toBigInt(gasPrice);
-
-  // Increase the gas price by 2%
-  // const gasPricePlusTwoPercent = web3.utils.toBigInt(gasPriceBigInt) * web3.utils.toBigInt(102) / web3.utils.toBigInt(100);
-  // console.log(`Calling payStake(): the gas price plus 2% is ${gasPricePlusTwoPercent}`);
-
   let stakeInEther = await dollarsToEthereum(stakeUSD);
   console.log(`The stake in Ether is ${stakeInEther}`);
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
@@ -540,8 +533,6 @@ async function payStake(stakeUSD, contractAddress) {
     'to': web3.utils.toChecksumAddress(contractAddress),
     'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
     'nonce': nonce,
-    // 'maxFeePerGas': gasPricePlusTwoPercent,
-    // 'maxPriorityFeePerGas': gasPricePlusTwoPercent,
     'data': encodedData,
   };
 
@@ -550,15 +541,6 @@ async function payStake(stakeUSD, contractAddress) {
   const gasOracle = await getGasOracle();
 
   payStakeStatusP.innerText = 'Submitting transaction...';
-
-  // web3.eth.estimateGas(transaction).then(gasEstimate => {
-  //   console.log(`The estimated gas is ${gasEstimate}`);
-  //   web3.eth.getGasPrice().then(gasPrice => {
-  //     console.log(`The gas price in wei is ${gasPrice}`);
-  //     const totalCost = web3.utils.toBigInt(stakeInWei) + web3.utils.toBigInt(gasEstimate * gasPrice);
-  //     console.log(`The estimated total cost of the transaction is ${totalCost}`);
-  //   })
-  // });
 
   const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
   console.log(`The maxFeePerGas is ${maxFeePerGas}`);
