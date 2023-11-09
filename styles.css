@@ -344,3 +344,7 @@ button:disabled:hover {
   color: goldenrod;
   text-decoration: none;
 }
+
+.modal p {
+  font-family: 'RedHatDisplay Variable';
+}
