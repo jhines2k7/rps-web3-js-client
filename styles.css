@@ -10,12 +10,12 @@
 
 @font-face {
   font-family: 'RedHatDisplay Variable';
-  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('ttf');
+  src: url('fonts/RedHatDisplay-VariableFont_wght.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'RedHatDisplay Regular';
-  src: url('fonts/RedHatDisplay-Regular.ttf') format('ttf');
+  src: url('fonts/RedHatDisplay-Regular.ttf') format('truetype');
 }
 
 html {
