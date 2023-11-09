@@ -317,7 +317,7 @@ function registerSocketIOEventListeners() {
        
       getEthereumPrice().then((ethInUSD) => {
         const winningsInDollars = winningsInEth * ethInUSD;
-        console.log(`The winnings in dollars is ${winningsInDollars}`);
+        console.log(`Winnings in dollars ${winningsInDollars}`);
         outcomeP.innerText = `YOU won $${winningsInDollars}`;
       });
     });
@@ -727,6 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use web3.js
     accounts = await web3.eth.getAccounts();
     initialBalanceInWei = await web3.eth.getBalance(accounts[0]);
+    console.log(`Initial balance ${initialBalanceInWei}`);
 
     console.log(`Your accounts: ${accounts}`);
 
