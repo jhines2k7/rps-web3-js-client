@@ -51,7 +51,7 @@ let overlay;
 let closeModalBtn;
 let contactP;
 
-const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
+const domain = 'https://dev.generalsolutions43.com';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
