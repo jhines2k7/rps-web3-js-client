@@ -249,7 +249,7 @@ function registerSocketIOEventListeners() {
     const stakeUSD = data.your_wager.replace(/^\$/, '');
     console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
     console.log(`Stake in USD: ${stakeUSD}`);
-    payStake(parseFloat(stakeUSD), contractAddress);
+    // payStake(parseFloat(stakeUSD), contractAddress);
   });
 
   socket.on('wager_accepted', (data) => {
