@@ -87,13 +87,13 @@ function registerDOMEventListeners() {
     declineWagerBtn.disabled = true;
 
     opponentJoinP.innerText = '';
-    
-    if(yourWagerStatusP.innerText === '') {
+
+    if (yourWagerStatusP.innerText === '') {
       yourWagerStatusP.innerText = 'Try to offer your opponent a wager...';
       yourWagerStatusP.classList.add('flashing');
       yourWagerStatusP.style.color = 'green';
     }
-    
+
     oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
     oppWagerStatusP.classList.remove('flashing');
   });
@@ -102,7 +102,7 @@ function registerDOMEventListeners() {
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
   };
-  
+
   function showModal() {
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
@@ -177,35 +177,55 @@ function registerDOMEventListeners() {
   choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
       button.addEventListener('click', (event) => {
-        socket.emit('choice', {
-          game_id: gameId,
-          choice: button.id,
-          address: accounts[0]
-        });
 
-        const choiceButtonsDiv = document.getElementById('buttons');
-        choiceButtonsDiv.remove();
+        // get wager from the server here...
+        fetch(`${domain}/get-wager?game_id=${gameId}&address=${accounts[0]}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(data);
+            const stakeUSD = data.replace(/^\$/, '');
+            console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
+            console.log(`Stake in USD: ${stakeUSD}`);
+            payStake(parseFloat(stakeUSD), contractAddress);
 
-        const choice = button.id;
-        console.log(`You chose ${choice}`);
-        document.querySelector('#symbol-choice p').innerText = `YOU chose`;
+            // socket.emit('choice', {
+            //   game_id: gameId,
+            //   choice: button.id,
+            //   address: accounts[0]
+            // });
 
-        let playerChoiceP = document.createElement('p');
-        playerChoiceP.innerText = `${button.id.toUpperCase()}`;
+            const choiceButtonsDiv = document.getElementById('buttons');
+            choiceButtonsDiv.remove();
 
-        const colors = {
-          'rock': 'red',
-          'paper': 'purple',
-          'scissors': 'seagreen'
-        }
-        playerChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+            const choice = button.id;
+            console.log(`You chose ${choice}`);
+            document.querySelector('#symbol-choice p').innerText = `YOU chose`;
 
-        let symbolChoiceDiv = document.getElementById('symbol-choice');
+            let playerChoiceP = document.createElement('p');
+            playerChoiceP.innerText = `${button.id.toUpperCase()}`;
 
-        let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-        opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
+            const colors = {
+              'rock': 'red',
+              'paper': 'purple',
+              'scissors': 'seagreen'
+            }
+            playerChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
 
-        symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
+            let symbolChoiceDiv = document.getElementById('symbol-choice');
+
+            let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+            opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
+
+            symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
+          })
+          .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+          });
       });
     }
   });
@@ -234,12 +254,12 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('both_wagers_accepted', (data) => {
-    const contractAddress = data.contract_address;
+    // const contractAddress = data.contract_address;
     const yourWager = data.your_wager;
     const opponentWager = data.opponent_wager;
 
-    console.log("Paying stakes...");
-    payStakeStatusP.innerText = 'Paying stakes...';
+    // console.log("Paying stakes...");
+    // payStakeStatusP.innerText = 'Paying stakes...';
     yourWagerP.innerText = `YOU wagered ${yourWager}`;
     opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
     enableChoiceButtons();
@@ -247,7 +267,6 @@ function registerSocketIOEventListeners() {
 
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'contents';
-    // join the created RPS contract
     // const stakeUSD = data.your_wager.replace(/^\$/, '');
     // console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
     // console.log(`Stake in USD: ${stakeUSD}`);
@@ -288,7 +307,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('game_started', (data) => {
     gameId = data.game_id;
-    if(!disconnected) {
+    if (!disconnected) {
       gameIdP.innerText = `Game ID: ${gameId}`;
     }
     opponentJoinP.innerText = 'You\'ve got an opponent! Try sending them a wager...';
@@ -464,7 +483,7 @@ function registerSocketIOEventListeners() {
     if (reason === 'insufficient_funds') {
       console.error(`Opponent insufficient funds: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'Your opponent didn\'t have the funds to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
-    } else if(reason == 'rpc_error') {
+    } else if (reason == 'rpc_error') {
       console.error(`Opponent JSON-RPC error: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'An error occurred when your opponent payed their wager. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     } else {
@@ -567,7 +586,7 @@ async function payStake(stakeUSD, contractAddress) {
 
   payStakeStatusP.innerText = 'Submitting transaction...';
 
-  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
+  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
   console.log(`The maxFeePerGas is ${maxFeePerGas}`);
 
   transaction['gas'] = gasEstimate;
@@ -580,10 +599,10 @@ async function payStake(stakeUSD, contractAddress) {
 
     let dappError = {}
 
-    if(error.innerError) {
+    if (error.innerError) {
       dappError['error'] = error.innerError
     } else {
-      dappError['error'] = error.error      
+      dappError['error'] = error.error
     }
 
     if (dappError.error.code === 4001) {
@@ -710,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   payStakeStatusP = document.getElementById('pay-stake-status');
   payStakeStatusP.style.marginBottom = '10px';
-  
+
   modal = document.querySelector('.modal');
   overlay = document.querySelector('.overlay');
   closeModalBtn = document.querySelector('.close-modal');
