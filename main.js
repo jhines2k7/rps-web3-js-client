@@ -44,8 +44,6 @@ let heartbeatInterval;
 
 let disconnected = false;
 
-let initialBalanceInWei = 0;
-
 let modal;
 let overlay;
 let closeModalBtn;
@@ -723,14 +721,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Request access to user's MetaMask accounts
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
+    // await window.ethereum.request({ method: 'eth_requestAccounts' })
 
     web3 = new Web3(window.ethereum);
 
     // Use web3.js
     accounts = await web3.eth.getAccounts();
-    initialBalanceInWei = await web3.eth.getBalance(accounts[0]);
-    console.log(`Initial balance ${initialBalanceInWei}`);
 
     console.log(`Your accounts: ${accounts}`);
 
