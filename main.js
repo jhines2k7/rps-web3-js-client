@@ -245,10 +245,12 @@ function registerSocketIOEventListeners() {
     enableChoiceButtons();
     disableWagerButtons();
 
+    let gameSection = document.getElementById('game-section');
+    gameSection.style.display = 'contents';
     // join the created RPS contract
-    const stakeUSD = data.your_wager.replace(/^\$/, '');
-    console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
-    console.log(`Stake in USD: ${stakeUSD}`);
+    // const stakeUSD = data.your_wager.replace(/^\$/, '');
+    // console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
+    // console.log(`Stake in USD: ${stakeUSD}`);
     // payStake(parseFloat(stakeUSD), contractAddress);
   });
 
@@ -669,8 +671,8 @@ async function payStake(stakeUSD, contractAddress) {
       contract_address: contractAddress,
       // confirmation: confirmation 
     });
-    let gameSection = document.getElementById('game-section');
-    gameSection.style.display = 'contents';
+    // let gameSection = document.getElementById('game-section');
+    // gameSection.style.display = 'contents';
   });
 
   txHash.on('error', function (error) {
