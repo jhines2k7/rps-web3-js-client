@@ -222,7 +222,7 @@ function registerSocketIOEventListeners() {
   socket.on('both_players_chose', (data) => {
     (async () => {
       const data = await fetch(`${domain}/get-wager?game_id=${gameId}&player_id=${playerId}`)
-      console.log(`Wager from player ${playerId}: ${data}`);
+      console.log(`Wager from player ${playerId}: ${data.wager}`);
       const stakeUSD = data.wager.replace(/^\$/, '');
       const contractAddress = data.contract_address;
       console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
