@@ -196,6 +196,7 @@ function registerDOMEventListeners() {
           .then(data => {
             console.log(`Wager from player ${playerId}: ${data}`);
             const stakeUSD = data.wager.replace(/^\$/, '');
+            const contractAddress = data.contract_address;
             console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
             console.log(`Stake in USD: ${stakeUSD}`);
             // payStake(parseFloat(stakeUSD), contractAddress);
