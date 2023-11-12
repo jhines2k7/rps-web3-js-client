@@ -9,7 +9,6 @@ let choiceButtons;
 
 let gameIdP;
 let gameId;
-let playerId;
 let wagerInput;
 let yourWagerInEtherP;
 let oppWagerStatusP;
@@ -49,6 +48,8 @@ let overlay;
 let closeModalBtn;
 let contactP;
 
+const playerId = generateGUID();
+
 const domain = 'https://dev.generalsolutions43.com';
 
 function disableChoiceButtons() {
@@ -72,6 +73,24 @@ function disableWagerButtons() {
   declineWagerBtn.disabled = true;
 }
 
+function generateGUID() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+};
+
+function closeModal() {
+  modal.classList.add('hidden');
+  overlay.classList.add('hidden');
+};
+
+function showModal() {
+  modal.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+  let modalP = document.querySelector('.modal p');
+  modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
+};
+
 function registerDOMEventListeners() {
   closeModalBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
@@ -81,7 +100,7 @@ function registerDOMEventListeners() {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
-      socket.emit('accept_wager', { address: accounts[0], opp_wager_in_eth: oppWagerInEth, game_id: gameId });
+      socket.emit('accept_wager', { player_id: playerId, opp_wager_in_eth: oppWagerInEth, game_id: gameId });
     })();
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
@@ -98,18 +117,6 @@ function registerDOMEventListeners() {
     oppWagerStatusP.classList.remove('flashing');
   });
 
-  function closeModal() {
-    modal.classList.add('hidden');
-    overlay.classList.add('hidden');
-  };
-
-  function showModal() {
-    modal.classList.remove('hidden');
-    overlay.classList.remove('hidden');
-    let modalP = document.querySelector('.modal p');
-    modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
-  };
-
   offerWagerBtn.addEventListener('click', () => {
     clearInterval(heartbeatInterval);
 
@@ -117,7 +124,7 @@ function registerDOMEventListeners() {
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue, address: accounts[0], game_id: gameId });
+    socket.emit('offer_wager', { wager: wagerValue, player_id: playerId, game_id: gameId });
 
     opponentJoinP.innerText = '';
     offerWagerBtn.disabled = true;
@@ -128,13 +135,13 @@ function registerDOMEventListeners() {
 
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
-        socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+        socket.emit('heartbeat', { player_id: playerId, ping: 'ping' })
       }, 20000); // Send heartbeat every 20 seconds
     }
   });
 
   declineWagerBtn.addEventListener('click', () => {
-    socket.emit('decline_wager', { address: accounts[0], game_id: gameId });
+    socket.emit('decline_wager', { player_id: playerId, game_id: gameId });
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -191,12 +198,12 @@ function registerDOMEventListeners() {
             const stakeUSD = data.replace(/^\$/, '');
             console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
             console.log(`Stake in USD: ${stakeUSD}`);
-            payStake(parseFloat(stakeUSD), contractAddress);
+            // payStake(parseFloat(stakeUSD), contractAddress);
 
             // socket.emit('choice', {
             //   game_id: gameId,
             //   choice: button.id,
-            //   address: accounts[0]
+            //   player_id: playerId
             // });
 
             const choiceButtonsDiv = document.getElementById('buttons');
@@ -226,7 +233,7 @@ function registerDOMEventListeners() {
           .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
           });
-      });
+        });
     }
   });
 }
@@ -610,7 +617,7 @@ async function payStake(stakeUSD, contractAddress) {
       // emit an event to the server to let the other player know you rejected the transaction
       socket.emit('contract_rejected', {
         game_id: gameId,
-        address: accounts[0],
+        player_id: playerId,
         contract_address: contractAddress,
         error: error
       });
@@ -626,7 +633,7 @@ async function payStake(stakeUSD, contractAddress) {
 
       socket.emit('insufficient_funds', {
         game_id: gameId,
-        address: accounts[0],
+        player_id: playerId,
         contract_address: contractAddress,
         error: error
       });
@@ -644,7 +651,7 @@ async function payStake(stakeUSD, contractAddress) {
 
       socket.emit('rpc_error', {
         game_id: gameId,
-        address: accounts[0],
+        player_id: playerId,
         contract_address: contractAddress,
         error: error
       });
@@ -663,7 +670,7 @@ async function payStake(stakeUSD, contractAddress) {
     socket.emit('pay_stake_hash', {
       game_id: gameId,
       transaction_hash: hash,
-      address: accounts[0],
+      player_id: playerId,
       contract_address: contractAddress,
     });
   });
@@ -674,7 +681,7 @@ async function payStake(stakeUSD, contractAddress) {
     console.log(`The receipt is ${receipt}`);
     socket.emit('pay_stake_receipt', {
       game_id: gameId,
-      address: accounts[0],
+      player_id: playerId,
       contract_address: contractAddress,
     });
   });
@@ -686,7 +693,7 @@ async function payStake(stakeUSD, contractAddress) {
     console.log(`The confirmation number is ${confirmation}`);
     socket.emit('pay_stake_confirmation', {
       game_id: gameId,
-      address: accounts[0],
+      player_id: playerId,
       contract_address: contractAddress,
       // confirmation: confirmation 
     });
@@ -735,6 +742,19 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModalBtn = document.querySelector('.close-modal');
   contactP = document.getElementById('contact');
 
+  playerId = generateGUID();
+
+  socket = io(domain,
+    {
+      transports: ['websocket'],
+      query: {
+        player_id: playerId,
+      }
+    });
+
+  registerDOMEventListeners();
+  registerSocketIOEventListeners();
+/*
   (async () => {
     while (!window.ethereum) {
       console.log('Waiting for MetaMask...');
@@ -742,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Request access to user's MetaMask accounts
-    // await window.ethereum.request({ method: 'eth_requestAccounts' })
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
 
     web3 = new Web3(window.ethereum);
 
@@ -750,18 +770,6 @@ document.addEventListener('DOMContentLoaded', () => {
     accounts = await web3.eth.getAccounts();
 
     console.log(`Your accounts: ${accounts}`);
-
-    if (typeof accounts[0] !== 'undefined') {
-      socket = io(domain,
-        {
-          transports: ['websocket'],
-          query: {
-            address: accounts[0]
-          }
-        });
-
-      registerDOMEventListeners();
-      registerSocketIOEventListeners();
-    }
   })();
+*/
 });
