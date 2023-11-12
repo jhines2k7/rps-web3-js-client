@@ -183,63 +183,55 @@ function registerDOMEventListeners() {
 
   choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
-      button.addEventListener('click', (event) => {
+      button.addEventListener('click', (event) => {        
+        const choiceButtonsDiv = document.getElementById('buttons');
+        choiceButtonsDiv.remove();
 
-        // get wager from the server here...
-        fetch(`${domain}/get-wager?game_id=${gameId}&address=${accounts[0]}`)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log(`Wager from player ${playerId}: ${data}`);
-            const stakeUSD = data.wager.replace(/^\$/, '');
-            const contractAddress = data.contract_address;
-            console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
-            console.log(`Stake in USD: ${stakeUSD}`);
-            // payStake(parseFloat(stakeUSD), contractAddress);
+        const choice = button.id;
+        console.log(`You chose ${choice}`);
+        document.querySelector('#symbol-choice p').innerText = `YOU chose`;
 
-            // socket.emit('choice', {
-            //   game_id: gameId,
-            //   choice: button.id,
-            //   player_id: playerId
-            // });
+        let playerChoiceP = document.createElement('p');
+        playerChoiceP.innerText = `${button.id.toUpperCase()}`;
 
-            const choiceButtonsDiv = document.getElementById('buttons');
-            choiceButtonsDiv.remove();
+        const colors = {
+          'rock': 'red',
+          'paper': 'purple',
+          'scissors': 'seagreen'
+        }
+        playerChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
 
-            const choice = button.id;
-            console.log(`You chose ${choice}`);
-            document.querySelector('#symbol-choice p').innerText = `YOU chose`;
+        let symbolChoiceDiv = document.getElementById('symbol-choice');
 
-            let playerChoiceP = document.createElement('p');
-            playerChoiceP.innerText = `${button.id.toUpperCase()}`;
+        let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+        opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
 
-            const colors = {
-              'rock': 'red',
-              'paper': 'purple',
-              'scissors': 'seagreen'
-            }
-            playerChoiceP.classList.add('xxx-large-peace-sans', colors[choice]);
+        symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
 
-            let symbolChoiceDiv = document.getElementById('symbol-choice');
-
-            let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-            opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
-
-            symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
-          })
-          .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-          });
+        socket.emit('choice', {
+          game_id: gameId,
+          choice: button.id,
+          player_id: playerId
         });
+      });
     }
   });
 }
 
 function registerSocketIOEventListeners() {
+  socket.on('both_players_chose', (data) => {
+    (async () => {
+      const data = await fetch(`${domain}/get-wager?game_id=${gameId}&player_id=${playerId}`)
+      console.log(`Wager from player ${playerId}: ${data}`);
+      const stakeUSD = data.wager.replace(/^\$/, '');
+      const contractAddress = data.contract_address;
+      console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
+      console.log(`Stake in USD: ${stakeUSD}`);
+      
+      payStake(parseFloat(stakeUSD), contractAddress);
+    })();
+  });
+
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
     oppWagerStatusP.innerText = `You were offered a ${data.wager} wager.`;
@@ -579,6 +571,23 @@ async function payStake(stakeUSD, contractAddress) {
   const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
   console.log(`The stake in Wei is ${stakeInWei}`);
 
+  (async () => {
+    while (!window.ethereum) {
+      console.log('Waiting for MetaMask...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    // Request access to user's MetaMask accounts
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
+
+    web3 = new Web3(window.ethereum);
+
+    // Use web3.js
+    accounts = await web3.eth.getAccounts();
+
+    console.log(`Your accounts: ${accounts}`);
+  })();
+
   const encodedData = RPSContract.methods.payStake().encodeABI();
   const transaction = {
     'from': web3.utils.toChecksumAddress(accounts[0]),
@@ -683,6 +692,7 @@ async function payStake(stakeUSD, contractAddress) {
     socket.emit('pay_stake_receipt', {
       game_id: gameId,
       player_id: playerId,
+      address: accounts[0],
       contract_address: contractAddress,
     });
   });
@@ -696,10 +706,7 @@ async function payStake(stakeUSD, contractAddress) {
       game_id: gameId,
       player_id: playerId,
       contract_address: contractAddress,
-      // confirmation: confirmation 
     });
-    // let gameSection = document.getElementById('game-section');
-    // gameSection.style.display = 'contents';
   });
 
   txHash.on('error', function (error) {
@@ -752,22 +759,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   registerDOMEventListeners();
   registerSocketIOEventListeners();
-/*
-  (async () => {
-    while (!window.ethereum) {
-      console.log('Waiting for MetaMask...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-
-    // Request access to user's MetaMask accounts
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-
-    web3 = new Web3(window.ethereum);
-
-    // Use web3.js
-    accounts = await web3.eth.getAccounts();
-
-    console.log(`Your accounts: ${accounts}`);
-  })();
-*/
 });
