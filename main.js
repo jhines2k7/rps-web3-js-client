@@ -569,18 +569,6 @@ async function loadContractABI() {
 }
 
 async function payStake(stakeUSD, contractAddress) {
-  // Fetch the RPSContract
-  const rpsContractABI = await loadContractABI();
-  const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
-
-  const nonce = await web3.eth.getTransactionCount(accounts[0]);
-  console.log(`The nonce for your address is ${nonce}`);
-
-  let stakeInEther = await dollarsToEthereum(stakeUSD);
-  console.log(`The stake in Ether is ${stakeInEther}`);
-  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
-  console.log(`The stake in Wei is ${stakeInWei}`);
-
   (async () => {
     while (!window.ethereum) {
       console.log('Waiting for MetaMask...');
@@ -597,6 +585,18 @@ async function payStake(stakeUSD, contractAddress) {
 
     console.log(`Your accounts: ${accounts}`);
   })();
+
+  // Fetch the RPSContract
+  const rpsContractABI = await loadContractABI();
+  const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
+
+  const nonce = await web3.eth.getTransactionCount(accounts[0]);
+  console.log(`The nonce for your address is ${nonce}`);
+
+  let stakeInEther = await dollarsToEthereum(stakeUSD);
+  console.log(`The stake in Ether is ${stakeInEther}`);
+  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
+  console.log(`The stake in Wei is ${stakeInWei}`);
 
   const encodedData = RPSContract.methods.payStake().encodeABI();
   const transaction = {
