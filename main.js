@@ -584,145 +584,146 @@ async function payStake(stakeUSD, contractAddress) {
     accounts = await web3.eth.getAccounts();
 
     console.log(`Your accounts: ${accounts}`);
+
+    // Fetch the RPSContract
+    const rpsContractABI = await loadContractABI();
+    const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
+
+    const nonce = await web3.eth.getTransactionCount(accounts[0]);
+    console.log(`The nonce for your address is ${nonce}`);
+
+    let stakeInEther = await dollarsToEthereum(stakeUSD);
+    console.log(`The stake in Ether is ${stakeInEther}`);
+    const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
+    console.log(`The stake in Wei is ${stakeInWei}`);
+
+    const encodedData = RPSContract.methods.payStake().encodeABI();
+    const transaction = {
+      'from': web3.utils.toChecksumAddress(accounts[0]),
+      'to': web3.utils.toChecksumAddress(contractAddress),
+      'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
+      'nonce': nonce,
+      'data': encodedData,
+    };
+
+    const gasEstimate = await web3.eth.estimateGas(transaction);
+    console.log(`The gas estimate is ${gasEstimate}`);
+    const gasOracle = await getGasOracle();
+
+    payStakeStatusP.innerText = 'Submitting transaction...';
+
+    // const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
+    const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei'));
+    console.log(`The maxFeePerGas is ${maxFeePerGas}`);
+
+    transaction['gas'] = gasEstimate;
+    transaction['maxFeePerGas'] = maxFeePerGas.toString();
+    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
+    const txHash = web3.eth.sendTransaction(transaction);
+
+    txHash.catch((error) => {
+      console.error(JSON.stringify(error));
+
+      let dappError = {}
+
+      if (error.innerError) {
+        dappError['error'] = error.innerError
+      } else {
+        dappError['error'] = error.error
+      }
+
+      if (dappError.error.code === 4001) {
+        console.error(dappError.error.message);
+        // emit an event to the server to let the other player know you rejected the transaction
+        socket.emit('contract_rejected', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
+          "Refresh to start a new game.";
+
+        payStakeStatusP.classList.remove('flashing');
+      }
+
+      if (dappError.error.code === -32000) {
+        console.error(dappError.error.message);
+
+        socket.emit('insufficient_funds', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
+          " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
+          "in a few minutes or refresh now to start a new game.";
+
+        payStakeStatusP.style.color = 'red';
+        payStakeStatusP.classList.remove('flashing');
+      }
+
+      if (dappError.error.code === -32603) {
+        console.error(dappError.error.message);
+
+        socket.emit('rpc_error', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
+
+        payStakeStatusP.style.color = 'red';
+        payStakeStatusP.classList.remove('flashing');
+      }
+    });
+
+    txHash.on('transactionHash', function (hash) {
+      payStakeStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
+      // Transaction hash received
+      console.log(`The transaction hash is ${hash}`);
+      socket.emit('pay_stake_hash', {
+        game_id: gameId,
+        transaction_hash: hash,
+        player_id: playerId,
+        contract_address: contractAddress,
+      });
+    });
+
+    txHash.on('receipt', function (receipt) {
+      payStakeStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
+      // Transaction receipt received
+      console.log(`The receipt is ${receipt}`);
+      socket.emit('pay_stake_receipt', {
+        game_id: gameId,
+        player_id: playerId,
+        address: accounts[0],
+        contract_address: contractAddress,
+      });
+    });
+
+    txHash.on('confirmation', function (confirmation, receipt) {
+      payStakeStatusP.innerText = 'Transaction confirmed.';
+      payStakeStatusP.classList.remove('flashing');
+      // Transaction confirmed
+      console.log(`The confirmation number is ${confirmation}`);
+      socket.emit('pay_stake_confirmation', {
+        game_id: gameId,
+        player_id: playerId,
+        contract_address: contractAddress,
+      });
+    });
+
+    txHash.on('error', function (error) {
+      // Transaction error occurred
+      console.error(`An error occurred: ${error}`);
+    });
   })();
-
-  // Fetch the RPSContract
-  const rpsContractABI = await loadContractABI();
-  const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
-
-  const nonce = await web3.eth.getTransactionCount(accounts[0]);
-  console.log(`The nonce for your address is ${nonce}`);
-
-  let stakeInEther = await dollarsToEthereum(stakeUSD);
-  console.log(`The stake in Ether is ${stakeInEther}`);
-  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
-  console.log(`The stake in Wei is ${stakeInWei}`);
-
-  const encodedData = RPSContract.methods.payStake().encodeABI();
-  const transaction = {
-    'from': web3.utils.toChecksumAddress(accounts[0]),
-    'to': web3.utils.toChecksumAddress(contractAddress),
-    'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
-    'nonce': nonce,
-    'data': encodedData,
-  };
-
-  const gasEstimate = await web3.eth.estimateGas(transaction);
-  console.log(`The gas estimate is ${gasEstimate}`);
-  const gasOracle = await getGasOracle();
-
-  payStakeStatusP.innerText = 'Submitting transaction...';
-
-  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
-  console.log(`The maxFeePerGas is ${maxFeePerGas}`);
-
-  transaction['gas'] = gasEstimate;
-  transaction['maxFeePerGas'] = maxFeePerGas.toString();
-  transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.FastGasPrice, 'gwei');
-  const txHash = web3.eth.sendTransaction(transaction);
-
-  txHash.catch((error) => {
-    console.error(JSON.stringify(error));
-
-    let dappError = {}
-
-    if (error.innerError) {
-      dappError['error'] = error.innerError
-    } else {
-      dappError['error'] = error.error
-    }
-
-    if (dappError.error.code === 4001) {
-      console.error(dappError.error.message);
-      // emit an event to the server to let the other player know you rejected the transaction
-      socket.emit('contract_rejected', {
-        game_id: gameId,
-        player_id: playerId,
-        contract_address: contractAddress,
-        error: error
-      });
-
-      payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
-        "Refresh to start a new game.";
-
-      payStakeStatusP.classList.remove('flashing');
-    }
-
-    if (dappError.error.code === -32000) {
-      console.error(dappError.error.message);
-
-      socket.emit('insufficient_funds', {
-        game_id: gameId,
-        player_id: playerId,
-        contract_address: contractAddress,
-        error: error
-      });
-
-      payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
-        " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
-        "in a few minutes or refresh now to start a new game.";
-
-      payStakeStatusP.style.color = 'red';
-      payStakeStatusP.classList.remove('flashing');
-    }
-
-    if (dappError.error.code === -32603) {
-      console.error(dappError.error.message);
-
-      socket.emit('rpc_error', {
-        game_id: gameId,
-        player_id: playerId,
-        contract_address: contractAddress,
-        error: error
-      });
-
-      payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
-
-      payStakeStatusP.style.color = 'red';
-      payStakeStatusP.classList.remove('flashing');
-    }
-  });
-
-  txHash.on('transactionHash', function (hash) {
-    payStakeStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
-    // Transaction hash received
-    console.log(`The transaction hash is ${hash}`);
-    socket.emit('pay_stake_hash', {
-      game_id: gameId,
-      transaction_hash: hash,
-      player_id: playerId,
-      contract_address: contractAddress,
-    });
-  });
-
-  txHash.on('receipt', function (receipt) {
-    payStakeStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
-    // Transaction receipt received
-    console.log(`The receipt is ${receipt}`);
-    socket.emit('pay_stake_receipt', {
-      game_id: gameId,
-      player_id: playerId,
-      address: accounts[0],
-      contract_address: contractAddress,
-    });
-  });
-
-  txHash.on('confirmation', function (confirmation, receipt) {
-    payStakeStatusP.innerText = 'Transaction confirmed.';
-    payStakeStatusP.classList.remove('flashing');
-    // Transaction confirmed
-    console.log(`The confirmation number is ${confirmation}`);
-    socket.emit('pay_stake_confirmation', {
-      game_id: gameId,
-      player_id: playerId,
-      contract_address: contractAddress,
-    });
-  });
-
-  txHash.on('error', function (error) {
-    // Transaction error occurred
-    console.error(`An error occurred: ${error}`);
-  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
