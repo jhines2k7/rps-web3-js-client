@@ -710,7 +710,6 @@ async function payStake(stakeUSD, contractAddress) {
 document.addEventListener('DOMContentLoaded', () => {
   choiceButtons = document.querySelectorAll('#buttons button');
   gameIdP = document.getElementById('game-id');
-  playerId = document.getElementById('player-id');
   wagerInput = document.getElementById('wager-input');
   wagerInputPlaceholder = wagerInput.placeholder;
   yourWagerInEtherP = document.getElementById('your-wager-in-ether');
