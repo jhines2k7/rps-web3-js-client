@@ -741,8 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModalBtn = document.querySelector('.close-modal');
   contactP = document.getElementById('contact');
 
-  playerId = generateGUID();
-
   socket = io(domain,
     {
       transports: ['websocket'],
