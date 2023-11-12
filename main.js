@@ -612,8 +612,8 @@ async function payStake(stakeUSD, contractAddress) {
 
     payStakeStatusP.innerText = 'Submitting transaction...';
 
-    // const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
-    const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei'));
+    const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
+    // const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei'));
     console.log(`The maxFeePerGas is ${maxFeePerGas}`);
 
     transaction['gas'] = gasEstimate;
