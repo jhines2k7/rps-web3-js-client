@@ -219,6 +219,17 @@ function registerDOMEventListeners() {
 }
 
 function registerSocketIOEventListeners() {
+  // notify player opponent accepted contract
+  socket.on('opponent_accepted_contract', (data) => {
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = 'Your opponent called your bet.';
+  });
+    
+  socket.io.on('both_players_accepted_contract', (data) => {
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+      opponentChoiceStatus.innerText = 'Settling the bet... Good luck!';
+  });
+
   socket.on('both_players_chose', (data) => {
     fetch(`${domain}/get-wager?game_id=${gameId}&player_id=${playerId}`)
       .then(response => {
