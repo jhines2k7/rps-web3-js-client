@@ -231,7 +231,6 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('both_players_chose', (data) => {
-    console.log(`Response data from call to get-wager: ${JSON.stringify(data)}`);
     console.log(`Wager from player ${playerId}: ${data.wager}`);
     const stakeUSD = data.wager.replace(/^\$/, '');
     const contractAddress = data.contract_address;
