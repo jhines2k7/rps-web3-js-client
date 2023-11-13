@@ -604,12 +604,12 @@ async function payStake(stakeUSD, contractAddress) {
 
     payStakeStatusP.innerText = 'Submitting transaction...';
 
-    const maxPriorityFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')) - web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei'));
+    const maxPriorityFeePerGas = parseInt(gasOracle.FastGasPrice) - parseInt(gasOracle.suggestBaseFee);
     console.log(`The maxFeePerGas is ${maxPriorityFeePerGas}`);
 
     transaction['gas'] = gasEstimate;
     transaction['maxFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
-    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(maxPriorityFeePerGas, 'gwei');
+    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(maxPriorityFeePerGas.toString(), 'gwei');
     const txHash = web3.eth.sendTransaction(transaction);
 
     txHash.catch((error) => {
