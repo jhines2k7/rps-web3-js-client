@@ -448,15 +448,15 @@ function registerSocketIOEventListeners() {
     disableWagerButtons();
   });
 
-  socket.on('contract_creation_error', () => {
-    console.error('Error creating contract');
-    payStakeStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
-    payStakeStatusP.style.color = 'red';
-  });
+  // socket.on('contract_creation_error', () => {
+  //   console.error('Error creating contract');
+  //   payStakeStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
+  //   payStakeStatusP.style.color = 'red';
+  // });
 
   socket.on('pay_winner_error', () => {
     console.error('Error paying winner');
-    payStakeStatusP.innerText = 'There was an error paying the winner. Refresh to start a new game.';
+    payStakeStatusP.innerText = 'An error occured while settling the bet. Refresh to start a new game.';
     payStakeStatusP.style.color = 'red';
   });
 
