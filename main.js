@@ -224,7 +224,7 @@ function registerSocketIOEventListeners() {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = 'Your opponent called your bet.';
   });
-    
+
   socket.on('both_players_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = 'Settling the bet... Good luck!';
@@ -604,13 +604,12 @@ async function payStake(stakeUSD, contractAddress) {
 
     payStakeStatusP.innerText = 'Submitting transaction...';
 
-    // const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
-    const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei'));
-    console.log(`The maxFeePerGas is ${maxFeePerGas}`);
+    const maxPriorityFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')) - web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei'));
+    console.log(`The maxFeePerGas is ${maxPriorityFeePerGas}`);
 
     transaction['gas'] = gasEstimate;
-    transaction['maxFeePerGas'] = maxFeePerGas.toString();
-    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
+    transaction['maxFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
+    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(maxPriorityFeePerGas, 'gwei');
     const txHash = web3.eth.sendTransaction(transaction);
 
     txHash.catch((error) => {
