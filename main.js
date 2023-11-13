@@ -227,7 +227,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('both_players_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-    opponentChoiceStatus.innerText = 'Settling the bet... Good luck!';
+    opponentChoiceStatus.innerText = 'Settling up... Good luck!';
   });
 
   socket.on('both_players_chose', (data) => {
