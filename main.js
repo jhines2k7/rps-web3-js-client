@@ -360,7 +360,7 @@ function registerSocketIOEventListeners() {
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings);
       let winningsInEthP = document.createElement('p');
-      winningsInEthP.innerText = `You won ${winningsInEth} eth`;
+      winningsInEthP.innerText = `You won ${winningsInEth} eth. Refresh to start a new game.`;
       resultsDiv.appendChild(winningsInEthP);
 
       const etherscanLink = document.createElement("a");
@@ -400,7 +400,7 @@ function registerSocketIOEventListeners() {
     (async () => {
       const lossesInEth = await dollarsToEthereum(data.losses.replace(/^\$/, ''));
       let lossesInEthP = document.createElement('p');
-      lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
+      lossesInEthP.innerText = `You lost ${lossesInEth} eth. Refresh to start a new game.`;
       resultsDiv.appendChild(lossesInEthP);
 
       const etherscanLink = document.createElement("a");
