@@ -222,7 +222,7 @@ function registerSocketIOEventListeners() {
   // notify player opponent accepted contract
   socket.on('opponent_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-    opponentChoiceStatus.innerText = 'Your opponent called your bet.';
+    opponentChoiceStatus.innerText = 'Your opponent made their choice.';
   });
 
   socket.on('both_players_accepted_contract', () => {
@@ -602,6 +602,11 @@ async function payStake(stakeUSD, contractAddress) {
     const gasOracle = await getGasOracle();
 
     payStakeStatusP.innerText = 'Submitting transaction...';
+
+    socket.emit('paying_stake', {
+      game_id: gameId,
+      player_id: playerId,
+    });
 
     const maxPriorityFeePerGas = parseInt(gasOracle.FastGasPrice) - parseInt(gasOracle.suggestBaseFee);
     console.log(`The maxFeePerGas is ${maxPriorityFeePerGas}`);
