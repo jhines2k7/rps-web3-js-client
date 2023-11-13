@@ -220,37 +220,25 @@ function registerDOMEventListeners() {
 
 function registerSocketIOEventListeners() {
   // notify player opponent accepted contract
-  socket.on('opponent_accepted_contract', (data) => {
+  socket.on('opponent_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
     opponentChoiceStatus.innerText = 'Your opponent called your bet.';
   });
     
-  socket.io.on('both_players_accepted_contract', (data) => {
+  socket.io.on('both_players_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
       opponentChoiceStatus.innerText = 'Settling the bet... Good luck!';
   });
 
   socket.on('both_players_chose', (data) => {
-    fetch(`${domain}/get-wager?game_id=${gameId}&player_id=${playerId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json(); // or response.text() if the data is plain text
-      })
-      .then(data => {
-        console.log(`Response data from call to get-wager: ${JSON.stringify(data)}`);
-        console.log(`Wager from player ${playerId}: ${data.wager}`);
-        const stakeUSD = data.wager.replace(/^\$/, '');
-        const contractAddress = data.contract_address;
-        console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
-        console.log(`Stake in USD: ${stakeUSD}`);
+    console.log(`Response data from call to get-wager: ${JSON.stringify(data)}`);
+    console.log(`Wager from player ${playerId}: ${data.wager}`);
+    const stakeUSD = data.wager.replace(/^\$/, '');
+    const contractAddress = data.contract_address;
+    console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
+    console.log(`Stake in USD: ${stakeUSD}`);
 
-        payStake(parseFloat(stakeUSD), contractAddress);
-      })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-      });
+    payStake(parseFloat(stakeUSD), contractAddress);
   });
 
   socket.on('wager_offered', (data) => {
@@ -275,12 +263,9 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('both_wagers_accepted', (data) => {
-    // const contractAddress = data.contract_address;
     const yourWager = data.your_wager;
     const opponentWager = data.opponent_wager;
 
-    // console.log("Paying stakes...");
-    // payStakeStatusP.innerText = 'Paying stakes...';
     yourWagerP.innerText = `YOU wagered ${yourWager}`;
     opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
     enableChoiceButtons();
@@ -288,10 +273,6 @@ function registerSocketIOEventListeners() {
 
     let gameSection = document.getElementById('game-section');
     gameSection.style.display = 'contents';
-    // const stakeUSD = data.your_wager.replace(/^\$/, '');
-    // console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
-    // console.log(`Stake in USD: ${stakeUSD}`);
-    // payStake(parseFloat(stakeUSD), contractAddress);
   });
 
   socket.on('wager_accepted', (data) => {
@@ -713,7 +694,6 @@ async function payStake(stakeUSD, contractAddress) {
       socket.emit('pay_stake_receipt', {
         game_id: gameId,
         player_id: playerId,
-        address: accounts[0],
         contract_address: contractAddress,
       });
     });
@@ -726,6 +706,7 @@ async function payStake(stakeUSD, contractAddress) {
       socket.emit('pay_stake_confirmation', {
         game_id: gameId,
         player_id: playerId,
+        address: accounts[0],
         contract_address: contractAddress,
       });
     });
