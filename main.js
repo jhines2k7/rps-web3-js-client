@@ -50,7 +50,7 @@ let contactP;
 
 const playerId = generateGUID();
 
-const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
+const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
