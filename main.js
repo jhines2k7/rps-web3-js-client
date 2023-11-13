@@ -9,7 +9,6 @@ let choiceButtons;
 
 let gameIdP;
 let gameId;
-let playerId;
 let wagerInput;
 let yourWagerInEtherP;
 let oppWagerStatusP;
@@ -44,14 +43,14 @@ let heartbeatInterval;
 
 let disconnected = false;
 
-let initialBalanceInWei = 0;
-
 let modal;
 let overlay;
 let closeModalBtn;
 let contactP;
 
-const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
+const playerId = generateGUID();
+
+const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
@@ -74,6 +73,24 @@ function disableWagerButtons() {
   declineWagerBtn.disabled = true;
 }
 
+function generateGUID() {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+};
+
+function closeModal() {
+  modal.classList.add('hidden');
+  overlay.classList.add('hidden');
+};
+
+function showModal() {
+  modal.classList.remove('hidden');
+  overlay.classList.remove('hidden');
+  let modalP = document.querySelector('.modal p');
+  modalP.innerText = `Be sure to include your game ID: ${gameId} and player Id: ${playerId} in your message.`;
+};
+
 function registerDOMEventListeners() {
   closeModalBtn.addEventListener("click", closeModal);
   overlay.addEventListener("click", closeModal);
@@ -83,34 +100,22 @@ function registerDOMEventListeners() {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
-      socket.emit('accept_wager', { address: accounts[0], opp_wager_in_eth: oppWagerInEth, game_id: gameId });
+      socket.emit('accept_wager', { player_id: playerId, opp_wager_in_eth: oppWagerInEth, game_id: gameId });
     })();
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
 
     opponentJoinP.innerText = '';
-    
-    if(yourWagerStatusP.innerText === '') {
+
+    if (yourWagerStatusP.innerText === '') {
       yourWagerStatusP.innerText = 'Try to offer your opponent a wager...';
       yourWagerStatusP.classList.add('flashing');
       yourWagerStatusP.style.color = 'green';
     }
-    
+
     oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
     oppWagerStatusP.classList.remove('flashing');
   });
-
-  function closeModal() {
-    modal.classList.add('hidden');
-    overlay.classList.add('hidden');
-  };
-  
-  function showModal() {
-    modal.classList.remove('hidden');
-    overlay.classList.remove('hidden');
-    let modalP = document.querySelector('.modal p');
-    modalP.innerText = `Be sure to include your game ID: ${gameId} and address: ${accounts[0]} in your message.`;
-  };
 
   offerWagerBtn.addEventListener('click', () => {
     clearInterval(heartbeatInterval);
@@ -119,7 +124,7 @@ function registerDOMEventListeners() {
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue, address: accounts[0], game_id: gameId });
+    socket.emit('offer_wager', { wager: wagerValue, player_id: playerId, game_id: gameId });
 
     opponentJoinP.innerText = '';
     offerWagerBtn.disabled = true;
@@ -130,13 +135,13 @@ function registerDOMEventListeners() {
 
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
-        socket.emit('heartbeat', { address: accounts[0], ping: 'ping' })
+        socket.emit('heartbeat', { player_id: playerId, ping: 'ping' })
       }, 20000); // Send heartbeat every 20 seconds
     }
   });
 
   declineWagerBtn.addEventListener('click', () => {
-    socket.emit('decline_wager', { address: accounts[0], game_id: gameId });
+    socket.emit('decline_wager', { player_id: playerId, game_id: gameId });
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -179,12 +184,6 @@ function registerDOMEventListeners() {
   choiceButtons.forEach((button) => {
     if (button.id === 'rock' || button.id === 'paper' || button.id === 'scissors') {
       button.addEventListener('click', (event) => {
-        socket.emit('choice', {
-          game_id: gameId,
-          choice: button.id,
-          address: accounts[0]
-        });
-
         const choiceButtonsDiv = document.getElementById('buttons');
         choiceButtonsDiv.remove();
 
@@ -208,12 +207,39 @@ function registerDOMEventListeners() {
         opponentChoiceStatus.innerText = 'Waiting for opponent to choose...';
 
         symbolChoiceDiv.insertBefore(playerChoiceP, opponentChoiceStatus);
+
+        socket.emit('choice', {
+          game_id: gameId,
+          choice: button.id,
+          player_id: playerId
+        });
       });
     }
   });
 }
 
 function registerSocketIOEventListeners() {
+  // notify player opponent accepted contract
+  socket.on('opponent_accepted_contract', () => {
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = 'Your opponent made their choice.';
+  });
+
+  socket.on('both_players_accepted_contract', () => {
+    let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
+    opponentChoiceStatus.innerText = 'Settling the bet... Good luck!';
+  });
+
+  socket.on('both_players_chose', (data) => {
+    console.log(`Wager from player ${playerId}: ${data.wager}`);
+    const stakeUSD = data.wager.replace(/^\$/, '');
+    const contractAddress = data.contract_address;
+    console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
+    console.log(`Stake in USD: ${stakeUSD}`);
+
+    payStake(parseFloat(stakeUSD), contractAddress);
+  });
+
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
     oppWagerStatusP.innerText = `You were offered a ${data.wager} wager.`;
@@ -236,22 +262,16 @@ function registerSocketIOEventListeners() {
   });
 
   socket.on('both_wagers_accepted', (data) => {
-    const contractAddress = data.contract_address;
     const yourWager = data.your_wager;
     const opponentWager = data.opponent_wager;
 
-    console.log("Paying stakes...");
-    payStakeStatusP.innerText = 'Paying stakes...';
     yourWagerP.innerText = `YOU wagered ${yourWager}`;
     opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
     enableChoiceButtons();
     disableWagerButtons();
 
-    // join the created RPS contract
-    const stakeUSD = data.your_wager.replace(/^\$/, '');
-    console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
-    console.log(`Stake in USD: ${stakeUSD}`);
-    payStake(parseFloat(stakeUSD), contractAddress);
+    let gameSection = document.getElementById('game-section');
+    gameSection.style.display = 'contents';
   });
 
   socket.on('wager_accepted', (data) => {
@@ -288,7 +308,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('game_started', (data) => {
     gameId = data.game_id;
-    if(!disconnected) {
+    if (!disconnected) {
       gameIdP.innerText = `Game ID: ${gameId}`;
     }
     opponentJoinP.innerText = 'You\'ve got an opponent! Try sending them a wager...';
@@ -339,7 +359,7 @@ function registerSocketIOEventListeners() {
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings);
       let winningsInEthP = document.createElement('p');
-      winningsInEthP.innerText = `You won ${winningsInEth} eth`;
+      winningsInEthP.innerText = `You won ${winningsInEth} eth. Refresh to start a new game.`;
       resultsDiv.appendChild(winningsInEthP);
 
       const etherscanLink = document.createElement("a");
@@ -379,7 +399,7 @@ function registerSocketIOEventListeners() {
     (async () => {
       const lossesInEth = await dollarsToEthereum(data.losses.replace(/^\$/, ''));
       let lossesInEthP = document.createElement('p');
-      lossesInEthP.innerText = `You lost ${lossesInEth} eth`;
+      lossesInEthP.innerText = `You lost ${lossesInEth} eth. Refresh to start a new game.`;
       resultsDiv.appendChild(lossesInEthP);
 
       const etherscanLink = document.createElement("a");
@@ -427,15 +447,15 @@ function registerSocketIOEventListeners() {
     disableWagerButtons();
   });
 
-  socket.on('contract_creation_error', () => {
-    console.error('Error creating contract');
-    payStakeStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
-    payStakeStatusP.style.color = 'red';
-  });
+  // socket.on('contract_creation_error', () => {
+  //   console.error('Error creating contract');
+  //   payStakeStatusP.innerText = 'There was an error creating the contract. Refresh to start a new game.';
+  //   payStakeStatusP.style.color = 'red';
+  // });
 
   socket.on('pay_winner_error', () => {
     console.error('Error paying winner');
-    payStakeStatusP.innerText = 'There was an error paying the winner. Refresh to start a new game.';
+    payStakeStatusP.innerText = 'An error occured while settling the bet. Refresh to start a new game.';
     payStakeStatusP.style.color = 'red';
   });
 
@@ -464,7 +484,7 @@ function registerSocketIOEventListeners() {
     if (reason === 'insufficient_funds') {
       console.error(`Opponent insufficient funds: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'Your opponent didn\'t have the funds to join the contract. You will be refunded your wager minus gas fees. Refresh to start a new game.';
-    } else if(reason == 'rpc_error') {
+    } else if (reason == 'rpc_error') {
       console.error(`Opponent JSON-RPC error: ${data.transaction_hash}`);
       wagerRefundStatusP.innerText = 'An error occurred when your opponent payed their wager. You will be refunded your wager minus gas fees. Refresh to start a new game.';
     } else {
@@ -540,151 +560,170 @@ async function loadContractABI() {
 }
 
 async function payStake(stakeUSD, contractAddress) {
-  // Fetch the RPSContract
-  const rpsContractABI = await loadContractABI();
-  const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
-
-  const nonce = await web3.eth.getTransactionCount(accounts[0]);
-  console.log(`The nonce for your address is ${nonce}`);
-
-  let stakeInEther = await dollarsToEthereum(stakeUSD);
-  console.log(`The stake in Ether is ${stakeInEther}`);
-  const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
-  console.log(`The stake in Wei is ${stakeInWei}`);
-
-  const encodedData = RPSContract.methods.payStake().encodeABI();
-  const transaction = {
-    'from': web3.utils.toChecksumAddress(accounts[0]),
-    'to': web3.utils.toChecksumAddress(contractAddress),
-    'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
-    'nonce': nonce,
-    'data': encodedData,
-  };
-
-  const gasEstimate = await web3.eth.estimateGas(transaction);
-  console.log(`The gas estimate is ${gasEstimate}`);
-  const gasOracle = await getGasOracle();
-
-  payStakeStatusP.innerText = 'Submitting transaction...';
-
-  const maxFeePerGas = web3.utils.toBigInt(web3.utils.toWei(gasOracle.suggestBaseFee, 'gwei')) * 2n + web3.utils.toBigInt(web3.utils.toWei(gasOracle.FastGasPrice, 'gwei')); 
-  console.log(`The maxFeePerGas is ${maxFeePerGas}`);
-
-  transaction['gas'] = gasEstimate;
-  transaction['maxFeePerGas'] = maxFeePerGas.toString();
-  transaction['maxPriorityFeePerGas'] = web3.utils.toWei(gasOracle.FastGasPrice, 'gwei');
-  const txHash = web3.eth.sendTransaction(transaction);
-
-  txHash.catch((error) => {
-    console.error(JSON.stringify(error));
-
-    let dappError = {}
-
-    if(error.innerError) {
-      dappError['error'] = error.innerError
-    } else {
-      dappError['error'] = error.error      
+  (async () => {
+    while (!window.ethereum) {
+      console.log('Waiting for MetaMask...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    if (dappError.error.code === 4001) {
-      console.error(dappError.error.message);
-      // emit an event to the server to let the other player know you rejected the transaction
-      socket.emit('contract_rejected', {
+    // Request access to user's MetaMask accounts
+    await window.ethereum.request({ method: 'eth_requestAccounts' })
+
+    web3 = new Web3(window.ethereum);
+
+    // Use web3.js
+    accounts = await web3.eth.getAccounts();
+
+    console.log(`Your accounts: ${accounts}`);
+
+    // Fetch the RPSContract
+    const rpsContractABI = await loadContractABI();
+    const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
+
+    const nonce = await web3.eth.getTransactionCount(accounts[0]);
+    console.log(`The nonce for your address is ${nonce}`);
+
+    let stakeInEther = await dollarsToEthereum(stakeUSD);
+    console.log(`The stake in Ether is ${stakeInEther}`);
+    const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
+    console.log(`The stake in Wei is ${stakeInWei}`);
+
+    const encodedData = RPSContract.methods.payStake().encodeABI();
+    const transaction = {
+      'from': web3.utils.toChecksumAddress(accounts[0]),
+      'to': web3.utils.toChecksumAddress(contractAddress),
+      'value': '0x' + web3.utils.toBigInt(stakeInWei).toString(16),
+      'nonce': nonce,
+      'data': encodedData,
+    };
+
+    const gasEstimate = await web3.eth.estimateGas(transaction);
+    console.log(`The gas estimate is ${gasEstimate}`);
+    const gasOracle = await getGasOracle();
+
+    payStakeStatusP.innerText = 'Submitting transaction...';
+
+    socket.emit('paying_stake', {
+      game_id: gameId,
+      player_id: playerId,
+    });
+
+    const maxPriorityFeePerGas = parseInt(gasOracle.FastGasPrice) - parseInt(gasOracle.suggestBaseFee);
+    console.log(`The maxFeePerGas is ${maxPriorityFeePerGas}`);
+
+    transaction['gas'] = gasEstimate;
+    transaction['maxFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
+    transaction['maxPriorityFeePerGas'] = web3.utils.toWei(maxPriorityFeePerGas.toString(), 'gwei');
+    const txHash = web3.eth.sendTransaction(transaction);
+
+    txHash.catch((error) => {
+      console.error(JSON.stringify(error));
+
+      let dappError = {}
+
+      if (error.innerError) {
+        dappError['error'] = error.innerError
+      } else {
+        dappError['error'] = error.error
+      }
+
+      if (dappError.error.code === 4001) {
+        console.error(dappError.error.message);
+        // emit an event to the server to let the other player know you rejected the transaction
+        socket.emit('contract_rejected', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
+          "Refresh to start a new game.";
+
+        payStakeStatusP.classList.remove('flashing');
+      }
+
+      if (dappError.error.code === -32000) {
+        console.error(dappError.error.message);
+
+        socket.emit('insufficient_funds', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
+          " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
+          "in a few minutes or refresh now to start a new game.";
+
+        payStakeStatusP.style.color = 'red';
+        payStakeStatusP.classList.remove('flashing');
+      }
+
+      if (dappError.error.code === -32603) {
+        console.error(dappError.error.message);
+
+        socket.emit('rpc_error', {
+          game_id: gameId,
+          player_id: playerId,
+          contract_address: contractAddress,
+          error: error
+        });
+
+        payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
+
+        payStakeStatusP.style.color = 'red';
+        payStakeStatusP.classList.remove('flashing');
+      }
+    });
+
+    txHash.on('transactionHash', function (hash) {
+      payStakeStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
+      // Transaction hash received
+      console.log(`The transaction hash is ${hash}`);
+      socket.emit('pay_stake_hash', {
         game_id: gameId,
+        transaction_hash: hash,
+        player_id: playerId,
+        contract_address: contractAddress,
+      });
+    });
+
+    txHash.on('receipt', function (receipt) {
+      payStakeStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
+      // Transaction receipt received
+      console.log(`The receipt is ${receipt}`);
+      socket.emit('pay_stake_receipt', {
+        game_id: gameId,
+        player_id: playerId,
         address: accounts[0],
         contract_address: contractAddress,
-        error: error
       });
+    });
 
-      payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
-        "Refresh to start a new game.";
-
+    txHash.on('confirmation', function (confirmation, receipt) {
+      payStakeStatusP.innerText = 'Transaction confirmed.';
       payStakeStatusP.classList.remove('flashing');
-    }
-
-    if (dappError.error.code === -32000) {
-      console.error(dappError.error.message);
-
-      socket.emit('insufficient_funds', {
+      // Transaction confirmed
+      console.log(`The confirmation number is ${confirmation}`);
+      socket.emit('pay_stake_confirmation', {
         game_id: gameId,
-        address: accounts[0],
+        player_id: playerId,
         contract_address: contractAddress,
-        error: error
       });
-
-      payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
-        " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
-        "in a few minutes or refresh now to start a new game.";
-
-      payStakeStatusP.style.color = 'red';
-      payStakeStatusP.classList.remove('flashing');
-    }
-
-    if (dappError.error.code === -32603) {
-      console.error(dappError.error.message);
-
-      socket.emit('rpc_error', {
-        game_id: gameId,
-        address: accounts[0],
-        contract_address: contractAddress,
-        error: error
-      });
-
-      payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
-
-      payStakeStatusP.style.color = 'red';
-      payStakeStatusP.classList.remove('flashing');
-    }
-  });
-
-  txHash.on('transactionHash', function (hash) {
-    payStakeStatusP.innerText = 'Transaction hash received. Waiting for transaction to be mined...';
-    // Transaction hash received
-    console.log(`The transaction hash is ${hash}`);
-    socket.emit('pay_stake_hash', {
-      game_id: gameId,
-      transaction_hash: hash,
-      address: accounts[0],
-      contract_address: contractAddress,
     });
-  });
 
-  txHash.on('receipt', function (receipt) {
-    payStakeStatusP.innerText = 'Transaction receipt received. Transaction mined, waiting for confirmation...';
-    // Transaction receipt received
-    console.log(`The receipt is ${receipt}`);
-    socket.emit('pay_stake_receipt', {
-      game_id: gameId,
-      address: accounts[0],
-      contract_address: contractAddress,
+    txHash.on('error', function (error) {
+      // Transaction error occurred
+      console.error(`An error occurred: ${error}`);
     });
-  });
-
-  txHash.on('confirmation', function (confirmation, receipt) {
-    payStakeStatusP.innerText = 'Transaction confirmed.';
-    payStakeStatusP.classList.remove('flashing');
-    // Transaction confirmed
-    console.log(`The confirmation number is ${confirmation}`);
-    socket.emit('pay_stake_confirmation', {
-      game_id: gameId,
-      address: accounts[0],
-      contract_address: contractAddress,
-      // confirmation: confirmation 
-    });
-    let gameSection = document.getElementById('game-section');
-    gameSection.style.display = 'contents';
-  });
-
-  txHash.on('error', function (error) {
-    // Transaction error occurred
-    console.error(`An error occurred: ${error}`);
-  });
+  })();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   choiceButtons = document.querySelectorAll('#buttons button');
   gameIdP = document.getElementById('game-id');
-  playerId = document.getElementById('player-id');
   wagerInput = document.getElementById('wager-input');
   wagerInputPlaceholder = wagerInput.placeholder;
   yourWagerInEtherP = document.getElementById('your-wager-in-ether');
@@ -710,41 +749,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   payStakeStatusP = document.getElementById('pay-stake-status');
   payStakeStatusP.style.marginBottom = '10px';
-  
+
   modal = document.querySelector('.modal');
   overlay = document.querySelector('.overlay');
   closeModalBtn = document.querySelector('.close-modal');
   contactP = document.getElementById('contact');
 
-  (async () => {
-    while (!window.ethereum) {
-      console.log('Waiting for MetaMask...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+  socket = io(domain,
+    {
+      transports: ['websocket'],
+      query: {
+        player_id: playerId,
+      }
+    });
 
-    // Request access to user's MetaMask accounts
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-
-    web3 = new Web3(window.ethereum);
-
-    // Use web3.js
-    accounts = await web3.eth.getAccounts();
-    initialBalanceInWei = await web3.eth.getBalance(accounts[0]);
-    console.log(`Initial balance ${initialBalanceInWei}`);
-
-    console.log(`Your accounts: ${accounts}`);
-
-    if (typeof accounts[0] !== 'undefined') {
-      socket = io(domain,
-        {
-          transports: ['websocket'],
-          query: {
-            address: accounts[0]
-          }
-        });
-
-      registerDOMEventListeners();
-      registerSocketIOEventListeners();
-    }
-  })();
+  registerDOMEventListeners();
+  registerSocketIOEventListeners();
 });
