@@ -50,7 +50,7 @@ let contactP;
 
 const playerId = generateGUID();
 
-const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
+const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
@@ -227,7 +227,7 @@ function registerSocketIOEventListeners() {
 
   socket.on('both_players_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-    opponentChoiceStatus.innerText = 'Settling up... Good luck!';
+    opponentChoiceStatus.innerText = 'Settling up! Please be patient, this could take a while... Good luck!';
   });
 
   socket.on('both_players_chose', (data) => {
