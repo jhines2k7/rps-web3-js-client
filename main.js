@@ -694,6 +694,7 @@ async function payStake(stakeUSD, contractAddress) {
       socket.emit('pay_stake_receipt', {
         game_id: gameId,
         player_id: playerId,
+        address: accounts[0],
         contract_address: contractAddress,
       });
     });
@@ -706,7 +707,6 @@ async function payStake(stakeUSD, contractAddress) {
       socket.emit('pay_stake_confirmation', {
         game_id: gameId,
         player_id: playerId,
-        address: accounts[0],
         contract_address: contractAddress,
       });
     });
