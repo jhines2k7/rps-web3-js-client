@@ -283,7 +283,7 @@ function registerSocketIOEventListeners() {
     yourWagerStatusP.innerText = `Your opponent accepted your wager.`;
     console.log(`data from wager_accepted event: ${JSON.stringify(data)}`);
     opponentJoinP.innerText = '';
-    oppWagerStatusP.innerText = '';
+    // oppWagerStatusP.innerText = '';
   });
 
   socket.on('connect_error', (error) => {
