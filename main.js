@@ -98,7 +98,7 @@ function registerDOMEventListeners() {
   contactP.addEventListener("click", showModal);
 
   acceptWagerBtn.addEventListener('click', () => {
-    
+
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
@@ -154,6 +154,7 @@ function registerDOMEventListeners() {
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
     opponentJoinP.innerText = '';
+    wagerOfferedP.innerText = '';
     oppWagerStatusP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
   });
 
