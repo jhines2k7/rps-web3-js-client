@@ -133,7 +133,7 @@ function registerDOMEventListeners() {
     yourWagerStatusP.classList.remove('flashing');
     yourWagerStatusP.style.color = 'black';
 
-    if(oppWagerStatusP.innerText.contains('opponent declined')) {
+    if(oppWagerStatusP.innerText.includes('opponent declined')) {
       oppWagerStatusP.innerText = '';
     }
 
