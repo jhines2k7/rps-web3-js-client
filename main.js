@@ -354,7 +354,7 @@ function registerSocketIOEventListeners() {
     symbolChoiceDiv.insertBefore(oppChoiceP, opponentChoiceStatus);
 
     winLoseDrawP.innerText = 'You win!';
-    outcomeP.innerText = `YOU won $${data.winnings}`;
+    outcomeP.innerText = `YOU won $${parseFloat(data.winnings.toFixed(2))}`;
 
     (async () => {
       const winningsInEth = await dollarsToEthereum(data.winnings);
