@@ -35,6 +35,7 @@ let oppWagerInDollars;
 let oppId;
 let wagerInputPlaceholder;
 let payStakeStatusP;
+let wagerOfferedP;
 
 let accounts = [];
 let web3 = null;
@@ -113,7 +114,8 @@ function registerDOMEventListeners() {
       yourWagerStatusP.style.color = 'green';
     }
 
-    oppWagerStatusP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
+    wagerOfferedP.innerText = `You accepted a ${oppWagerInDollars} wager from your opponent.`;
+    // oppWagerStatusP.innerText = '';
     oppWagerStatusP.classList.remove('flashing');
   });
 
@@ -246,7 +248,8 @@ function registerSocketIOEventListeners() {
 
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
-    oppWagerStatusP.innerText = `You were offered a ${data.wager} wager.`;
+    wagerOfferedP.innerText = `You were offered a ${data.wager} wager.`;
+    // oppWagerStatusP.innerText = ''
     oppWagerStatusP.style.fontWeight = 'bold';
     oppWagerStatusP.classList.add('flashing');
     declineWagerBtn.disabled = false;
@@ -257,7 +260,6 @@ function registerSocketIOEventListeners() {
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
     yourWagerStatusP.innerText = '';
-    
     oppWagerStatusP.innerText = 'Your opponent declined your wager. Try to offer a different amount.';
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
@@ -269,7 +271,6 @@ function registerSocketIOEventListeners() {
   socket.on('both_wagers_accepted', (data) => {
     const yourWager = data.your_wager;
     const opponentWager = data.opponent_wager;
-
     yourWagerP.innerText = `YOU wagered ${yourWager}`;
     opponentWagerP.innerText = `OPP wagered ${opponentWager}`;
     enableChoiceButtons();
@@ -752,6 +753,7 @@ document.addEventListener('DOMContentLoaded', () => {
   opponentWagerP = document.getElementById('opponent-wager');
   yourWagerStatusP = document.getElementById('your-wager-status');
   oppWagerStatusP = document.getElementById('opp-wager-status');
+  wagerOfferedP = document.getElementById('wager-offered');
 
   payStakeStatusP = document.getElementById('pay-stake-status');
   payStakeStatusP.style.marginBottom = '10px';
