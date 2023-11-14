@@ -133,9 +133,7 @@ function registerDOMEventListeners() {
     yourWagerStatusP.classList.remove('flashing');
     yourWagerStatusP.style.color = 'black';
 
-    if(!opponentWagerAcceptedP) {
-      oppWagerStatusP.innerText = '';
-    }
+    // oppWagerStatusP.innerText = '';
 
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
