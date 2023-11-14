@@ -132,7 +132,10 @@ function registerDOMEventListeners() {
     yourWagerStatusP.innerText = `You offered a ${wagerValue} wager. Waiting for your opponent to accept your wager...`;
     yourWagerStatusP.classList.remove('flashing');
     yourWagerStatusP.style.color = 'black';
-    // oppWagerStatusP.innerText = '';
+
+    if(!opponentWagerAcceptedP) {
+      oppWagerStatusP.innerText = '';
+    }
 
     if (!heartbeatInterval) {
       heartbeatInterval = setInterval(function () {
