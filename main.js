@@ -251,9 +251,9 @@ function registerSocketIOEventListeners() {
   socket.on('wager_offered', (data) => {
     oppWagerInDollars = data.wager;
     wagerOfferedP.innerText = `You were offered a ${data.wager} wager.`;
-    // oppWagerStatusP.innerText = ''
-    oppWagerStatusP.style.fontWeight = 'bold';
-    oppWagerStatusP.classList.add('flashing');
+    oppWagerStatusP.innerText = ''
+    // oppWagerStatusP.style.fontWeight = 'bold';
+    // oppWagerStatusP.classList.add('flashing');
     declineWagerBtn.disabled = false;
     acceptWagerBtn.disabled = false;
     opponentJoinP.innerText = '';
