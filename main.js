@@ -154,8 +154,8 @@ function registerDOMEventListeners() {
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
     opponentJoinP.innerText = '';
-    wagerOfferedP.innerText = '';
-    oppWagerStatusP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
+    wagerOfferedP.innerText = `You declined the ${oppWagerInDollars} wager from your opponent.`;
+    oppWagerStatusP.innerText = '';
   });
 
   wagerInput.addEventListener('input', function (e) {
@@ -262,8 +262,8 @@ function registerSocketIOEventListeners() {
   socket.on('wager_declined', (data) => {
     console.log(`Wager declined by opponent in game ${data.game_id}`)
 
-    yourWagerStatusP.innerText = '';
-    oppWagerStatusP.innerText = 'Your opponent declined your wager. Try to offer a different amount.';
+    yourWagerStatusP.innerText = 'Your opponent declined your wager. Try to offer a different amount.';
+    oppWagerStatusP.innerText = '';
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
     // acceptWagerBtn.disabled = true;
