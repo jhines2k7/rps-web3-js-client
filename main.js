@@ -98,7 +98,6 @@ function registerDOMEventListeners() {
   contactP.addEventListener("click", showModal);
 
   acceptWagerBtn.addEventListener('click', () => {
-
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
