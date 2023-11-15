@@ -265,8 +265,8 @@ function registerSocketIOEventListeners() {
     oppWagerStatusP.innerText = 'Your opponent declined your wager. Try to offer a different amount.';
     offerWagerBtn.disabled = false;
     wagerInput.disabled = false;
-    // acceptWagerBtn.disabled = true;
-    // declineWagerBtn.disabled = true;
+    acceptWagerBtn.disabled = true;
+    declineWagerBtn.disabled = true;
     opponentJoinP.innerText = '';
   });
 
