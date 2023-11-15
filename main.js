@@ -77,7 +77,7 @@ function clearGUIDCookie() {
   document.cookie = "guid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-const domain = 'https://dev.generalsolutions43.com';
+const domain = 'http://localhost:8000';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
