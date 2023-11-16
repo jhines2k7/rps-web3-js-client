@@ -54,21 +54,21 @@ const playerId = saveGUIDToCookie();
 function saveGUIDToCookie() {
   // Check if a GUID already exists in the cookie
   let guid = document.cookie.split('; ').find(row => row.startsWith('guid='));
-  
+
   // If a GUID exists, split the string to get the value
   if (guid) {
     guid = guid.split('=')[1];
   } else {
     // If a GUID doesn't exist, generate a new one
     guid = generateGUID();
-    
+
     // Save the new GUID to the cookie
     // This cookie expires in 1 year
     let date = new Date();
     date.setFullYear(date.getFullYear() + 1);
     document.cookie = `guid=${guid}; expires=${date.toUTCString()}; path=/`;
   }
-  
+
   return guid;
 }
 
@@ -117,6 +117,66 @@ function showModal() {
   let modalP = document.querySelector('.modal p');
   modalP.innerText = `Be sure to include your game ID: ${gameId} and player Id: ${playerId} in your message.`;
 };
+
+function handleWeb3Error(error, contractAddress) {
+  let dappError = {}
+
+  if (error.innerError) {
+    dappError['error'] = error.innerError
+  } else {
+    dappError['error'] = error.error
+  }
+
+  if (dappError.error.code === 4001) {
+    console.error(dappError.error.message);
+    // emit an event to the server to let the other player know you rejected the transaction
+    socket.emit('contract_rejected', {
+      game_id: gameId,
+      player_id: playerId,
+      contract_address: contractAddress,
+      error: error
+    });
+
+    payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
+      "Refresh to start a new game.";
+
+    payStakeStatusP.classList.remove('flashing');
+  }
+
+  if (dappError.error.code === -32000) {
+    console.error(dappError.error.message);
+
+    socket.emit('insufficient_funds', {
+      game_id: gameId,
+      player_id: playerId,
+      contract_address: contractAddress,
+      error: error
+    });
+
+    payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
+      " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
+      "in a few minutes or refresh now to start a new game.";
+
+    payStakeStatusP.style.color = 'red';
+    payStakeStatusP.classList.remove('flashing');
+  }
+
+  if (dappError.error.code === -32603) {
+    console.error(dappError.error.message);
+
+    socket.emit('rpc_error', {
+      game_id: gameId,
+      player_id: playerId,
+      contract_address: contractAddress,
+      error: error
+    });
+
+    payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
+
+    payStakeStatusP.style.color = 'red';
+    payStakeStatusP.classList.remove('flashing');
+  }
+}
 
 function registerDOMEventListeners() {
   closeModalBtn.addEventListener("click", closeModal);
@@ -635,8 +695,18 @@ async function payStake(stakeUSD, contractAddress) {
       'data': encodedData,
     };
 
-    const gasEstimate = await web3.eth.estimateGas(transaction);
-    console.log(`The gas estimate is ${gasEstimate}`);
+    try {
+      const gasEstimate = await web3.eth.estimateGas(transaction);
+      transaction['gas'] = gasEstimate;
+      console.log(`The gas estimate is ${gasEstimate}`);
+    } catch (error) {
+      console.error(`Error estimating gas: ${error}`);
+      
+      handleWeb3Error(error, contractAddress);
+
+      return;
+    }
+
     const gasOracle = await getGasOracle();
 
     payStakeStatusP.innerText = 'Submitting transaction...';
@@ -648,8 +718,7 @@ async function payStake(stakeUSD, contractAddress) {
 
     const maxPriorityFeePerGas = parseInt(gasOracle.FastGasPrice) - parseInt(gasOracle.suggestBaseFee);
     console.log(`The maxFeePerGas is ${maxPriorityFeePerGas}`);
-
-    transaction['gas'] = gasEstimate;
+    
     transaction['maxFeePerGas'] = web3.utils.toWei(gasOracle.SafeGasPrice, 'gwei');
     transaction['maxPriorityFeePerGas'] = web3.utils.toWei(maxPriorityFeePerGas.toString(), 'gwei');
     const txHash = web3.eth.sendTransaction(transaction);
@@ -657,63 +726,7 @@ async function payStake(stakeUSD, contractAddress) {
     txHash.catch((error) => {
       console.error(JSON.stringify(error));
 
-      let dappError = {}
-
-      if (error.innerError) {
-        dappError['error'] = error.innerError
-      } else {
-        dappError['error'] = error.error
-      }
-
-      if (dappError.error.code === 4001) {
-        console.error(dappError.error.message);
-        // emit an event to the server to let the other player know you rejected the transaction
-        socket.emit('contract_rejected', {
-          game_id: gameId,
-          player_id: playerId,
-          contract_address: contractAddress,
-          error: error
-        });
-
-        payStakeStatusP.innerText = "You decided not to accept the contract. Your opponent has been notified. " +
-          "Refresh to start a new game.";
-
-        payStakeStatusP.classList.remove('flashing');
-      }
-
-      if (dappError.error.code === -32000) {
-        console.error(dappError.error.message);
-
-        socket.emit('insufficient_funds', {
-          game_id: gameId,
-          player_id: playerId,
-          contract_address: contractAddress,
-          error: error
-        });
-
-        payStakeStatusP.innerText = "Check your account balance. Your wallet may have insufficient funds for gas * price + value. This " +
-          " is sometimes due to a sudden increase in gas prices on the network. We've notified your opponent. Try again " +
-          "in a few minutes or refresh now to start a new game.";
-
-        payStakeStatusP.style.color = 'red';
-        payStakeStatusP.classList.remove('flashing');
-      }
-
-      if (dappError.error.code === -32603) {
-        console.error(dappError.error.message);
-
-        socket.emit('rpc_error', {
-          game_id: gameId,
-          player_id: playerId,
-          contract_address: contractAddress,
-          error: error
-        });
-
-        payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
-
-        payStakeStatusP.style.color = 'red';
-        payStakeStatusP.classList.remove('flashing');
-      }
+      handleWeb3Error(error, contractAddress);
     });
 
     txHash.on('transactionHash', function (hash) {
