@@ -77,7 +77,7 @@ function clearGUIDCookie() {
   document.cookie = "guid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-const domain = 'https://prod.wss1.crypto-rockpaperscissors.com';
+const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
@@ -709,7 +709,7 @@ async function payStake(stakeUSD, contractAddress) {
 
     const gasOracle = await getGasOracle();
 
-    payStakeStatusP.innerText = 'Submitting transaction...';
+    // payStakeStatusP.innerText = 'Submitting transaction...';
 
     socket.emit('paying_stake', {
       game_id: gameId,
