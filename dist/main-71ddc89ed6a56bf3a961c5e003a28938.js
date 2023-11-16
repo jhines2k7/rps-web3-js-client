@@ -175,6 +175,8 @@ function handleWeb3Error(error, contractAddress) {
 
     payStakeStatusP.style.color = 'red';
     payStakeStatusP.classList.remove('flashing');
+
+    clearGUIDCookie();
   }
 }
 
@@ -709,7 +711,7 @@ async function payStake(stakeUSD, contractAddress) {
 
     const gasOracle = await getGasOracle();
 
-    payStakeStatusP.innerText = 'Submitting transaction...';
+    // payStakeStatusP.innerText = 'Submitting transaction...';
 
     socket.emit('paying_stake', {
       game_id: gameId,
