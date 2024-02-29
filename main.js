@@ -40,8 +40,6 @@ let wagerOfferedP;
 let accounts = [];
 let web3 = null;
 
-let heartbeatInterval;
-
 let disconnected = false;
 
 let modal;
@@ -49,9 +47,10 @@ let overlay;
 let closeModalBtn;
 let contactP;
 
-const playerId = saveGUIDToCookie();
+let PLAYER_NONCE = null;
+let CHOICE = '';
 
-function saveGUIDToCookie() {
+function getPlayerId() {
   // Check if a GUID already exists in the cookie
   let guid = document.cookie.split('; ').find(row => row.startsWith('guid='));
 
@@ -115,7 +114,7 @@ function showModal() {
   modal.classList.remove('hidden');
   overlay.classList.remove('hidden');
   let modalP = document.querySelector('.modal p');
-  modalP.innerText = `Be sure to include your game ID: ${gameId} and player Id: ${playerId} in your message.`;
+  modalP.innerText = `Be sure to include your game ID: ${gameId} and player Id: ${getPlayerId()} in your message.`;
 };
 
 function handleWeb3Error(error, contractAddress) {
@@ -132,7 +131,7 @@ function handleWeb3Error(error, contractAddress) {
     // emit an event to the server to let the other player know you rejected the transaction
     socket.emit('contract_rejected', {
       game_id: gameId,
-      player_id: playerId,
+      player_id: getPlayerId(),
       contract_address: contractAddress,
       error: error
     });
@@ -148,7 +147,7 @@ function handleWeb3Error(error, contractAddress) {
 
     socket.emit('insufficient_funds', {
       game_id: gameId,
-      player_id: playerId,
+      player_id: getPlayerId(),
       contract_address: contractAddress,
       error: error
     });
@@ -166,7 +165,7 @@ function handleWeb3Error(error, contractAddress) {
 
     socket.emit('rpc_error', {
       game_id: gameId,
-      player_id: playerId,
+      player_id: getPlayerId(),
       contract_address: contractAddress,
       error: error
     });
@@ -189,7 +188,7 @@ function registerDOMEventListeners() {
     (async () => {
       const oppWagerInEth = await dollarsToEthereum(oppWagerInDollars.replace(/^\$/, ''));
       oppWagerInEtherP.innerText = `Your opponent wager in eth: ${oppWagerInEth}`;
-      socket.emit('accept_wager', { player_id: playerId, opp_wager_in_eth: oppWagerInEth, game_id: gameId });
+      socket.emit('accept_wager', { player_id: getPlayerId(), opp_wager_in_eth: oppWagerInEth, game_id: gameId });
     })();
     acceptWagerBtn.disabled = true;
     declineWagerBtn.disabled = true;
@@ -208,13 +207,11 @@ function registerDOMEventListeners() {
   });
 
   offerWagerBtn.addEventListener('click', () => {
-    clearInterval(heartbeatInterval);
-
     let wagerValue = wagerInput.value;
 
     console.log(`wagerValue: ${wagerValue}`);
 
-    socket.emit('offer_wager', { wager: wagerValue, player_id: playerId, game_id: gameId });
+    socket.emit('offer_wager', { wager: wagerValue, player_id: getPlayerId(), game_id: gameId });
 
     opponentJoinP.innerText = '';
     offerWagerBtn.disabled = true;
@@ -226,16 +223,10 @@ function registerDOMEventListeners() {
     if (oppWagerStatusP.innerText.includes('opponent declined')) {
       oppWagerStatusP.innerText = '';
     }
-
-    if (!heartbeatInterval) {
-      heartbeatInterval = setInterval(function () {
-        socket.emit('heartbeat', { player_id: playerId, ping: 'ping' })
-      }, 20000); // Send heartbeat every 20 seconds
-    }
   });
 
   declineWagerBtn.addEventListener('click', () => {
-    socket.emit('decline_wager', { player_id: playerId, game_id: gameId });
+    socket.emit('decline_wager', { player_id: getPlayerId(), game_id: gameId });
     // offerWagerBtn.disabled = false;
     // wagerInput.disabled = false;
     acceptWagerBtn.disabled = true;
@@ -284,6 +275,8 @@ function registerDOMEventListeners() {
 
         const choice = button.id;
         console.log(`You chose ${choice}`);
+        CHOICE = choice;
+
         document.querySelector('#symbol-choice p').innerText = `YOU chose`;
 
         let playerChoiceP = document.createElement('p');
@@ -305,8 +298,8 @@ function registerDOMEventListeners() {
 
         socket.emit('choice', {
           game_id: gameId,
-          choice: button.id,
-          player_id: playerId
+          choice: choice,
+          player_id: getPlayerId()
         });
       });
     }
@@ -322,11 +315,11 @@ function registerSocketIOEventListeners() {
 
   socket.on('both_players_accepted_contract', () => {
     let opponentChoiceStatus = document.querySelector('#symbol-choice p.flashing');
-    opponentChoiceStatus.innerText = 'Settling up! Please be patient, this could take a while... Good luck!';
+    opponentChoiceStatus.innerText = 'Settling up! This will only take a moment... Good luck!';
   });
 
   socket.on('both_players_chose', (data) => {
-    console.log(`Wager from player ${playerId}: ${data.wager}`);
+    console.log(`Wager from player ${getPlayerId()}: ${data.wager}`);
     const stakeUSD = data.wager.replace(/^\$/, '');
     const contractAddress = data.contract_address;
     console.log(`Wager accepted by both parties. Paying stakes to RPSContract with address: ${contractAddress}`)
@@ -608,6 +601,15 @@ function registerSocketIOEventListeners() {
   socket.on('heartbeat_response', (data) => {
     console.log(`Heartbeat received: ${JSON.stringify(data)}`);
   });
+
+  socket.on('nonce_requested', (gameId) => {
+    console.log('Nonce requested');
+    socket.emit('nonce_supplied', { player_nonce: PLAYER_NONCE, game_id: gameId, player_id: getPlayerId() });
+  });
+
+  socket.on('ping', () => {
+    console.log('Ping packet received from the server.');
+  });
 }
 
 async function dollarsToEthereum(dollars) {
@@ -677,8 +679,8 @@ async function payStake(stakeUSD, contractAddress) {
     console.log(`Your accounts: ${accounts}`);
 
     // Fetch the RPSContract
-    const rpsContractABI = await loadContractABI();
-    const RPSContract = new web3.eth.Contract(rpsContractABI.abi, web3.utils.toChecksumAddress(contractAddress));
+    const rpsContractV2ABI = await loadContractABI();
+    const RPSContractV2 = new web3.eth.Contract(rpsContractV2ABI.abi, web3.utils.toChecksumAddress(contractAddress));
 
     const nonce = await web3.eth.getTransactionCount(accounts[0]);
     console.log(`The nonce for your address is ${nonce}`);
@@ -688,7 +690,20 @@ async function payStake(stakeUSD, contractAddress) {
     const stakeInWei = web3.utils.toWei(stakeInEther.toString(), 'ether');
     console.log(`The stake in Wei is ${stakeInWei}`);
 
-    const encodedData = RPSContract.methods.payStake().encodeABI();
+    const playerMove = {
+      'player_address': accounts[0],
+      'game_id': gameId,
+      'choice': CHOICE
+    }
+    const playerMoveString = JSON.stringify(playerMove);
+
+    PLAYER_NONCE = web3.utils.randomHex(16);
+    console.log(`The playerMove as a string is ${playerMoveString + PLAYER_NONCE}`);
+
+    const playerMoveHash = web3.utils.sha3(web3.utils.toHex(playerMoveString + PLAYER_NONCE), {encoding:"hex"});
+    console.log(`The playerMoveHash is ${playerMoveHash}`);
+
+    const encodedData = RPSContractV2.methods.payStake(gameId, accounts[0], playerMoveHash).encodeABI();
     const transaction = {
       'from': web3.utils.toChecksumAddress(accounts[0]),
       'to': web3.utils.toChecksumAddress(contractAddress),
@@ -703,9 +718,7 @@ async function payStake(stakeUSD, contractAddress) {
       console.log(`The gas estimate is ${gasEstimate}`);
     } catch (error) {
       console.error(`Error estimating gas: ${error}`);
-      
       handleWeb3Error(error, contractAddress);
-
       return;
     }
 
@@ -715,7 +728,7 @@ async function payStake(stakeUSD, contractAddress) {
 
     socket.emit('paying_stake', {
       game_id: gameId,
-      player_id: playerId,
+      player_id: getPlayerId(),
     });
 
     const maxPriorityFeePerGas = parseInt(gasOracle.FastGasPrice) - parseInt(gasOracle.suggestBaseFee);
@@ -738,7 +751,7 @@ async function payStake(stakeUSD, contractAddress) {
       socket.emit('pay_stake_hash', {
         game_id: gameId,
         transaction_hash: hash,
-        player_id: playerId,
+        player_id: getPlayerId(),
         contract_address: contractAddress,
       });
     });
@@ -749,7 +762,7 @@ async function payStake(stakeUSD, contractAddress) {
       console.log(`The receipt is ${receipt}`);
       socket.emit('pay_stake_receipt', {
         game_id: gameId,
-        player_id: playerId,
+        player_id: getPlayerId(),
         address: accounts[0],
         contract_address: contractAddress,
       });
@@ -762,7 +775,7 @@ async function payStake(stakeUSD, contractAddress) {
       console.log(`The confirmation number is ${confirmation}`);
       socket.emit('pay_stake_confirmation', {
         game_id: gameId,
-        player_id: playerId,
+        player_id: getPlayerId(),
         contract_address: contractAddress,
       });
     });
@@ -813,7 +826,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       transports: ['websocket'],
       query: {
-        player_id: playerId,
+        player_id: getPlayerId(),
       }
     });
 
