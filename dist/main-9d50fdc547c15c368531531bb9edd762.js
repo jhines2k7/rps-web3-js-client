@@ -170,7 +170,7 @@ function handleWeb3Error(error, contractAddress) {
       error: error
     });
 
-    payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your MetaMask app. We've notified your opponent.";
+    payStakeStatusP.innerText = "An Internal JSON-RPC error has occured. You may need to restart your Web3 browser app. We've notified your opponent.";
 
     payStakeStatusP.style.color = 'red';
     payStakeStatusP.classList.remove('flashing');
