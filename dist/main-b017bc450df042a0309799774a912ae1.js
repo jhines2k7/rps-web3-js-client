@@ -50,7 +50,7 @@ let contactP;
 let PLAYER_NONCE = null;
 let CHOICE = '';
 
-const domain = 'https://rps.generalsolutions43.com';
+const domain = 'https://test.wss1.crypto-rockpaperscissors.com';
 
 function getPlayerId() {
   // Check if a GUID already exists in the cookie
