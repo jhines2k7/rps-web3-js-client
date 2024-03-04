@@ -23,7 +23,7 @@ if [ "$environment" == "prod" ]; then
 elif [ "$environment" == "test" ]; then
   domain="test.wss1.crypto-rockpaperscissors.com"
 elif [ "$environment" == "dev" ]; then
-  domain="dev.generalsolutions43.com"
+  domain="rps.generalsolutions43.com"
 else
   echo "Invalid environment specified. Please use 'prod', 'test', or 'dev'."
   exit 1

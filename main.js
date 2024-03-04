@@ -50,6 +50,8 @@ let contactP;
 let PLAYER_NONCE = null;
 let CHOICE = '';
 
+const domain = 'http://localhost:8000';
+
 function getPlayerId() {
   // Check if a GUID already exists in the cookie
   let guid = document.cookie.split('; ').find(row => row.startsWith('guid='));
@@ -75,8 +77,6 @@ function clearGUIDCookie() {
   // Set the GUID cookie to expire immediately
   document.cookie = "guid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
-
-const domain = 'http://localhost:8000';
 
 function disableChoiceButtons() {
   choiceButtons.forEach((button) => {
